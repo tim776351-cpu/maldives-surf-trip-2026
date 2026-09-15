@@ -79,6 +79,13 @@ h2 {
   font-stretch: 118%;
   letter-spacing: -.012em;
   margin-bottom: .55em;
+  overflow-wrap: normal;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+/* Phones: long single-word headings ("Accommodation") must fit on one line instead of breaking mid-word */
+@media (max-width: 480px) {
+  h2 { font-size: clamp(1.6rem, 7.6vw, 2.2rem); font-stretch: 100%; }
 }
 h3 { font-size: 1.35rem; font-weight: 760; font-stretch: 104%; }
 h4 { font-size: 1.12rem; font-weight: 720; font-stretch: 100%; line-height: 1.2; }
