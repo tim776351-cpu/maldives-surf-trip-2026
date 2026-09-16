@@ -153,6 +153,34 @@ section[id], footer[id], .day, [id^="stay-"], [id^="flight-"], h2[id], h3[id], [
 @media (min-width: 480px) { .menu-btn-text { position: static; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none; } }
 @media (min-width: 720px) { .seg { flex: 0 1 460px; margin-left: auto; } }
 
+/* ------------------------------------------------- language switcher (EN / 中文)
+   Phones and tablets: a compact always-visible button in the sticky bar, plus the
+   full two-state control pinned at the top of the Sections panel.
+   Desktop (>=1100px, where the bar is hidden): the full control at the top of the rail. */
+.lang-btn {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; height: 44px; padding: 0 8px;
+  border: 1.5px solid rgba(191, 238, 230, .45); border-radius: 12px;
+  background: transparent; color: #fff; font: inherit; font-weight: 700; font-size: .95rem;
+  line-height: 1; white-space: nowrap; cursor: pointer;
+}
+.lang-btn:hover { background: var(--channel-2); }
+.lang-btn[aria-pressed="true"] { background: rgba(255, 194, 71, .18); border-color: var(--sun); }
+.lang-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; box-shadow: 0 0 0 1px var(--focus-halo), 0 0 0 6px var(--focus-halo); }
+.lang-pick { margin: 0 0 14px; }
+.lang-pick-h { margin: 0 0 6px; font-size: .9rem; font-weight: 700; color: var(--reef-soft); }
+.lang-seg { display: flex; gap: 0; padding: 3px; border-radius: 13px; background: rgba(255, 255, 255, .1); }
+.lang-opt {
+  flex: 1; min-width: 0; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 10px; border: 0; border-radius: 10px; background: transparent;
+  color: #d7efea; font: inherit; font-weight: 700; line-height: 1; cursor: pointer;
+}
+.lang-opt.is-on { background: var(--sun); color: var(--channel); }
+.lang-opt.is-off { opacity: .55; }
+.lang-opt:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; box-shadow: 0 0 0 1px var(--focus-halo), 0 0 0 6px var(--focus-halo); }
+.lang-pick--rail { order: -1; }
+@media (max-width: 399px) { .lang-btn { padding: 0 6px; } }
+
 /* ---------------------------------------------------------------- rail (desktop) */
 .rail { display: none; }
 @media (min-width: 1100px) {
@@ -215,15 +243,18 @@ body.menu-open { overflow: hidden; }
 
 /* ---------------------------------------------------------------- toast */
 .toast {
-  position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); z-index: 80;
-  transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
+  /* Anchored under the sticky top bar (16 Sep 2026). It used to sit at the bottom of the
+     viewport, where it covered 5-6 of the 7 map-key rows on portrait phones right after a
+     language switch. Below the bar it only ever passes over the page heading, never the map
+     key, the plan switcher, the calculator dock or the spot sheet. */
+  position: fixed; left: 50%; top: calc(var(--topbar-h) + 12px); bottom: auto; z-index: 80;
+  transform: translate(-50%, -16px); opacity: 0; pointer-events: none;
   width: max-content; max-width: calc(100vw - 32px);
   padding: 12px 18px; border-radius: 14px; background: var(--channel); color: #fff; font-weight: 700;
   box-shadow: 0 10px 30px rgba(11, 58, 69, .35);
   transition: opacity .2s ease, transform .2s ease;
 }
 .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
-body.dock-on .toast { bottom: calc(86px + env(safe-area-inset-bottom)); }
 html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 
@@ -1058,7 +1089,7 @@ img.is-retrying { visibility: hidden; }
 /* Section numbers: a narrow numeral in the display face, sun on dark plates, coral ink on light bands. */
 .sec-num { display: inline-block; margin-right: .14em; font-stretch: 62%; font-weight: 900; color: var(--coral-ink); font-variant-numeric: tabular-nums; }
 .plate h2 .sec-num, .spots-intro .sec-num { color: var(--sun); }
-a.more { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
+a.more { display: inline-flex; align-items: center; justify-content: flex-start; min-width: 44px; min-height: 44px; font-weight: 700; }
 .h-sub.h-first { margin-top: .2em; }
 
 /* ---------------------------------------------------------------- top bar: the Surf spots tab */
@@ -1075,6 +1106,7 @@ a.more { display: inline-flex; align-items: center; min-height: 44px; font-weigh
   .tab-spots { padding: 0 9px; gap: 5px; }
   .seg-pick { display: none; }
   .seg-opt .seg-name { padding: 0 4px; font-size: .95rem; }
+  .lang-btn { font-size: .9rem; }
 }
 
 /* ---------------------------------------------------------------- rail and menu */
@@ -1345,7 +1377,6 @@ a.more { display: inline-flex; align-items: center; min-height: 44px; font-weigh
   .sheet-close { position: absolute; right: -6px; top: 4px; border-color: var(--line-2); color: var(--channel); }
   .sheet-close:hover { background: var(--shallows); }
   .spot-sheet .spot-detail { padding: 0 0 4px; border: 0; border-radius: 0; background: transparent; }
-  body.sheet-on .toast { bottom: calc(min(56vh - var(--topbar-h), 480px) + 12px); bottom: calc(min(56svh - var(--topbar-h), 480px) + 12px); }
 }
 /* Phones held sideways: a bottom sheet would leave no map, so the details open as a panel on the right, under the
    top bar, and the map pans its spot into the part on the left (app.js, sheetSide). */
@@ -1357,7 +1388,8 @@ a.more { display: inline-flex; align-items: center; min-height: 44px; font-weigh
     transform: translate3d(105%, 0, 0);
   }
   .spot-sheet .sheet-grip { display: none; }
-  body.sheet-on .toast { bottom: calc(16px + env(safe-area-inset-bottom)); left: calc((100vw - min(360px, 45vw)) / 2); max-width: calc(100vw - min(360px, 45vw) - 32px); }
+  /* Landscape: the details panel takes the right, so centre the toast over what is left of the page. */
+  body.sheet-on .toast { left: calc((100vw - min(360px, 45vw)) / 2); max-width: calc(100vw - min(360px, 45vw) - 32px); }
 }
 @media (prefers-reduced-motion: reduce) { .spot-sheet, .spot-sheet.is-open { transition: none; } }
 
@@ -1419,3 +1451,31 @@ a.more { display: inline-flex; align-items: center; min-height: 44px; font-weigh
   }
   .legend-map li { align-items: flex-start; }
 }
+
+/* ------------------------------------------------- Book it: the booking links
+   Added 16 Sep 2026. Every action comes from a "booking" object in the data: a 44 px
+   target with the provider named, the price we saw, the date we saw it and, where the
+   data says so, the free-cancellation deadline. Focus uses the page's global ring. */
+.bookit { margin: 12px 0 0; display: grid; justify-items: start; gap: 4px; }
+.bookit--inline { margin-top: 2px; }
+.bookit p { margin: 0; overflow-wrap: anywhere; }
+.btn-book { background: var(--sun); border-color: var(--sun); color: var(--channel); text-align: left; }
+.btn-book:hover { background: #ffd36e; border-color: #ffd36e; color: var(--channel); }
+.btn-book::after, .book-link::after {
+  content: ""; width: .72em; height: .72em; margin-left: 2px; flex: none; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 2h6v6M10 2L3 9' fill='none' stroke='black' stroke-width='1.8'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 2h6v6M10 2L3 9' fill='none' stroke='black' stroke-width='1.8'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.book-link { margin-right: 0; }
+.bookit-price { font-size: .92rem; color: var(--ink); }
+.bookit-cancel { font-size: .92rem; font-weight: 700; color: var(--coral-ink); }
+.bookit-warn { font-size: .92rem; font-weight: 700; color: var(--coral-ink); }
+.bookit-sum {
+  margin: 1.2em 0 1.4em; padding: 14px 16px; border-radius: var(--radius-l);
+  background: var(--sand); border: 2px solid var(--sand-2); display: grid; gap: 4px;
+}
+.bookit-sum-h { font-size: 1.15rem; font-weight: 780; font-stretch: 112%; margin: 0; color: var(--channel); }
+.bookit-sum p { margin: 0; overflow-wrap: anywhere; }
+.bookit-sum-line { font-weight: 700; color: var(--ink); }
+.pass-more .bookit { margin-bottom: 8px; }
+.prop .bookit { margin-top: 14px; }

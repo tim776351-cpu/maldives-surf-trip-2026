@@ -12,6 +12,799 @@
   var TRIP = W.TRIP;
   var IS_BROWSER = typeof document !== 'undefined';
 
+  /* Every hard-coded user-facing string on the page, by stable key. The English
+     here is the source of truth: plan/i18n/strings.en.json is extracted from it
+     (plus the data-i18n keys in index.html), and translators fill the same keys
+     in plan/i18n/strings.zh.json. Missing keys fall back to the English below. */
+  var UI_EN = {
+    "status.text.older price (2025)": "older price (2025)",
+    "status.text.published 2026 rate": "published 2026 rate",
+    "status.text.estimate": "estimate",
+    "status.text.quote needed": "quote needed",
+    "status.text.older price (year unknown)": "older price (year unknown)",
+    "status.text.older price (about 2014)": "older price (about 2014)",
+    "status.text.quote needed (undated agent price)": "quote needed (undated agent price)",
+    "level.short.Advanced": "Advanced",
+    "level.short.Intermediate": "Intermediate",
+    "level.short.Int-Adv": "Int-Adv",
+    "level.short.Beginner-Int": "Beginner-Int",
+    "level.short.Int-Adv to Advanced/Expert": "Int-Adv to Advanced/Expert",
+    "plan.vhRole": ", {role}",
+    "photo.captionDot": "{caption}.",
+    /* --- language switcher --- */
+    "lang.label": "Language",
+    "lang.en": "EN",
+    "lang.zh": "中文",
+    "lang.enFull": "English",
+    "lang.zhFull": "繁體中文",
+    "lang.toEn": "Switch the page to English",
+    "lang.toZh": "Switch the page to Chinese",
+    "lang.switchAria": "Language / 語言",
+    "lang.unavailable": "The Chinese version is not ready yet.",
+    "lang.switchedZh": "Page switched to Chinese.",
+    "lang.switchedEn": "Page switched to English.",
+
+    /* --- head, share card --- */
+    "meta.title": "Maldives Surf Trip, 1-10 Nov 2026",
+    "meta.description": "Crew trip plan for 11 intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Tue 10 Nov 2026. Opens on a map of the surf spots and where we could stay, then the November surf outlook, the budget (Budget plan, Mid as the upgrade), flights, stays, surf spots, coaching, boats and more. Prices checked 16 Sep 2026.",
+    "meta.ogTitle": "Maldives Surf Trip, 1-10 Nov 2026",
+    "meta.ogDescription": "Our crew plan for North Malé Atoll: a map of the breaks and the guesthouse options, the November surf outlook, what it costs each of us in HKD (Budget plan, Mid as the upgrade), flights, boats and coaching. Prices checked 16 Sep 2026, estimates to re-check before booking.",
+    "meta.ogImageAlt": "A surfer in a yellow rash guard crouched inside a hollow, glassy wave in the Maldives",
+    "noscript.text": "This trip plan needs JavaScript to show its content. Turn JavaScript on and reload the page.",
+    "skip.toOverview": "Skip the map, go to 1 Overview",
+
+    /* --- top bar, rail, menu, nav --- */
+    "bar.sections": "Sections",
+    "bar.surfSpots": "Surf spots",
+    "bar.planLegend": "Plan",
+    "bar.planBudget": "Budget",
+    "bar.planBudgetVh": ", the crew's plan",
+    "bar.planMid": "Mid",
+    "bar.planMidVh": ", optional upgrade",
+    "rail.navAria": "Trip navigation",
+    "rail.brandName": "Maldives surf trip",
+    "rail.brandDates": "Sun 1 to Tue 10 Nov 2026",
+    "rail.spotsTitle": "Surf spots",
+    "rail.spotsTaglineFallback": "Map, breaks and boat times",
+    "rail.spotsTagline": "{n} breaks on a map, boat times",
+    "rail.planLegend": "Plan (estimated cost each)",
+    "rail.planEst": "{price} each, default picks (estimate)",
+    "nav.aria": "Sections",
+    "menu.title": "Sections",
+    "menu.close": "Close sections menu",
+    "menu.estimate": "{plan} ({role}): {price} each, estimate",
+
+    /* --- section names (nav and headings) --- */
+    "sec.top": "Map overview",
+    "sec.overview": "Overview",
+    "sec.overviewH": "Overview: Maldives surfing in 1-10 Nov",
+    "sec.budget": "Budget overall",
+    "sec.flights": "Flights",
+    "sec.stay": "Accommodation",
+    "sec.spots": "Surf spots",
+    "sec.coaching": "Surf coaching",
+    "sec.transport": "Local transport",
+    "sec.activities": "Other activities",
+    "sec.food": "Eat & drink",
+    "sec.itinerary": "Day-by-day plan",
+    "sec.prep": "Before you go",
+    "sec.sources": "Sources & photo credits",
+    "sec.readFirst": "Read this first",
+    "sec.plan30": "The plan in 30 seconds",
+    "sec.calls": "The calls we made, and the alternatives",
+    "sec.crewDates": "Crew and dates",
+    "sec.vibe": "The vibe",
+    "sec.calc": "Budget calculator",
+
+    /* --- money, dates, shared words --- */
+    "money.hkd": "HKD",
+    "money.zero": "HKD 0",
+    "date.fmt": "{d} {mon} {y}",
+    "date.mon.1": "Jan",
+    "date.mon.2": "Feb",
+    "date.mon.3": "Mar",
+    "date.mon.4": "Apr",
+    "date.mon.5": "May",
+    "date.mon.6": "Jun",
+    "date.mon.7": "Jul",
+    "date.mon.8": "Aug",
+    "date.mon.9": "Sep",
+    "date.mon.10": "Oct",
+    "date.mon.11": "Nov",
+    "date.mon.12": "Dec",
+    "words.listSep": ", ",
+    "words.listAnd": " and ",
+    "common.details": "Details",
+    "common.good": "Good",
+    "common.watchOut": "Watch out",
+    "common.goodBad": "Good and bad",
+    "src.source": "Source",
+    "src.sourceLower": "source",
+    "src.sourceN": "source {n}",
+    "tag.crewPick": "Crew pick",
+    "error.section": "This part of the page could not be shown. Reload to try again.",
+    "error.noData": "The trip data did not load. Reload the page.",
+
+    /* --- price-confidence labels --- */
+    "chip.labeled": "{prefix}: {status}",
+    "status.legend.live": "live price {date}",
+    "status.legend.liveDesc": "Seen on a booking site for our exact dates on {date}.",
+    "status.legend.published": "published 2026 rate",
+    "status.legend.publishedDesc": "The seller's own 2026 price, not a quote for our dates or group.",
+    "status.legend.estimate": "estimate",
+    "status.legend.estimateDesc": "Worked out from guides, ranges or scaling. Could move either way.",
+    "status.legend.quote": "quote needed",
+    "status.legend.quoteDesc": "No usable price yet. HKD 0 here means not priced, not free.",
+    "status.legend.older": "older price",
+    "status.legend.olderDesc": "From an earlier year or undated. Expect it to be higher now.",
+
+    /* --- map overview (first screen) --- */
+    "ov.title": "Maldives surf trip",
+    "ov.dates": "Sun 1 to Tue 10 Nov 2026",
+    "ov.countdownFallback": "Fly out Sat 31 Oct",
+    "ov.flag": "November surf is a gamble. No charter boat or coaching quote yet. Re-check flights and prices.",
+    "ov.flagLink": "Read this first",
+    "ov.mapAria": "Map overview: the stay options, the surf spots and the airport",
+    "ov.cardAria": "Selected place",
+    "ov.moveMap": "Move map",
+    "ov.doneMoving": "Done moving",
+    "ov.showSouth": "Show South Malé too",
+    "ov.backNorth": "Back to North Malé",
+    "ov.legendAria": "Map key",
+    "ov.legendStay": "Stay options (we book one)",
+    "ov.legendPick": "Crew pick",
+    "ov.legendOther": "Other break",
+    "ov.legendAdv": "Advanced",
+    "ov.legendResort": "Resort guests only",
+    "ov.legendAirport": "Airport",
+    "ov.legendBoat": "Boat from Thulusdhoo",
+    "ov.vibeIntro": "Reef, boats, sandbanks and local islands. These are other people's photos from around the Maldives: a caption names a place only where the photographer did.",
+    "ov.cardClose": "Close this card",
+    "ov.tagResort": "Resort guests only",
+    "ov.tagBreak": "Surf break",
+    "ov.accessLine": "{type}, {level}. Access: {access}.",
+    "ov.aboutKm": ", about {km} km {how}",
+    "ov.kmPins": "between the map pins",
+    "ov.kmLine": "in a straight line",
+    "ov.fromBase": "From {base}:",
+    "ov.openSpots": "Open in Surf spots",
+    "ov.stayKickerOne": "Stay option on the {plan} plan (we book one)",
+    "ov.stayKickerMany": "Stay options on the {plan} plan (we book one)",
+    "ov.stayPinNote": "The pin is the approx. island location, not the guesthouse address.",
+    "ov.stayBoatNote": " The boat times on this map are from {base}, not from {place}.",
+    "ov.eachNights": "{price} each, {nights} nights",
+    "ov.openStay": "Open in Accommodation",
+    "ov.airportKicker": "Where we land",
+    "ov.airportFallbackName": "Malé airport",
+    "ov.openTransport": "Open in Local transport",
+    "ov.listStayH": "Where we could stay on the {plan} plan (we book one)",
+    "ov.approxIsland": "{place} (approx. island location)",
+    "ov.listPicksH": "Where we surf: the crew picks",
+    "ov.fromBaseShort": "From {base}: {boat}",
+    "ov.allBreaks": "All {n} breaks in 5 Surf spots",
+    "ov.southNote": "{n} of them are in South Malé, an optional day trip by boat.",
+
+    /* --- maps, sketch, credits --- */
+    "map.layerSatellite": "Satellite",
+    "map.layerMap": "Map",
+    "map.creditSatellite": "Satellite tiles: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP and the GIS User Community. Map by Leaflet. Pins are approximate (about 2-3 km) and nudged apart by up to about 3 km where they would overlap; zoomed out, close pins overlap.",
+    "map.creditMap": "Map data: OpenStreetMap contributors (openstreetmap.org/copyright), ODbL. Map by Leaflet. Pins are approximate (about 2-3 km) and nudged apart by up to about 3 km where they would overlap; zoomed out, close pins overlap.",
+    "map.routeNote": " Dotted lines show the boat trips from Thulusdhoo to the crew picks, not exact routes.",
+    "map.sketchCredit": "Sketch drawn to scale from the approximate pin coordinates in our research (about 2-3 km), not from map images. Pins that would overlap are nudged apart by up to about 3 km. Dotted lines show the boat trips from Thulusdhoo to the crew picks, not exact routes.",
+    "map.tilesFellBack": " Satellite tiles did not load, so this shows the street map.",
+    "map.ovNoLeaflet": "The satellite map could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. Everything on it is tappable.",
+    "map.ovNoStart": "The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates.",
+    "map.ovNoTiles": "Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. Everything on it is tappable.",
+    "map.modNoLeaflet": "The satellite map could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
+    "map.modNoStart": "The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
+    "map.modNoTiles": "Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
+    "map.approxIsland": "approx. island location",
+    "map.stayAriaOne": "Stay option on the {plan} plan (we book one): {names}, on {place} (approx. island location)",
+    "map.stayAriaMany": "Stay options on the {plan} plan (we book one): {names}, on {place} (approx. island location)",
+    "map.airportBoat": "{duration} to {base}",
+    "map.airportBoatFallback": "boat to {base}",
+    "map.airportAria": "{name}. {boat}.",
+    "sketch.aria": "To-scale sketch of {what}, drawn from the pin coordinates",
+    "sketch.whatSouth": "the South Malé breaks",
+    "sketch.whatAll": "all {n} breaks, the stay options and the airport",
+    "sketch.whatNorth": "the North Malé breaks, the stay options and the airport",
+    "sketch.north": "N",
+    "sketch.kmBar": "{n} km",
+
+    /* --- boat times --- */
+    "boat.paddleText": "No boat needed: it breaks off the island",
+    "boat.paddleShort": "paddle out, no boat",
+    "boat.noText": "Not an option from our base (resort guests only)",
+    "boat.noShort": "guests only",
+    "boat.timeText": "About {mins} min by boat",
+    "boat.timeTextEachWay": "About {mins} min each way by boat",
+    "boat.timeShort": "about {mins} min by boat",
+    "boat.unknownText": "Boat time not confirmed",
+    "boat.unknownShort": "boat time not confirmed",
+    "boat.unknownCompact": "time not confirmed",
+    "boat.compactTime": "{name} · {mins} min",
+    "boat.ariaFrom": "{text} from {base}",
+    "boat.ariaUnknown": "Boat time from {base} not confirmed",
+
+    /* --- surf levels, access, regions --- */
+    "level.words.Advanced": "Advanced",
+    "level.words.Intermediate": "Intermediate",
+    "level.words.Int-Adv": "Intermediate to advanced",
+    "level.words.Beginner-Int": "Beginner to intermediate",
+    "level.words.Int-Adv to Advanced/Expert": "Intermediate-advanced to Advanced/Expert",
+    "access.Public": "Public",
+    "access.Limited": "Limited",
+    "access.Resort guests only": "Resort guests only",
+    "region.North Male": "North Malé",
+    "region.South Male": "South Malé",
+
+    /* --- read this first --- */
+    "heads.gambleTitle": "November surf is a gamble",
+    "heads.charterTitle": "No surf charter boat is confirmed for our dates",
+    "heads.coachTitle": "Coaching has no quote yet",
+    "heads.coachBody": " Every coaching package price below is a wide estimate until 2-3 coaches quote.",
+    "heads.flightsTitle": "Flights and prices need a live re-check",
+    "heads.flightCheck": "The {airline} fare ({price} each, {status}) is a {date} snapshot, and its flight numbers come from a 1 Nov search, so confirm both when booking. Online bookings take 9 people at most, so book the crew in two groups. ",
+    "heads.details": "Details",
+    "top.pricesChecked": "Prices checked {date}.",
+    "top.pricesBody": " Every price here is a snapshot or an estimate. Re-check it before anyone books or pays. Price cards and calculator lines carry a label that says how solid each price is; prices written into the day plan and notes say it in brackets, and the matching card has the details.",
+    "top.legendSummary": "What the price labels mean",
+
+    /* --- 1 Overview: season --- */
+    "season.title": "Surfing here in early November",
+    "season.kicker": "Season call for 1-10 Nov",
+    "season.factWind": "Wind",
+    "season.factSwell": "Swell",
+    "season.factWater": "Water",
+    "season.factAir": "Air",
+    "season.factRain": "Rain",
+    "season.moreOn": "More on {label}",
+    "season.goSpots": "Where to surf: 5 Surf spots",
+    "fold.season": "season details",
+    "fold.tides": "sunrise, sunset and tides",
+    "fold.show": "Show {label}",
+    "fold.hide": "Hide {label}",
+
+    /* --- crew and countdown --- */
+    "crew.inMaldives": "In the Maldives",
+    "crew.datesNights": "Sun 1 to Tue 10 Nov 2026, {n} nights",
+    "crew.flyOut": "Fly out",
+    "crew.flyOutVal": "{date}, {flight} leaves Hong Kong at {time}",
+    "crew.flyHome": "Fly home",
+    "crew.flyHomeVal": "{date}, {flight} leaves Malé at {dep}; lands in Hong Kong Wed 11 Nov at {arr}",
+    "crew.flightNote": "Flight times follow our recommended {flights} flights; see 3 Flights.",
+    "crew.countdownLabel": "Until the flight leaves Hong Kong",
+    "crew.countdownFlight": "{flight} leaves Hong Kong {date} at {time} (HK time)",
+    "cd.daysToGo": "{n} days to go",
+    "cd.today": "Flying out today",
+    "cd.away": "The crew is away",
+    "cd.done": "Trip done",
+    "cd.day": "day",
+    "cd.days": "days",
+    "cd.hour": "hour",
+    "cd.hours": "hours",
+    "cd.min": "min",
+    "cd.sec": "sec",
+    "cd.aria": "{d} days, {h} hours and {m} minutes to go",
+    "cd.labelDuring": "Trip in progress",
+    "cd.labelAfter": "Welcome home",
+
+    /* --- plans --- */
+    "plan.roleCrew": "The crew's plan",
+    "plan.roleUpgrade": "Optional upgrade",
+    "plan.roleAlt": "Alternative",
+    "plan.recRole": "The crew's plan (organiser's pick)",
+    "plan.eachWithFlights": "each, with flights ",
+    "plan.crewOf": "Crew of {n}: {price}",
+    "plan.defaultPicks": "Default picks: {picks}.",
+    "plan.moreThan": "{delta} more each than {plan} (estimate).",
+    "plan.changeInCalc": "Change the picks in the calculator",
+    "plan.aboveLink": "An all-in surf resort: checked, above our budget",
+    "plan.show": "Show this plan",
+    "plan.showing": "Showing this plan",
+    "plan.tileShow": "Show this plan on the page",
+    "plan.tileShowing": "The page is showing this plan",
+    "plan.planSuffix": "{plan} plan",
+    "picks.noCoaching": "no coaching",
+    "picks.coaching": "{name} coaching",
+    "picks.food": "{name} food",
+    "picks.noAddons": "no add-ons",
+    "picks.addonOne": "{n} add-on",
+    "picks.addonMany": "{n} add-ons",
+    "picks.crewOf": "crew of {n}",
+    "decisions.alts": "Alternatives",
+
+    /* --- toasts --- */
+    "toast.planSwitched": "{plan} ({role}): about {price} each, estimate",
+
+    /* --- 5 Surf spots --- */
+    "spots.lede": "All {n} breaks our research found in North and South Malé, on one map. The crew picks are {picks}. Boat times are as the guides give them from {base}. Tap a pin or a card for the details.",
+    "spots.mapAria": "Map of the surf spots",
+    "spots.viewAria": "Map view",
+    "spots.viewNorth": "Near our base",
+    "spots.viewAll": "All {n} spots",
+    "spots.viewSouth": "South Malé",
+    "spots.hintOne": "The spot that matches is not in this map view.",
+    "spots.hintMany": "The {n} spots that match are not in this map view.",
+    "spots.hintShowAll": "Show every spot on the map",
+    "spots.sheetClose": "Close the spot details",
+    "spots.moveMap": "Move the map",
+    "spots.doneMovingMap": "Done moving the map",
+    "spots.countAll": "All {n} spots",
+    "spots.countSome": "{n} of {total} spots match{extra}",
+    "spots.countNoneInView": " (none of them in this map view)",
+    "spots.countNone": "No spots match these filters. Clear a filter to see more.",
+    "spots.crewPickSuffix": ", crew pick",
+    "spots.statusDetail": "{name}{pick}. Details {where}",
+    "spots.detailsSide": "in the panel at the side of the screen.",
+    "spots.detailsBottom": "in the panel at the bottom of the screen.",
+    "spots.detailsUnder": "under the map.",
+    "spots.aria": "{name}{pick}, {level}, {access} access. {boat}.",
+    "spots.levelAria": "Level: {level}",
+    "filters.crewOnly": "Crew picks only",
+    "filters.regionAria": "Region",
+    "filters.allRegions": "All regions",
+    "filters.level": "Level",
+    "filters.allLevels": "All levels",
+    "filters.access": "Access",
+    "filters.anyAccess": "Any access",
+    "filters.clear": "Clear filters",
+    "filters.levelKey": "Levels are as the surf guides rate them. Int-Adv means intermediate to advanced; Beginner-Int means beginner to intermediate.",
+    "spot.wave": "Wave",
+    "spot.level": "Level",
+    "spot.levelVal": "{level}. {note}",
+    "spot.access": "Access",
+    "spot.accessVal": "{access}. {note}",
+    "spot.fromBase": "From {base}",
+    "spot.hazards": "Hazards",
+    "spot.november": "In November",
+    "spot.bestSwell": "Best swell",
+    "spot.bestWind": "Best wind",
+    "spot.bestTide": "Best tide",
+    "spot.mapPin": "Map pin",
+    "spot.mapPinVal": "{lat}, {lon} ({note})",
+    "spot.moreSummary": "Swell, wind, tide and sources",
+    "spot.sourcesLbl": "Sources",
+    "spot.regionNear": "{region}, near {island}",
+    "spot.meta": "{type}, {region}",
+    "spot.showOnMap": "Show on the map",
+    "spots.boatTimesTitle": "Boat times from Thulusdhoo",
+    "spots.boatIntro": "From {base}, as the surf guides give it. Guides differ, so ask the boat crew; prices per trip are in 7 Local transport. Distances are straight lines.",
+    "spots.aboutKm": "about {km} km",
+    "spots.betweenPins": " (between the map pins)",
+    "spots.accessTitle": "Who can surf where",
+
+    /* --- surf levels, access, regions --- */
+    "access.publicH": "Open to anyone who gets there",
+    "access.publicIntro": "Listed as public access in our sources. ",
+    "access.publicPaddleOne": "{names} is a paddle from {base}; the rest need a boat.",
+    "access.publicPaddleMany": "{names} are a paddle from {base}; the rest need a boat.",
+    "access.publicAllBoat": "All of them need a boat.",
+    "access.limitedH": "Access not confirmed",
+    "access.limitedBody": "They break in front of or near a resort, and whether people who are not guests may surf them is not confirmed. Check before planning a day there.",
+    "access.resortH": "Resort guests only",
+    "access.resortBody": "Only guests on that resort's surf package can surf them, so they are not an option from our base.",
+
+    /* --- 5 Surf spots --- */
+    "spots.tidesTitle": "Light and tides, 1 to 10 Nov",
+    "tides.below": " Below: sunrise, sunset and a tide outlook worked out from moon phases.",
+    "tides.moreSummary": "What we know about the tides",
+    "tides.tableAria": "Sunrise, sunset and tide outlook table",
+    "tides.day": "Day",
+    "tides.sunrise": "Sunrise",
+    "tides.sunset": "Sunset",
+    "tides.outlook": "Tide outlook (estimate, from moon phases)",
+    "tides.about": "about {t}",
+    "tides.fine": "Exact sunrise and sunset times are for 1 and 10 Nov; the days between are within a minute of them. Times are Maldives time (HK time minus 3 hours).",
+    "spots.rhythmTitle": "A surf day, hour by hour",
+
+    /* --- clipped lists ("Show all N ...") --- */
+    "clip.showAll": "Show all {n} {noun}",
+    "clip.showFewer": "Show fewer {noun}",
+    "clip.noun.spots": "spots",
+    "clip.noun.rhythm": "steps of the day",
+    "clip.noun.flights": "flight options",
+    "clip.noun.bookingTips": "booking tips",
+    "clip.noun.notes": "notes",
+    "clip.noun.legs": "journeys",
+    "clip.noun.props": "places to stay",
+    "clip.noun.notAvailable": "checked options",
+    "clip.noun.days": "days",
+    "clip.noun.coaches": "coaches",
+    "clip.noun.places": "places",
+    "clip.noun.dishes": "dishes",
+    "clip.noun.ideas": "ideas",
+    "clip.noun.steps": "steps",
+    "clip.noun.confirm": "things to confirm",
+    "clip.noun.credits": "photo credits",
+    "clip.programmeShow": "Show the {n}-day programme",
+    "clip.programmeHide": "Hide the programme",
+    "clip.addonsShow": "Show add-ons ({n})",
+    "clip.addonsFewer": "Show fewer add-ons",
+
+    /* --- share --- */
+    "share.title": "Share the plan with the crew",
+    "share.blurb": "One link for everyone. No login, no ads, no analytics.",
+    "share.text": "Maldives surf trip plan, 1-10 Nov 2026: {url}",
+    "share.copy": "Copy link",
+    "share.whatsapp": "Share on WhatsApp",
+
+    /* --- toasts --- */
+    "toast.copied": "Link copied. Paste it in the crew chat.",
+    "toast.copyFailed": "Copy did not work here. Copy the address bar instead.",
+
+    /* --- photo gallery --- */
+    "vibe.aria": "Photo gallery",
+    "vibe.ariaScroll": "Photo gallery, scrolls sideways",
+    "vibe.hint": "Swipe sideways for more photos.",
+    "photo.credit": "{credit}, {license}",
+
+    /* --- 3 Flights --- */
+    "flights.dirOut": "Out",
+    "flights.dirHome": "Home",
+    "flights.via": "via {list}",
+    "flights.routeMeta": "{flights}. Total {duration}.",
+    "flights.timeUnknown": "time not listed",
+    "flights.ourPick": "Our pick",
+    "flights.fareLbl": "Return fare, each",
+    "flights.boardLbl": "Board bag, each",
+    "flights.boardFree": "HKD 0 inside the allowance",
+    "flights.confirmWriting": "Confirm in writing",
+    "flights.boardRules": "Board rules",
+    "flights.fareSearch": "Fare search (Google Flights)",
+    "flights.bookingTips": "Booking tips",
+    "flights.taxes": "Taxes",
+    "flights.sources": "Flight sources ({n})",
+    "flights.chipFare": "Fare",
+    "flights.chipBoard": "board fee",
+    "flights.chipBag": "bag",
+    "flights.chipCard": "card fee",
+    "flights.chipExtras": "extras",
+    "flights.recName": "{airline} ({out} out, {home} home)",
+    "flights.recFallback": "recommended",
+
+    /* --- 7 Local transport --- */
+    "per.boat": "per boat",
+    "per.person": "per person",
+    "per.group": "for the group",
+    "transport.dailyTitle": "Daily surf boats",
+    "transport.perSession": "each, per session",
+    "transport.forTrip": "each, for the trip",
+    "transport.addsUp": "How this adds up",
+    "transport.bothPlans": "Both plans use this",
+    "transport.everyPlan": "Every plan uses this",
+
+    /* --- 4 Accommodation --- */
+    "stay.planShort": "{plan} plan",
+    "stay.stampCrew": "Crew's plan",
+    "stay.stayEach": "Stay, each, {nights} nights",
+    "stay.wholeTrip": "Whole trip, each, with the calculator picks",
+    "stay.covers": "What the price covers",
+    "stay.included": "Included",
+    "stay.notIncluded": "Not included",
+    "stay.figureNote": "This figure: {status}. The package as a whole: ",
+    "stay.placesTitle": "Places to stay",
+    "stay.placesOnPlan": "Places to stay on the {plan} plan",
+    "stay.placesHint": "Room prices were found for a crew of {crew}: group totals cover all {crew} for {nights} nights, and the price each is that total divided by {crew}. Change the plan to see the {other} places.",
+    "stay.otherPlan": "other plan's",
+    "stay.otherPlans": "other plans'",
+    "stay.roomsFor": "Rooms for {n}",
+    "stay.meals": "Meals",
+    "stay.taxes": "Taxes",
+    "stay.cancelling": "Cancelling",
+    "stay.rating": "Rating",
+    "stay.availability": "Availability",
+    "stay.eachNights": "each, {nights} nights",
+    "stay.forGroup": "{price} for the group",
+    "stay.cancellingLbl": "Cancelling:",
+    "stay.roomsSummary": "Rooms, meals, taxes and availability",
+    "stay.seeListing": "See the listing",
+    "stay.seeIsland": "See the island on the map",
+    "stay.naTitle": "Checked, and not available for 1-10 Nov",
+
+    /* --- Book it: the booking and enquiry links, wherever the data carries one --- */
+    "book.sumTitle": "Book it",
+    "book.sumDeadline": "Earliest free cancellation deadline: {date}, on {name}.",
+    "book.sumNoneFlights": "No free-cancellation date is recorded for these fares, so read the airline's own conditions before you pay.",
+    "book.sumChecked": "{n} booking links below, all checked on {date}. Prices change, so open a link to see today's price.",
+    "book.stayBtn": "Book on {provider}",
+    "book.flightBtn": "Open this flight on {provider}",
+    "book.enquireBtn": "Enquire with {provider}",
+    "book.inlineBook": "Book on {provider}",
+    "book.inlineEnquire": "Enquire with {provider}",
+    "book.newTab": "opens in a new tab",
+    "book.priceSeen": "Price seen: {price}",
+    "book.cancelBy": "Free cancellation before {date}",
+    "book.checked": "Checked {date}. Prices change, so check the price on the site before you pay.",
+    "book.pricesChange": "Prices change, so check the price on the site before you pay.",
+    "book.unverified": "This link did not answer when we checked it, so it may have moved.",
+
+    "above.title": "Considered, above our budget",
+    "above.eachBefore": "{price} each, before flights",
+    "above.moreSummary": "Other reasons, and what the package covers",
+
+    /* --- 6 Surf coaching --- */
+    "coach.realityCheck": "Reality check.",
+    "coach.realityMore": "The rest of the reality check",
+    "coach.packagesBoth": "Coaching packages (both plans)",
+    "coach.packagesEvery": "Coaching packages (every plan)",
+    "coach.howPriced": "How it is priced",
+    "coach.programmeTitle": "The 8-day coaching programme",
+    "coach.focus": "Focus:",
+    "coach.where": "Where:",
+    "coach.drills": "Drills",
+    "coach.whoTitle": "Who could coach us",
+    "coach.openGroup": "Open to a guesthouse crew",
+    "coach.guestsGroup": "Only for their own guests or package buyers",
+    "coach.groupCount": "{label} ({n})",
+    "coach.filmsTag": "Films sessions",
+    "coach.guestsTag": "Guests only",
+    "coach.noStayTag": "No stay needed",
+    "coach.offer": "What they offer",
+    "coach.planCounts": "On the {plan} the budget calculator counts {pkg}{dflt}. Change it in the budget calculator.",
+    "coach.planDefault": " (this plan's default)",
+    "coach.planNone": "On the {plan} these packages do not apply. What the budget counts instead:",
+
+    /* --- Eat & drink --- */
+    "food.alcoholTitle": "Alcohol rules.",
+    "food.moreRules": "More drink rules ({n})",
+    "food.budgetTitle": "Daily food budget",
+    "food.perDay": "each, per day",
+    "food.howWorked": "How this is worked out",
+    "food.whereTitle": "Where to eat",
+    "food.islandAria": "Island",
+    "food.everywhere": "Everywhere",
+    "food.topOnly": "Top picks only",
+    "food.topPick": "Top pick",
+    "food.noPrice": "Price not checked",
+    "food.eachPrice": "{price} each",
+    "food.order": "Order:",
+    "food.meta": "{island}, {cuisine}",
+    "food.dishesTitle": "Dishes to try",
+    "food.noneMatch": "No places match. Pick another island.",
+    "food.countAll": "{n} places",
+    "food.countSome": "{n} of {total} places match",
+    "food.planCounts": "On the {plan} the calculator counts: ",
+    "food.planLine": "{label}, {price} each ",
+    "food.noLine": "no food line.",
+    "food.islandResortFilter": "Resort day passes",
+    "food.islandResort": "Resort (day pass)",
+    "food.island.Thulusdhoo": "Thulusdhoo",
+    "food.island.Male": "Malé",
+    "food.island.Hulhumale": "Hulhumalé",
+    "food.short.budget": "Budget",
+    "food.short.mid": "Cafés plus two nicer dinners",
+    "food.short.nicer": "Nicer restaurants every day",
+    "food.short.resort-day-pass": "Resort day pass (one day; included once in the Mid plan)",
+
+    /* --- 8 Other activities --- */
+    "act.ideasTitle": "Ideas for the rest of the day",
+    "act.bestForAria": "Best for",
+    "act.everything": "Everything",
+    "act.for.flat day": "Flat day",
+    "act.for.rest afternoon": "Rest afternoon",
+    "act.for.evening": "Evening",
+    "act.for.not this trip": "Not this trip",
+    "act.for.last day": "Last day",
+    "act.free": "Free",
+    "act.eachPrice": "{price} each",
+    "act.meta": "{where}. {duration}.",
+    "act.seasonTax": "Season and tax notes",
+    "act.countAll": "{n} ideas",
+    "act.countSome": "{n} of {total} ideas match",
+
+    /* --- Day-by-day plan --- */
+    "itin.showBoth": "Show both plans' times for each day",
+    "itin.showEvery": "Show every plan's times for each day",
+    "itin.openAll": "Open all days",
+    "itin.closeAll": "Close all days",
+    "itin.surf": "Surf:",
+    "itin.flat": "If it is flat or windy:",
+    "itin.tide": "Tide:",
+    "itin.kindFlex": "Flex day",
+    "itin.kindBuffer": "Buffer day",
+    "itin.kindSurf": "Surf day",
+    "itin.kindSurfFly": "Surf, then fly",
+    "itin.kindArrive": "Arrive",
+    "itin.kindTravel": "Travel",
+    "itin.planTag": "{plans} plan",
+    "itin.planNote": "Showing the {plan} ({role}). Times marked with a plan name only apply to that plan; change the plan in the top bar (phones) or the side panel (desktop) to compare. Travel times follow our recommended {flights} flights, whichever flight you pick in the budget calculator.",
+    "itin.planNoteStrong": "{plan} plan",
+
+    /* --- 2 Budget overall: the calculator --- */
+    "budget.lede": "Pick a plan, a flight, coaching, food style and extras. The totals are per person, and group totals are that times the crew size. It opens on {plan}, the crew's plan. Prices checked {date}; all are estimates to re-check before booking.",
+    "budget.legPlan": "Plan",
+    "budget.legFlight": "Flight",
+    "budget.legCoaching": "Coaching",
+    "budget.legFood": "Food",
+    "budget.legAddons": "Optional add-ons",
+    "budget.legCrew": "Crew size",
+    "budget.planNote": "Changing the plan loads that plan's own flight, coaching and food picks. Add-ons and crew size stay.",
+    "budget.stepDown": "One fewer person",
+    "budget.stepUp": "One more person",
+    "budget.numPeople": "Number of people",
+    "budget.crewSlider": "Crew size slider",
+    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, the Mid crew boat, permits) are split across the crew. Room prices were found for {base}, so a different crew size needs new room quotes.",
+    "budget.reset": "Reset to the crew's plan ({plan})",
+    "budget.eachPerson": "Each person ",
+    "budget.wholeCrew": "Whole crew of ",
+    "budget.whereMoney": "Where the money goes, each ",
+    "budget.barsKey": "Each subtotal is an estimate, added up from the lines below. Darker bar = low end, lighter = high end.",
+    "budget.resNote": "That is the per-person figure above, times {n} (worked out before rounding, so a hand check can be a few dollars off).",
+    "budget.notPriced": "Not priced yet, counted as HKD 0:",
+    "budget.barNone": "Not in this selection",
+    "budget.barZeroQuote": "HKD 0, not priced yet",
+    "budget.barZeroNone": "HKD 0, none chosen",
+    "budget.barZeroIncl": "HKD 0, included",
+    "budget.everyLine": "Every line in this total ({n})",
+    "budget.notInTotal": "Not included in any total",
+    "budget.lineGroup": "{price} for the group, split by {n}",
+    "budget.linePerPerson": "per person",
+    "budget.working": "Working and source",
+    "budget.howWorks": "How the calculator works",
+    "budget.dockNote": "Estimate with your picks ({plan})",
+    "budget.dockEach": "Each",
+    "budget.dockCrewOf": "Crew of {n}",
+    "budget.statusLine": "{plan} plan. Each person {pp}, whole crew of {n} {group}. Estimates.",
+    "budget.yourPicks": "Your picks in the calculator ({plan}): {price} each (estimate).",
+    "budget.optPlanTitle": "{plan}: {desc}",
+    "budget.optPlanSub": "{role}, about {price} each",
+    "budget.optFlightSub": "{price} each, fare plus bag and board costs",
+    "budget.optEach": "{price} each",
+    "budget.optFoodSub": "{price} each, for the {nights}-night trip",
+    "budget.optAddonGroup": "{group} for the group, {each} each",
+    "budget.noCoachOpt": "{plan} plan: no coaching package to choose.",
+    "budget.noFoodOpt": "{plan} plan: no food choice.",
+    "budget.noAddons": "No add-ons for this plan.",
+    "budget.planDefault": "{plan} default",
+    "budget.each": " each",
+    "budget.forGroup": " for the group",
+
+    /* --- toasts --- */
+    "toast.crewRange": "The calculator goes from {min} to {max} people",
+    "toast.reset": "Back to the crew's plan: {plan} with its default picks",
+
+    /* --- 2 Budget overall: the calculator --- */
+    "cat.Flights": "Flights",
+    "cat.Stay": "Stay",
+    "cat.Transfers": "Transfers",
+    "cat.Surf boats": "Surf boats",
+    "cat.Coaching": "Coaching",
+    "cat.Food": "Food",
+    "cat.Activities": "Activities",
+    "cat.Other": "Other",
+
+    /* --- Before you go --- */
+    "prep.timeline": "Timeline",
+    "prep.why": "Why",
+    "prep.link": "Link",
+    "prep.packTitle": "Packing checklist",
+    "prep.packWarn": "Ticks can't be saved in this browser (private mode or blocked site data), so they will be gone after a reload. The list still works for this visit.",
+    "prep.untick": "Untick everything",
+    "prep.undo": "Undo",
+    "prep.packNote": "Ticks are saved in this browser only, on this device.",
+    "prep.packed": "{n} of {total} packed",
+    "prep.untickedOne": "Unticked {n} item.",
+    "prep.untickedMany": "Unticked {n} items.",
+    "prep.essentials": "Essentials",
+    "prep.entry": "Entry and visa",
+    "prep.taxes": "Taxes and fees",
+    "prep.money": "Money",
+    "prep.connectivity": "Phone, internet and plugs",
+    "prep.health": "Health and safety",
+    "prep.culture": "Local rules and culture",
+    "prep.weather": "Weather",
+    "prep.accSummary": "{label} ({n})",
+
+    /* --- toasts --- */
+    "toast.nothingTicked": "Nothing is ticked yet",
+    "toast.ticksRestored": "Ticks restored",
+
+    /* --- Sources & photo credits --- */
+    "sources.confirmTitle": "To confirm before anyone pays ({n})",
+    "sources.who": "Who:",
+    "sources.by": "By:",
+    "sources.title": "Sources ({n})",
+    "sources.photoTitle": "Photo credits ({n})",
+    "sources.photoNote": "The photos are shown straight from Wikimedia Commons, Unsplash and Pexels (not copied into this site), under the licence named for each. A caption names a place only where the photo's own page does.",
+    "sources.licence": "Licence: {license}",
+    "sources.sourcePage": "Source page",
+    "srcGroup.Map overview": "Map overview",
+    "srcGroup.Season and weather": "1 Overview: season and weather",
+    "srcGroup.Budget": "2 Budget overall",
+    "srcGroup.Flights": "3 Flights",
+    "srcGroup.Where to stay": "4 Accommodation",
+    "srcGroup.Above our budget": "4 Accommodation: above our budget",
+    "srcGroup.Not available": "4 Accommodation: not available",
+    "srcGroup.Surf spots": "5 Surf spots",
+    "srcGroup.Coaching": "6 Surf coaching",
+    "srcGroup.Transport": "7 Local transport",
+    "srcGroup.Activities": "8 Other activities",
+    "srcGroup.Food": "Eat & drink",
+    "srcGroup.Essentials": "Before you go"
+  };
+
+  /* ================================================================== i18n
+     English is the source of truth and always ships complete. Traditional
+     Chinese (Hong Kong) arrives as an overlay in assets/i18n-zh.js
+     (window.TRIP_I18N_ZH), loaded after data.js:
+       { data: { "<json path>": "…" }, ui: { "<key>": "…" }, meta: {...} }
+     Data strings resolve by their JSON path in plan/trip-data.json
+     ("spots[3].november_note"); hard-coded UI strings resolve by a stable key
+     ("spots.countAll"). Anything missing falls back to the English source, so a
+     half-finished or absent overlay can never blank the page. */
+  var LANG_KEY = 'maldives-surf-2026:lang';
+  var HTML_LANG = { en: 'en-GB', zh: 'zh-Hant-HK' };
+  var lang = 'en';
+  var ZH = W.TRIP_I18N_ZH && typeof W.TRIP_I18N_ZH === 'object' ? W.TRIP_I18N_ZH : null;
+  var ZH_DATA = (ZH && typeof ZH.data === 'object' && ZH.data) || {};
+  var ZH_UI = (ZH && typeof ZH.ui === 'object' && ZH.ui) || {};
+  function countKeys(o) { var n = 0, k; for (k in o) if (Object.prototype.hasOwnProperty.call(o, k)) n++; return n; }
+  var ZH_READY = !!ZH && (countKeys(ZH_DATA) + countKeys(ZH_UI)) > 0;
+  function langReady(l) { return l === 'en' || (l === 'zh' && ZH_READY); }
+  function htmlLangFor(l) {
+    if (l === 'zh' && ZH && ZH.meta && typeof ZH.meta.htmlLang === 'string' && ZH.meta.htmlLang) return ZH.meta.htmlLang;
+    return HTML_LANG[l] || HTML_LANG.en;
+  }
+  // Every object and array in the data is tagged, once, with its JSON path, so
+  // any string can be looked up by path without copying the data itself.
+  function tagPaths(o, p) {
+    if (!o || typeof o !== 'object') return;
+    try { Object.defineProperty(o, '__p', { value: p, enumerable: false, configurable: true, writable: true }); }
+    catch (e) { return; }
+    var i, k;
+    if (Object.prototype.toString.call(o) === '[object Array]') {
+      for (i = 0; i < o.length; i++) tagPaths(o[i], p + '[' + i + ']');
+      return;
+    }
+    for (k in o) if (Object.prototype.hasOwnProperty.call(o, k) && k !== '__p') tagPaths(o[k], p ? p + '.' + k : k);
+  }
+  tagPaths(TRIP, '');
+  tagPaths(W.TRIP_PHOTOS && W.TRIP_PHOTOS.photos, 'photos');
+
+  function zhAt(path) {
+    if (lang !== 'zh') return null;
+    var v = ZH_DATA[path];
+    return typeof v === 'string' && v ? v : null;
+  }
+  // tx(obj, field): that field's text in the reader's language, English if untranslated.
+  // Logic that parses the data (statuses, levels, boat times, filters) keeps reading obj[field].
+  function tx(obj, field) {
+    var en = obj ? obj[field] : '';
+    if (lang === 'en' || !obj || !obj.__p) return en;
+    return zhAt(obj.__p + '.' + field) || en;
+  }
+  // txi(arr, i) / txs(arr): elements of an array of strings.
+  function txi(arr, i) {
+    var en = arr ? arr[i] : '';
+    if (lang === 'en' || !arr || !arr.__p) return en;
+    return zhAt(arr.__p + '[' + i + ']') || en;
+  }
+  function txs(arr) {
+    if (!arr) return [];
+    return arr.map(function (v, i) { return txi(arr, i); });
+  }
+  function isTranslated(obj, field) { return !!(obj && obj.__p && zhAt(obj.__p + '.' + field)); }
+  // T(key): a hard-coded UI string. Tv adds {name} placeholders.
+  function T(key) {
+    if (lang === 'zh') { var v = ZH_UI[key]; if (typeof v === 'string' && v) return v; }
+    var e = UI_EN[key];
+    return typeof e === 'string' ? e : '';
+  }
+  function Tv(key, vars) {
+    return T(key).replace(/\{(\w+)\}/g, function (m, k) {
+      return vars && vars[k] != null ? String(vars[k]) : m;
+    });
+  }
+  function Te(key) { return esc(T(key)); }
+  // Tv for a template with HTML in some slots: the words are escaped, the markup is spliced in after.
+  function Th(key, vars, htmlVars) {
+    var out = esc(Tv(key, vars)), k;
+    for (k in htmlVars) if (Object.prototype.hasOwnProperty.call(htmlVars, k)) out = out.replace('{' + k + '}', htmlVars[k]);
+    return out;
+  }
+  function Tve(key, vars) { return esc(Tv(key, vars)); }
+
   /* ------------------------------------------------------------------ helpers */
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -25,7 +818,8 @@
   }
   function hkd(lo, hi) {
     var a = Math.round(lo), b = Math.round(hi);
-    return a === b ? 'HKD ' + fmt(a) : 'HKD ' + fmt(a) + '–' + fmt(b);
+    var c = T('money.hkd') + ' ';
+    return a === b ? c + fmt(a) : c + fmt(a) + '–' + fmt(b);
   }
   // Difference between two rounded totals, so it matches the totals shown next to it.
   function hkdDelta(a, b) { return hkd(Math.round(a.lo) - Math.round(b.lo), Math.round(a.hi) - Math.round(b.hi)); }
@@ -34,7 +828,7 @@
   function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
   function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48); }
   function sentences(text) {
-    var out = [], re = /[.!?]\)?\s+(?=[A-Z0-9])/g, last = 0, m;
+    var out = [], re = /[.!?]\)?\s+(?=[A-Z0-9])|[\u3002\uff01\uff1f][\u300d\u300f\uff09\u3011]?/g, last = 0, m;
     text = String(text || '');
     while ((m = re.exec(text))) {
       var before = text.slice(Math.max(0, m.index - 4), m.index + 1);
@@ -49,8 +843,7 @@
   function restSentences(text, n) { return sentences(text).slice(n).join(' '); }
   function fmtDate(iso) {
     var d = new Date(iso + 'T12:00:00Z');
-    var mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getUTCMonth()];
-    return d.getUTCDate() + ' ' + mon + ' ' + d.getUTCFullYear();
+    return Tv('date.fmt', { d: d.getUTCDate(), mon: T('date.mon.' + (d.getUTCMonth() + 1)), y: d.getUTCFullYear() });
   }
   // Read again whenever the OS setting changes (see watchReducedMotion).
   var reduceMotion = !!(IS_BROWSER && W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -78,40 +871,49 @@
     if (s.indexOf('not checked') === 0 || s.indexOf('no price') === 0) return 'none';
     return 'estimate';
   }
-  function chip(status) {
+  function chip(status, statusEn) {
     if (!status) return '';
-    return '<span class="status status--' + statusKind(status) + '">' + esc(cap(status)) + '</span>';
+    return '<span class="status status--' + statusKind(statusEn || status) + '">' + esc(cap(status)) + '</span>';
+  }
+  // A status that comes from the data: shown in the reader's language, classed by the English.
+  function chipT(obj, field) { return obj && obj[field] ? chip(tx(obj, field), obj[field]) : ''; }
+  // A status parsed out of a longer data sentence gets its own UI key, so the words can
+  // be translated while the chip's colour still follows the English status.
+  function chipParsed(obj, field) {
+    var en = parseStatus(obj[field]);
+    return chip(T('status.text.' + en) || en, en);
   }
   function parseStatus(text, fallback) {
     var m = /status:\s*([^.;]+)/i.exec(text || '');
     return m ? m[1].trim() : (fallback || 'estimate');
   }
-  var STATUS_HELP = [
-    ['live price 15 Sep 2026', 'Seen on a booking site for our exact dates on 15 Sep 2026.'],
-    ['published 2026 rate', "The seller's own 2026 price, not a quote for our dates or group."],
-    ['estimate', 'Worked out from guides, ranges or scaling. Could move either way.'],
-    ['quote needed', 'No usable price yet. HKD 0 here means not priced, not free.'],
-    ['older price', 'From an earlier year or undated. Expect it to be higher now.']
-  ];
+  var STATUS_KINDS = ['live', 'published', 'estimate', 'quote', 'older'];
   function statusLegend() {
-    return '<dl class="legend">' + STATUS_HELP.map(function (s) {
-      return '<div><dt>' + chip(s[0]) + '</dt><dd>' + esc(s[1]) + '</dd></div>';
+    // The "live price" row carries the date the prices were re-checked: read it from the
+    // data (meta.prices_checked) so the legend can never drift behind the chips again.
+    var iso = (TRIP && TRIP.meta && TRIP.meta.prices_checked) || '';
+    var checked = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? fmtDate(iso) : '';
+    var leg = function (k) { return Tv('status.legend.' + k, { date: checked }).replace(/\s+([.,])/g, '$1').trim(); };
+    return '<dl class="legend">' + STATUS_KINDS.map(function (k) {
+      return '<div><dt><span class="status status--' + k + '">' + esc(cap(leg(k))) + '</span></dt>' +
+        '<dd>' + esc(leg(k + 'Desc')) + '</dd></div>';
     }).join('') + '</dl>';
   }
   function srcLink(url, label) {
     var u = safeUrl(url);
     if (!u) return '';
-    return '<a class="src" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(label || 'Source') + '</a>';
+    return '<a class="src" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(label || T('src.source')) + '</a>';
   }
   // Weakest first: a total is only as solid as its weakest line.
   var STATUS_RANK = { none: 0, quote: 0, older: 1, estimate: 2, published: 3, live: 4 };
   function statusRank(s) { return STATUS_RANK[statusKind(s)]; }
-  function chipLabeled(prefix, status) {
+  function chipLabeled(prefix, status, text) {
     if (!status) return '';
-    return '<span class="status status--' + statusKind(status) + '">' + esc(prefix + ': ' + status) + '</span>';
+    return '<span class="status status--' + statusKind(status) + '">' +
+      esc(Tv('chip.labeled', { prefix: prefix, status: text || status })) + '</span>';
   }
   function shortHost(u) {
-    try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return 'source'; }
+    try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return T('src.sourceLower'); }
   }
   // Data text sometimes ends in "(Status: X. Source: URL)" or holds a bare URL.
   // Turn that into escaped text + a status chip + real links, so no raw URL is shown.
@@ -135,13 +937,89 @@
       .map(function (u) { return srcLink(u, shortHost(u)); }).join('');
     return { html: html, status: status, links: links };
   }
-  function richHtml(text, block) {
-    var r = richText(text);
-    var extra = (r.status ? ' ' + chip(r.status) : '') + (r.links ? '<span class="src-row src-row--inline">' + r.links + '</span>' : '');
-    return block ? '<p>' + r.html + (r.status ? ' ' + chip(r.status) : '') + '</p>' + (r.links ? '<p class="src-row">' + r.links + '</p>' : '') : r.html + extra;
+  function richHtml(text, block, enText) {
+    var r = richText(text), statusEn = r.status;
+    if (enText != null && enText !== text) {
+      var e0 = richText(enText);
+      statusEn = e0.status;
+      // A translated tail that no longer reads "(Status: ... Source: ...)": keep the
+      // English tail's status and links, shown in the reader's language where we have it.
+      if (!r.status) r.status = T('status.text.' + e0.status) || e0.status;
+      if (!r.links) r.links = e0.links;
+    }
+    var ch = r.status ? chip(r.status, statusEn) : '';
+    var extra = (ch ? ' ' + ch : '') + (r.links ? '<span class="src-row src-row--inline">' + r.links + '</span>' : '');
+    return block ? '<p>' + r.html + (ch ? ' ' + ch : '') + '</p>' + (r.links ? '<p class="src-row">' + r.links + '</p>' : '') : r.html + extra;
   }
   function stripStatusTail(s) {
     return String(s || '').replace(/\s+-\s+status:\s*[^.]*\./i, '.').replace(/\s*Status:\s*[^.]*\.\s*$/i, '').trim();
+  }
+
+  /* ----------------------------------------------------------------- booking */
+  /* Items in the data can carry a "booking" object: {url, label, checked, price_seen, notes}.
+     Nothing here is ever invented: no url means no action at all, no price_seen means no price
+     line, and the only cancellation date shown is the one written in booking.notes. Parsing
+     (provider, enquiry-or-booking, the date) always reads the English source, as everywhere else. */
+  var MONTHS_EN = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  function bookingOf(item) {
+    var b = item && item.booking;
+    return b && safeUrl(b.url) ? b : null;
+  }
+  // The provider: the head of the label, up to the first comma or dash ("Booking.com, Blue Haven ...").
+  function bookProvider(b) {
+    var t = String((b && b.label) || '').split(/\s[–—-]\s|[,，]/)[0].trim();
+    return t || shortHost(b.url);
+  }
+  // Where the data still says "quote needed", the link is an enquiry and must never say "book".
+  function bookIsEnquiry(item, b) {
+    var t = String((b.label || '') + ' ' + (b.price_seen || ''));
+    if (/enquir/i.test(t)) return true;
+    if (/quote needed|no public price|no price published|no price shown/i.test(t)) return true;
+    return !!(item && item.status && statusKind(item.status) === 'quote');
+  }
+  // "Free cancellation before 31 Oct 2026" in booking.notes: the words as written, plus a sortable number.
+  function cancelDate(b) {
+    var m = /free cancellation before\s+(\d{1,2}\s+[A-Za-z]{3,9}\.?\s+\d{4})/i.exec(String((b && b.notes) || ''));
+    if (!m) return null;
+    var text = m[1].replace(/\s+/g, ' ').trim();
+    var p = /^(\d{1,2})\s+([A-Za-z]{3})[A-Za-z]*\.?\s+(\d{4})$/.exec(text);
+    var mon = p ? MONTHS_EN.indexOf(p[2].toLowerCase()) : -1;
+    if (!p || mon === -1) return null;
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    // iso lets the page print the deadline in the reader's language (fmtDate); text stays as written.
+    return { text: text, iso: p[3] + '-' + pad(mon + 1) + '-' + pad(Number(p[1])),
+      sort: Number(p[3]) * 10000 + (mon + 1) * 100 + Number(p[1]) };
+  }
+  // One booking action. kind: 'stay' (button), 'flight' (button) or 'inline' (small link).
+  function bookingAction(item, kind) {
+    var b = bookingOf(item);
+    if (!b) return '';
+    var inline = kind === 'inline', enquiry = bookIsEnquiry(item, b), provider = bookProvider(b);
+    var key = enquiry ? (inline ? 'book.inlineEnquire' : 'book.enquireBtn')
+      : kind === 'flight' ? 'book.flightBtn' : inline ? 'book.inlineBook' : 'book.stayBtn';
+    var out = '<div class="bookit' + (inline ? ' bookit--inline' : '') + '">' +
+      '<a class="' + (inline ? 'src book-link' : 'btn btn-book') + '" href="' + esc(b.url) + '" target="_blank" rel="noopener noreferrer">' +
+      '<span>' + Tve(key, { provider: provider }) + '</span><span class="vh"> (' + Te('book.newTab') + ')</span></a>';
+    if (b.price_seen) out += '<p class="bookit-price">' + Tve('book.priceSeen', { price: tx(b, 'price_seen') }) + '</p>';
+    var c = cancelDate(b);
+    if (c) out += '<p class="bookit-cancel">' + Tve('book.cancelBy', { date: fmtDate(c.iso) }) + '</p>';
+    if (/could not verify/i.test(b.notes || '')) out += '<p class="bookit-warn">' + Te('book.unverified') + '</p>';
+    out += '<p class="bookit-checked fine">' + (b.checked ? Tve('book.checked', { date: fmtDate(b.checked) }) : Te('book.pricesChange')) + '</p>';
+    return out + '</div>';
+  }
+  // "Book it" above a set of options: the earliest free-cancellation date in their booking notes.
+  function bookSummary(items, o) {
+    var bs = (items || []).map(bookingOf).filter(Boolean);
+    if (!bs.length) return '';
+    var dated = (items || []).filter(function (it) { var b = bookingOf(it); return b && cancelDate(b); })
+      .sort(function (a, b) { return cancelDate(bookingOf(a)).sort - cancelDate(bookingOf(b)).sort; });
+    var first = dated[0] ? cancelDate(bookingOf(dated[0])) : null;
+    var checked = bs.map(function (b) { return b.checked; }).filter(Boolean).sort()[0];
+    return '<aside class="bookit-sum" aria-labelledby="' + esc(o.id) + '">' +
+      '<h3 class="bookit-sum-h" id="' + esc(o.id) + '" data-i18n="book.sumTitle">' + Te('book.sumTitle') + '</h3>' +
+      '<p class="bookit-sum-line">' + (first ? Tve('book.sumDeadline', { date: fmtDate(first.iso), name: tx(dated[0], o.nameField) }) : Te(o.noneKey)) + '</p>' +
+      (checked ? '<p class="fine">' + Tve('book.sumChecked', { n: bs.length, date: fmtDate(checked) }) + '</p>' : '') +
+      '</aside>';
   }
 
   /* ------------------------------------------------------------------- plans */
@@ -149,13 +1027,15 @@
   function planById(id) { return (TRIP.plans || []).filter(function (p) { return p.id === id; })[0]; }
   function planShort(id) {
     var p = planById(id);
-    return p ? String(p.name).split(':')[0].trim() : String(id);
+    if (!p) return String(id);
+    var n = String(tx(p, 'name')), i = n.search(/[:\uff1a]/);
+    return (i === -1 ? n : n.slice(0, i)).trim();
   }
   function planDesc(id) {
     var p = planById(id);
     if (!p) return '';
-    var i = String(p.name).indexOf(':');
-    return i === -1 ? '' : String(p.name).slice(i + 1).trim();
+    var n = String(tx(p, 'name')), i = n.search(/[:\uff1a]/);
+    return i === -1 ? '' : n.slice(i + 1).trim();
   }
   function recPlan() { return (TRIP.plans || []).filter(function (p) { return p.recommended; })[0] || TRIP.plans[0]; }
   function appliesTo(plans, planId) {
@@ -260,35 +1140,37 @@
   // "The crew's plan" for the recommended plan; any dearer plan is an optional upgrade.
   function planRole(id) {
     var rec = recPlan();
-    if (id === rec.id) return "The crew's plan";
+    if (id === rec.id) return T('plan.roleCrew');
     var a = computeBudget(defaultState(id)), b = computeBudget(defaultState(rec.id));
-    return a.hi >= b.hi && a.lo >= b.lo ? 'Optional upgrade' : 'Alternative';
+    return a.hi >= b.hi && a.lo >= b.lo ? T('plan.roleUpgrade') : T('plan.roleAlt');
   }
   // "Budget plan, Emirates, no coaching, budget food, no add-ons, crew of 11". Short form drops the plan and the crew.
   function picksText(state, short) {
     var r = computeBudget(state);
-    var parts = short ? [] : [planShort(state.plan) + ' plan'];
+    var parts = short ? [] : [Tv('plan.planSuffix', { plan: planShort(state.plan) })];
     var fo = (TRIP.flights.options || []).filter(function (o) { return o.id === r.eff.flight; })[0];
-    if (fo) parts.push(fo.airline);
-    if (r.eff.coaching === 'none') parts.push('no coaching');
+    if (fo) parts.push(tx(fo, 'airline'));
+    if (r.eff.coaching === 'none') parts.push(T('picks.noCoaching'));
     else if (r.eff.coaching) {
       var pk = (TRIP.coaching.packages || []).filter(function (p) { return p.id === r.eff.coaching; })[0];
-      parts.push((pk ? pk.name.split(' - ')[0] : r.eff.coaching) + ' coaching');
+      parts.push(Tv('picks.coaching', { name: pk ? String(tx(pk, 'name')).split(' - ')[0] : r.eff.coaching }));
     }
     if (r.eff.food) {
       var fn = foodName(r.eff.food).toLowerCase();
-      parts.push(/\s/.test(fn) ? fn : fn + ' food');
+      parts.push(/\s/.test(fn) ? fn : Tv('picks.food', { name: fn }));
     }
     var n = 0;
     state.addons.forEach(function (id) {
       var l = TRIP.budget.lines.filter(function (x) { return x.id === id; })[0];
       if (l && appliesTo(l.plans, state.plan)) n++;
     });
-    parts.push(n ? n + (n === 1 ? ' add-on' : ' add-ons') : 'no add-ons');
-    if (!short) parts.push('crew of ' + r.crew);
-    return parts.join(', ');
+    parts.push(n ? Tv(n === 1 ? 'picks.addonOne' : 'picks.addonMany', { n: n }) : T('picks.noAddons'));
+    if (!short) parts.push(Tv('picks.crewOf', { n: r.crew }));
+    return parts.join(T('words.listSep'));
   }
   function foodName(id) {
+    var k = T('food.short.' + id);
+    if (k) return k;
     var f = (TRIP.food.daily_budget || []).filter(function (x) { return x.id === id; })[0];
     if (f) return f.style.replace(/^Local island - /i, '').replace(/^./, function (c) { return c.toUpperCase(); });
     return cap(id);
@@ -296,6 +1178,8 @@
 
   /* ------------------------------------------------------------ surf levels */
   function levelWords(level) {
+    var k = T('level.words.' + String(level || ''));
+    if (k) return k;
     return String(level || '').replace(/^Int-Adv to /, 'Intermediate-advanced to ').replace(/Beginner-Int\b/g, 'Beginner to intermediate').replace(/Int-Adv\b/g, 'Intermediate to advanced');
   }
   function levelRange(level) {
@@ -321,6 +1205,7 @@
   function placeById(id) { return (TRIP.places || []).filter(function (p) { return p.id === id; })[0] || null; }
   // Every boat time in the data is "from Thulusdhoo", so that island is the base the boat routes start from.
   function basePlace() { return placeById('thulusdhoo') || { id: 'thulusdhoo', name: 'Thulusdhoo', kind: 'island', lat: 4.373, lon: 73.649 }; }
+  function placeName(pl) { return pl ? tx(pl, 'name') : ''; }
   function airportPlace() { return (TRIP.places || []).filter(function (p) { return p.kind === 'airport'; })[0] || null; }
   function islandName(s) { return String(s || '').split(',')[0].split('(')[0].trim(); }
   function isSouth(s) { return /south/i.test(s.region || ''); }
@@ -338,7 +1223,7 @@
     });
     return out;
   }
-  function spotShort(s) { return String(s.name).split(' (')[0]; }
+  function spotShort(s) { return String(tx(s, 'name')).split(' (')[0].split('\uff08')[0]; }
   function accessKind(s) { var a = String(s.access || '').toLowerCase(); return /resort/.test(a) ? 'resort' : /limited/.test(a) ? 'limited' : 'public'; }
   function isAdvanced(s) { return levelRange(s.level)[0] >= 2; }
   // Boat time from the base, read from the spot's own text ("boat time about 5-15 min", "About 20 min by boat").
@@ -347,15 +1232,17 @@
     var t = String(s.boat_from_thulusdhoo || '');
     var km = /about\s+([\d.]+)\s*km/i.exec(t);
     var out = { km: km ? Number(km[1]) : Math.round(distKm(s, basePlace()) * 10) / 10, kmFrom: km ? 'text' : 'pins' };
-    if (/^no real boat trip/i.test(t)) { out.kind = 'paddle'; out.text = 'No boat needed: it breaks off the island'; out.short = 'paddle out, no boat'; return out; }
-    if (/^not an option/i.test(t)) { out.kind = 'no'; out.text = 'Not an option from our base (resort guests only)'; out.short = 'guests only'; return out; }
+    if (/^no real boat trip/i.test(t)) { out.kind = 'paddle'; out.text = T('boat.paddleText'); out.short = T('boat.paddleShort'); return out; }
+    if (/^not an option/i.test(t)) { out.kind = 'no'; out.text = T('boat.noText'); out.short = T('boat.noShort'); return out; }
     var m = /(\d+(?:\s*-\s*\d+)?)\s*min\b/i.exec(t);
     if (m) {
-      var mins = m[1].replace(/\s+/g, ''), each = /each way/i.test(t) ? ' each way' : '';
-      out.kind = 'time'; out.text = 'About ' + mins + ' min' + each + ' by boat'; out.short = 'about ' + mins + ' min by boat';
+      var mins = m[1].replace(/\s+/g, ''), each = /each way/i.test(t);
+      out.kind = 'time'; out.mins = mins; out.eachWay = each;
+      out.text = Tv(each ? 'boat.timeTextEachWay' : 'boat.timeText', { mins: mins });
+      out.short = Tv('boat.timeShort', { mins: mins });
       return out;
     }
-    out.kind = 'unknown'; out.text = 'Boat time not confirmed'; out.short = 'boat time not confirmed';
+    out.kind = 'unknown'; out.text = T('boat.unknownText'); out.short = T('boat.unknownShort');
     return out;
   }
   // The points a map view has to show: North Malé (with the islands and the airport), South Malé, or everything.
@@ -579,11 +1466,11 @@
         pick = greedy.slice();
         var cur = total(), steps = opts.steps || 2000;
         for (var st = 0; st < steps; st++) {
-          var T = 14000 * Math.pow(0.002, st / steps);
+          var temp = 14000 * Math.pow(0.002, st / steps);
           var li = Math.floor(rnd() * n), lc = cands[li], c = lc[Math.floor(Math.pow(rnd(), 1.5) * lc.length)];
           if (c === pick[li]) continue;
           var delta = labelTotal(li, c) - labelTotal(li, pick[li]);
-          if (delta < 0 || rnd() < Math.exp(-delta / T)) {
+          if (delta < 0 || rnd() < Math.exp(-delta / temp)) {
             pick[li] = c; cur += delta;
             if (cur < bestTotal - 0.5) { bestTotal = cur; bestPick = pick.slice(); }
           }
@@ -636,7 +1523,7 @@
   }
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { computeBudget: computeBudget, defaultState: defaultState, defaultChoice: defaultChoice, applyPlanDefaults: applyPlanDefaults, stateForPlan: stateForPlan, choiceIds: choiceIds, effectiveChoice: effectiveChoice, planShort: planShort, planRole: planRole, sentences: sentences, richText: richText, stripStatusTail: stripStatusTail, picksText: picksText, boatTime: boatTime, staysForPlan: staysForPlan, spreadPoints: spreadPoints, placeLabels: placeLabels, projectBox: projectBox, geoBox: geoBox, viewPoints: viewPoints };
+    module.exports = { UI_EN: UI_EN, setLangForTest: function (l) { lang = l; }, computeBudget: computeBudget, defaultState: defaultState, defaultChoice: defaultChoice, applyPlanDefaults: applyPlanDefaults, stateForPlan: stateForPlan, choiceIds: choiceIds, effectiveChoice: effectiveChoice, planShort: planShort, planRole: planRole, sentences: sentences, richText: richText, stripStatusTail: stripStatusTail, picksText: picksText, boatTime: boatTime, staysForPlan: staysForPlan, spreadPoints: spreadPoints, placeLabels: placeLabels, projectBox: projectBox, geoBox: geoBox, viewPoints: viewPoints };
   }
   if (!IS_BROWSER) return;
 
@@ -656,7 +1543,7 @@
     emit('plan');
     if (source !== 'calc') {
       var r = computeBudget(state);
-      toast(planShort(id) + ' (' + planRole(id).toLowerCase() + '): about ' + hkd(r.lo, r.hi) + ' each, estimate');
+      toast(Tv('toast.planSwitched', { plan: planShort(id), role: planRole(id).toLowerCase(), price: hkd(r.lo, r.hi) }));
     }
   }
   function syncPlanInputs() {
@@ -664,13 +1551,13 @@
     $$('[data-plan-choose]').forEach(function (b) {
       var on = b.getAttribute('data-plan-choose') === state.plan;
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      b.textContent = on ? 'Showing this plan' : 'Show this plan';
+      b.textContent = T(on ? 'plan.showing' : 'plan.show');
     });
     $$('[data-plan-tile]').forEach(function (b) {
       var on = b.getAttribute('data-plan-tile') === state.plan;
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
       var st = $('[data-pick-state]', b);
-      if (st) st.textContent = on ? 'The page is showing this plan' : 'Show this plan on the page';
+      if (st) st.textContent = T(on ? 'plan.tileShowing' : 'plan.tileShow');
     });
     document.documentElement.setAttribute('data-plan', state.plan);
   }
@@ -709,10 +1596,10 @@
   /* ------------------------------------------------------- plan pickers, nav */
   // The organiser's order (15 Sep): the map overview first, sections 1-8, then the unnumbered extras.
   var SECTIONS = [
-    ['top', 'Map overview', ''], ['overview', 'Overview', '1'], ['budget', 'Budget overall', '2'], ['flights', 'Flights', '3'],
-    ['stay', 'Accommodation', '4'], ['spots', 'Surf spots', '5'], ['coaching', 'Surf coaching', '6'], ['transport', 'Local transport', '7'],
-    ['activities', 'Other activities', '8'], ['food', 'Eat & drink', ''], ['itinerary', 'Day-by-day plan', ''], ['prep', 'Before you go', ''],
-    ['sources', 'Sources & photo credits', '']
+    ['top', 'sec.top', ''], ['overview', 'sec.overview', '1'], ['budget', 'sec.budget', '2'], ['flights', 'sec.flights', '3'],
+    ['stay', 'sec.stay', '4'], ['spots', 'sec.spots', '5'], ['coaching', 'sec.coaching', '6'], ['transport', 'sec.transport', '7'],
+    ['activities', 'sec.activities', '8'], ['food', 'sec.food', ''], ['itinerary', 'sec.itinerary', ''], ['prep', 'sec.prep', ''],
+    ['sources', 'sec.sources', '']
   ];
   // Old links from v2 (shared in the chat before the restructure) still land somewhere sensible.
   // (#vibe still exists as the gallery heading in 1 Overview, and #plan now lands on "The plan in 30 seconds".)
@@ -724,14 +1611,14 @@
       var legend = fs.querySelector('legend');
       var html = TRIP.plans.map(function (p) {
         var inner = '<span class="seg-name">' + (p.recommended && g === 'top' ? '<span class="seg-pick" aria-hidden="true"></span>' : '') +
-          esc(planShort(p.id)) + '<span class="vh">, ' + esc(planRole(p.id).toLowerCase()) + '</span></span>';
+          esc(planShort(p.id)) + '<span class="vh">' + Tve('plan.vhRole', { role: planRole(p.id).toLowerCase() }) + '</span></span>';
         if (g === 'rail') inner += '<span class="seg-role" aria-hidden="true">' + esc(planRole(p.id)) + '</span><span class="seg-est" data-plan-est="' + esc(p.id) + '"></span>';
         return '<label class="seg-opt"><input type="radio" name="plan-' + g + '" value="' + esc(p.id) + '" data-plan-input>' + inner + '</label>';
       }).join('');
       fs.innerHTML = '';
       if (legend) fs.appendChild(legend);
       fs.insertAdjacentHTML('beforeend', html);
-      fs.addEventListener('change', function (e) {
+      bindOnce(fs, 'plan-group', 'change', function (e) {
         if (e.target && e.target.name === 'plan-' + g) setPlan(e.target.value, g);
       });
     });
@@ -741,7 +1628,7 @@
     // add-ons), labelled so. Only the calculator, its dock and the "Your picks" line follow the reader's changes.
     $$('[data-plan-est]').forEach(function (el) {
       var r = computeBudget(defaultState(el.getAttribute('data-plan-est')));
-      el.textContent = hkd(r.lo, r.hi) + ' each, default picks (estimate)';
+      el.textContent = Tv('rail.planEst', { price: hkd(r.lo, r.hi) });
     });
     $$('[data-plan-total]').forEach(function (el) {
       var r = computeBudget(stateForPlan(state, el.getAttribute('data-plan-total')));
@@ -749,16 +1636,18 @@
     });
   }
 
+  var navWatched = false;
   function renderNav() {
     $$('[data-nav]').forEach(function (ul) {
       ul.innerHTML = SECTIONS.map(function (s) {
         var num = s[2] ? '<span class="nav-num">' + esc(s[2]) + '</span> ' :
           s[0] === 'top' ? '<span class="nav-num nav-num--map" aria-hidden="true"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M2.5 5.5l5-2 5 2 5-2v11l-5 2-5-2-5 2z M7.5 3.5v11 M12.5 5.5v11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>' :
           '<span class="nav-num nav-num--none" aria-hidden="true"></span>';
-        return '<li><a href="#' + s[0] + '" data-nav-link="' + s[0] + '"' + (s[0] === 'spots' ? ' class="nav-spots"' : '') + '>' + num + '<span class="nav-label">' + esc(s[1]) + '</span></a></li>';
+        return '<li><a href="#' + s[0] + '" data-nav-link="' + s[0] + '"' + (s[0] === 'spots' ? ' class="nav-spots"' : '') + '>' + num + '<span class="nav-label">' + esc(T(s[1])) + '</span></a></li>';
       }).join('');
     });
-    if ('IntersectionObserver' in W) {
+    if ('IntersectionObserver' in W && !navWatched) {
+      navWatched = true;
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
           if (!en.isIntersecting) return;
@@ -779,7 +1668,7 @@
     var supports = typeof dlg.showModal === 'function';
     function show() {
       var r = computeBudget(state);
-      bind('menu-estimate', planShort(state.plan) + ' (' + planRole(state.plan).toLowerCase() + '): ' + hkd(r.lo, r.hi) + ' each, estimate');
+      bind('menu-estimate', Tv('menu.estimate', { plan: planShort(state.plan), role: planRole(state.plan).toLowerCase(), price: hkd(r.lo, r.hi) }));
       if (supports) dlg.showModal(); else dlg.setAttribute('open', '');
       document.body.classList.add('menu-open');
       open.setAttribute('aria-expanded', 'true');
@@ -936,6 +1825,12 @@
   // On phones a long list shows a few items and a "Show all N" button under it. The stylesheet only hides
   // clipped items below 900 px, so tablets and desktops always show everything.
   var clips = {};
+  // One listener per element, however many times a render runs (a language switch re-renders everything).
+  function bindOnce(el, key, type, fn) {
+    if (!el || el.getAttribute('data-bound-' + key)) return;
+    el.setAttribute('data-bound-' + key, '1');
+    el.addEventListener(type, fn);
+  }
   function listItems(list) {
     return Array.prototype.filter.call(list.children, function (el) { return !el.hidden && !el.hasAttribute('data-clip-btn'); });
   }
@@ -959,7 +1854,7 @@
       lists.forEach(function (l, i) { if (!l.id) l.id = 'clip-' + key + (i ? '-' + i : ''); });
       btn.setAttribute('aria-controls', lists.map(function (l) { return l.id; }).join(' '));
       (o.after || lists[lists.length - 1]).insertAdjacentElement('afterend', btn);
-      c = clips[key] = { open: false, btn: btn, list: list };
+      c = clips[key] = { open: c ? c.open : false, btn: btn, list: list };
       btn.addEventListener('click', function (e) { toggleClip(key, e.detail === 0); });
     }
     c.lists = lists;
@@ -984,7 +1879,8 @@
     });
     c.btn.hidden = extra <= 0;
     c.btn.setAttribute('aria-expanded', String(c.open));
-    c.btn.textContent = c.text ? c.text(c.open, items.length) : c.open ? 'Show fewer ' + c.noun : 'Show all ' + items.length + ' ' + c.noun;
+    c.btn.textContent = c.text ? c.text(c.open, items.length) :
+      Tv(c.open ? 'clip.showFewer' : 'clip.showAll', { n: items.length, noun: T('clip.noun.' + c.noun) });
   }
   function toggleClip(key, byKeyboard) {
     var c = clips[key];
@@ -1011,6 +1907,7 @@
     els = (els || []).filter(Boolean);
     if (!els.length) return;
     var f = folds[key];
+    if (f && !f.btn.parentNode) f = null;   // a re-render threw the old button away
     if (!f) {
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -1018,7 +1915,7 @@
       btn.setAttribute('data-fold-btn', key);
       btn.setAttribute('aria-controls', els.map(function (el, i) { if (!el.id) el.id = 'fold-' + key + '-' + i; return el.id; }).join(' '));
       els[0].insertAdjacentElement('beforebegin', btn);
-      f = folds[key] = { open: false, btn: btn };
+      f = folds[key] = { open: (folds[key] && folds[key].open) || false, btn: btn };
       btn.addEventListener('click', function () {
         var before = btn.getBoundingClientRect().top;
         f.open = !f.open;
@@ -1033,30 +1930,33 @@
     var f = folds[key];
     f.els.forEach(function (el) { el.classList.toggle('is-folded', !f.open); });
     f.btn.setAttribute('aria-expanded', String(f.open));
-    f.btn.textContent = (f.open ? 'Hide ' : 'Show ') + f.label;
+    f.btn.textContent = Tv(f.open ? 'fold.hide' : 'fold.show', { label: T('fold.' + f.label) });
   }
   function isWide() { return !!(W.matchMedia && W.matchMedia('(min-width: 900px)').matches); }
 
   /* ------------------------------------------------------------------- share */
+  var shareBound = false;
   function shareUrl() { return String(W.location.href).split('#')[0]; }
   function renderShare() {
-    var text = 'Maldives surf trip plan, 1-10 Nov 2026: ' + shareUrl();
+    var text = Tv('share.text', { url: shareUrl() });
     var wa = 'https://wa.me/?text=' + encodeURIComponent(text);
     $$('[data-share-slot]').forEach(function (slot) {
       slot.innerHTML = '<div class="share">' +
         '<button type="button" class="btn btn-solid" data-copy-link>' +
         '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-        '<span>Copy link</span></button>' +
+        '<span>' + Te('share.copy') + '</span></button>' +
         '<a class="btn btn-wa" href="' + esc(wa) + '" target="_blank" rel="noopener noreferrer">' +
         '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8L4 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        '<span>Share on WhatsApp</span></a>' +
+        '<span>' + Te('share.whatsapp') + '</span></a>' +
         '</div>';
     });
+    if (shareBound) return;
+    shareBound = true;
     document.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('[data-copy-link]');
       if (!b) return;
       copyText(shareUrl()).then(function (ok) {
-        toast(ok ? 'Link copied. Paste it in the crew chat.' : 'Copy did not work here. Copy the address bar instead.');
+        toast(T(ok ? 'toast.copied' : 'toast.copyFailed'));
       });
     });
   }
@@ -1116,12 +2016,15 @@
     var sizes = o.sizes || '100vw';
     var sw = srcWidth(p.src_small, Math.min(p.width, 720)), lw = srcWidth(p.src_large, p.width);
     var img = '<img src="' + esc(p.src_small) + '" srcset="' + esc(p.src_small) + ' ' + sw + 'w" sizes="' + esc(sizes) + '" width="' + Number(p.width) + '" height="' + Number(p.height) + '"' +
-      ' alt="' + esc(p.alt) + '" loading="lazy" decoding="async">';
+      ' alt="' + esc(tx(p, 'alt')) + '" loading="lazy" decoding="async">';
     if (p.src_large === p.src_small) return '<picture>' + img + '</picture>';
     return '<picture><source media="' + LARGE_MEDIA + '" srcset="' + esc(p.src_small) + ' ' + sw + 'w, ' + esc(p.src_large) + ' ' + lw + 'w" sizes="' + esc(sizes) + '">' + img + '</picture>';
   }
-  function creditText(p) { return p.credit + ', ' + p.license; }
-  function captionText(p) { var c = String(p.caption || '').trim(); return /[.!?]$/.test(c) ? c : c + '.'; }
+  function creditText(p) { return Tv('photo.credit', { credit: tx(p, 'credit'), license: tx(p, 'license') }); }
+  function captionText(p) {
+    var c = String(tx(p, 'caption') || '').trim();
+    return /[.!?\u3002\uff01\uff1f]$/.test(c) ? c : Tv('photo.captionDot', { caption: c });
+  }
   function figcap(p) {
     return '<figcaption>' + esc(captionText(p)) + ' <span class="credit">' + esc(creditText(p)) + '</span></figcaption>';
   }
@@ -1183,7 +2086,14 @@
     var sizes = '(min-width: 1100px) calc(100vw - 284px), 100vw';
     $$('[data-plate]').forEach(function (el) {
       var p = photoById(PLATES[el.getAttribute('data-plate')]);
-      if (p) {
+      var capEl = $('.plate-cap', el);
+      if (p && capEl) {
+        markUsed(p);
+        capEl.innerHTML = esc(captionText(p)) + ' <span class="credit">' + esc(creditText(p)) + '</span>';
+        var pimg = $('.plate-media img', el);
+        if (pimg) pimg.setAttribute('alt', tx(p, 'alt'));
+      }
+      if (p && !capEl) {
         var media = document.createElement('div');
         media.className = 'plate-media ph';
         media.innerHTML = picture(p, { sizes: sizes });
@@ -1191,6 +2101,7 @@
         var copy = $('.plate-copy', el);
         if (copy) copy.insertAdjacentHTML('beforeend', '<p class="plate-cap">' + esc(captionText(p)) + ' <span class="credit">' + esc(creditText(p)) + '</span></p>');
       }
+      if ($('.edge', el)) return;
       el.insertAdjacentHTML('beforeend', edgeSvg(el.getAttribute('data-edge')));
       el.setAttribute('data-reveal', '');
       el.setAttribute('data-live', '');
@@ -1207,14 +2118,17 @@
       el.setAttribute('aria-hidden', 'true');
     });
   }
+  var vibeBound = false;
   function renderVibe() {
     var list = VIBE.map(photoById).filter(Boolean);
     var sizes = '(min-width: 1100px) calc((100vw - 380px) / 2), (min-width: 1000px) 46vw, 84vw';
-    renderInto('vibe', '<ul class="vibe" aria-label="Photo gallery">' + list.map(function (p) {
+    renderInto('vibe', '<ul class="vibe" aria-label="' + Te('vibe.aria') + '">' + list.map(function (p) {
       var ar = (Number(p.width) / Number(p.height)).toFixed(3);
       return '<li><figure style="--ar:' + ar + '"><span class="ph">' + picture(p, { sizes: sizes }) + '</span>' + figcap(p) + '</figure></li>';
-    }).join('') + '</ul><p class="vibe-hint">Swipe sideways for more photos.</p>');
+    }).join('') + '</ul><p class="vibe-hint">' + Te('vibe.hint') + '</p>');
     syncVibeScroller();
+    if (vibeBound) return;
+    vibeBound = true;
     var t;
     W.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(syncVibeScroller, 150); });
   }
@@ -1224,10 +2138,10 @@
     if (!ul) return;
     if (ul.scrollWidth > ul.clientWidth + 2) {
       ul.setAttribute('tabindex', '0');
-      ul.setAttribute('aria-label', 'Photo gallery, scrolls sideways');
+      ul.setAttribute('aria-label', T('vibe.ariaScroll'));
     } else {
       ul.removeAttribute('tabindex');
-      ul.setAttribute('aria-label', 'Photo gallery');
+      ul.setAttribute('aria-label', T('vibe.aria'));
     }
   }
 
@@ -1238,37 +2152,36 @@
   function renderTop() {
     var m = TRIP.meta;
     bind('checked-strip',
-      '<p><strong>Prices checked ' + esc(fmtDate(m.prices_checked)) + '.</strong> Every price here is a snapshot or an estimate. Re-check it before anyone books or pays. Price cards and calculator lines carry a label that says how solid each price is; prices written into the day plan and notes say it in brackets, and the matching card has the details.</p>' +
-      '<details class="legend-wrap"><summary>What the price labels mean</summary>' + statusLegend() + '</details>', true);
-    bind('footer-note', m.disclaimer);
+      '<p><strong>' + Tve('top.pricesChecked', { date: fmtDate(m.prices_checked) }) + '</strong>' + Te('top.pricesBody') + '</p>' +
+      '<details class="legend-wrap"><summary>' + Te('top.legendSummary') + '</summary>' + statusLegend() + '</details>', true);
+    bind('footer-note', tx(m, 'disclaimer'));
     var picks = TRIP.spots.filter(function (s) { return s.crew_pick; }).map(spotShort);
-    bind('spots-tagline', TRIP.spots.length + ' breaks on a map, boat times');
-    bind('spots-lede', 'All ' + TRIP.spots.length + ' breaks our research found in North and South Malé, on one map. The crew picks are ' + listWords(picks) +
-      '. Boat times are as the guides give them from ' + basePlace().name + '. Tap a pin or a card for the details.');
+    bind('spots-tagline', Tv('rail.spotsTagline', { n: TRIP.spots.length }));
+    bind('spots-lede', Tv('spots.lede', { n: TRIP.spots.length, picks: listWords(picks), base: placeName(basePlace()) }));
   }
   function listWords(arr) {
     if (arr.length < 2) return arr.join('');
-    return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+    return arr.slice(0, -1).join(T('words.listSep')) + T('words.listAnd') + arr[arr.length - 1];
   }
   function renderCrew() {
     var rec = recFlight(), nights = tripNights();
-    var rows = [['In the Maldives', 'Sun 1 to Tue 10 Nov 2026, ' + nights + ' nights']];
+    var rows = [[T('crew.inMaldives'), Tv('crew.datesNights', { n: nights })]];
     if (rec) {
       var o0 = rec.outbound.legs[0], r0 = rec.return.legs[0], rz = rec.return.legs[rec.return.legs.length - 1];
-      rows.push(['Fly out', rec.outbound.date.replace(/ 2026$/, '') + ', ' + o0.flight + ' leaves Hong Kong at ' + o0.dep]);
-      rows.push(['Fly home', rec.return.date.replace(/ 2026$/, '') + ', ' + r0.flight + ' leaves Malé at ' + r0.dep + '; lands in Hong Kong Wed 11 Nov at ' + String(rz.arr).replace(/\s*\(\+1\)/, '')]);
+      rows.push([T('crew.flyOut'), Tv('crew.flyOutVal', { date: tx(rec.outbound, 'date').replace(/ 2026$/, ''), flight: o0.flight, time: o0.dep })]);
+      rows.push([T('crew.flyHome'), Tv('crew.flyHomeVal', { date: tx(rec.return, 'date').replace(/ 2026$/, ''), flight: r0.flight, dep: r0.dep, arr: String(rz.arr).replace(/\s*\(\+1\)/, '') })]);
     }
-    var html = '<div class="crew-facts"><p class="crew-who">' + esc(TRIP.meta.subtitle) + '</p>' +
+    var html = '<div class="crew-facts"><p class="crew-who">' + esc(tx(TRIP.meta, 'subtitle')) + '</p>' +
       '<dl class="crew-dl">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl>' +
-      '<p class="fine">Flight times follow our recommended ' + esc(recFlightName()) + ' flights; see 3 Flights.</p></div>' +
+      '<p class="fine">' + Tve('crew.flightNote', { flights: recFlightName() }) + '</p></div>' +
       '<div class="countdown" id="countdown" role="timer" data-live>' +
-      '<p class="countdown-label" data-bind="countdown-label">Until the flight leaves Hong Kong</p>' +
+      '<p class="countdown-label" data-bind="countdown-label">' + Te('crew.countdownLabel') + '</p>' +
       '<div class="countdown-digits" data-bind="countdown"></div>' +
       '<p class="countdown-flight" data-bind="countdown-flight"></p></div>';
     renderInto('crew', html);
     if (rec) {
       var leg = rec.outbound.legs[0];
-      bind('countdown-flight', leg.flight + ' leaves Hong Kong ' + rec.outbound.date.replace(/ 2026$/, '') + ' at ' + leg.dep + ' (HK time)');
+      bind('countdown-flight', Tv('crew.countdownFlight', { flight: leg.flight, date: tx(rec.outbound, 'date').replace(/ 2026$/, ''), time: leg.dep }));
     }
     tickCountdown(true);
     scheduleTick();
@@ -1276,13 +2189,13 @@
   function scheduleTick() {
     setTimeout(function () { tickCountdown(false); scheduleTick(); }, 1000 - (Date.now() % 1000) + 15);
   }
-  var cdLast = {}, chipLast = '';
+  var cdLast = {}, chipLast = null;
   function tickCountdown(force) {
     var dep = Date.parse(TRIP.meta.depart_hk);
     var end = Date.parse(TRIP.meta.trip_end + 'T23:59:00+05:00');
     var now = Date.now(), diff = dep - now;
     // The chip on the first screen: whole days only, so it changes at most once an hour.
-    var chipText = diff > 864e5 ? Math.floor(diff / 864e5) + ' days to go' : diff > 0 ? 'Flying out today' : now < end ? 'The crew is away' : 'Trip done';
+    var chipText = diff > 864e5 ? Tv('cd.daysToGo', { n: Math.floor(diff / 864e5) }) : diff > 0 ? T('cd.today') : now < end ? T('cd.away') : T('cd.done');
     if (chipText !== chipLast) { bind('countdown-chip', chipText); chipLast = chipText; }
     if (!force && (!cdLive || document.hidden)) return;
     var el = $('[data-bind="countdown"]');
@@ -1290,7 +2203,7 @@
     if (diff > 0) {
       var v = { d: Math.floor(diff / 864e5), h: Math.floor(diff % 864e5 / 36e5), m: Math.floor(diff % 36e5 / 6e4), s: Math.floor(diff % 6e4 / 1e3) };
       if (!$('[data-cd="d"]', el)) {
-        el.innerHTML = unit('d', v.d === 1 ? 'day' : 'days') + unit('h', v.h === 1 ? 'hour' : 'hours') + unit('m', 'min') + unit('s', 'sec');
+        el.innerHTML = unit('d', T(v.d === 1 ? 'cd.day' : 'cd.days')) + unit('h', T(v.h === 1 ? 'cd.hour' : 'cd.hours')) + unit('m', T('cd.min')) + unit('s', T('cd.sec'));
         cdLast = {};
       }
       ['d', 'h', 'm', 's'].forEach(function (k) {
@@ -1301,16 +2214,16 @@
         cdLast[k] = v[k];
       });
       var dl = $('[data-cd-lbl="d"]', el), hl = $('[data-cd-lbl="h"]', el);
-      if (dl) dl.textContent = v.d === 1 ? 'day' : 'days';
-      if (hl) hl.textContent = v.h === 1 ? 'hour' : 'hours';
-      if (force || v.s === 0) el.setAttribute('aria-label', v.d + ' days, ' + v.h + ' hours and ' + v.m + ' minutes to go');
-      bind('countdown-label', 'Until the flight leaves Hong Kong');
+      if (dl) dl.textContent = T(v.d === 1 ? 'cd.day' : 'cd.days');
+      if (hl) hl.textContent = T(v.h === 1 ? 'cd.hour' : 'cd.hours');
+      if (force || v.s === 0) el.setAttribute('aria-label', Tv('cd.aria', { d: v.d, h: v.h, m: v.m }));
+      bind('countdown-label', T('crew.countdownLabel'));
     } else if (now < end) {
-      el.innerHTML = '<span class="cd-now">The crew is away</span>';
-      bind('countdown-label', 'Trip in progress');
+      el.innerHTML = '<span class="cd-now">' + Te('cd.away') + '</span>';
+      bind('countdown-label', T('cd.labelDuring'));
     } else {
-      el.innerHTML = '<span class="cd-now">Trip done</span>';
-      bind('countdown-label', 'Welcome home');
+      el.innerHTML = '<span class="cd-now">' + Te('cd.done') + '</span>';
+      bind('countdown-label', T('cd.labelAfter'));
     }
   }
   function unit(k, label) {
@@ -1322,7 +2235,7 @@
     var custom = !isDefaultState(state);
     if (custom) {
       var q = computeBudget(state);
-      bind('estimate-mine', 'Your picks in the calculator (' + planShort(state.plan) + '): ' + hkd(q.lo, q.hi) + ' each (estimate).');
+      bind('estimate-mine', Tv('budget.yourPicks', { plan: planShort(state.plan), price: hkd(q.lo, q.hi) }));
     }
     mine.forEach(function (el) { el.hidden = !custom; });
   }
@@ -1341,38 +2254,50 @@
   function renderHeads() {
     var charter = (TRIP.not_available || [])[0] || {};
     var items = [
-      ['November surf is a gamble', TRIP.season.verdict, '#season-title'],
-      ['No surf charter boat is confirmed for our dates', charterSummary(charter.why), '#stay-not-available'],
-      ['Coaching has no quote yet', firstSentences(TRIP.coaching.reality_check, 1) + ' Every coaching package price below is a wide estimate until 2-3 coaches quote.', '#coaching'],
-      ['Flights and prices need a live re-check', flightCheckText(), '#flights']
+      [T('heads.gambleTitle'), tx(TRIP.season, 'verdict'), '#season-title'],
+      [T('heads.charterTitle'), charterSummary(charter), '#stay-not-available'],
+      [T('heads.coachTitle'), firstSentences(tx(TRIP.coaching, 'reality_check'), 1) + T('heads.coachBody'), '#coaching'],
+      [T('heads.flightsTitle'), flightCheckText(), '#flights']
     ];
     renderInto('heads', items.map(function (it) {
       return '<li class="head">' + ICON.hazard + '<div><h4>' + esc(it[0]) + '</h4><p>' + esc(it[1]) + '</p>' +
-        '<a class="more" href="' + it[2] + '">Details</a></div></li>';
+        '<a class="more" href="' + it[2] + '">' + Te('heads.details') + '</a></div></li>';
     }).join(''));
   }
 
-  function charterSummary(why) {
+  // Pick sentences by their position in the English text, so the same sentences are
+  // kept once the text is translated (a Chinese sentence never matches an English regex).
+  function pickSentences(obj, field, test) {
+    var en = sentences(obj ? obj[field] : ''), keepIdx = [];
+    en.forEach(function (x, i) { if (test(x, i)) keepIdx.push(i); });
+    var t = tx(obj, field);
+    if (t === (obj ? obj[field] : '')) return keepIdx.map(function (i) { return en[i]; });
+    var zh = sentences(t);
+    if (zh.length !== en.length) return zh;   // split differently: keep everything rather than lose meaning
+    return keepIdx.map(function (i) { return zh[i]; });
+  }
+  function charterSummary(charter) {
     // Keep the nuance: nothing dated for our week, some boats run into November, asking is a long shot.
-    var ss = sentences(why);
-    var keep = ss.filter(function (x, i) { return i === 0 || /november|long shot/i.test(x); });
-    return keep.join(' ');
+    return pickSentences(charter, 'why', function (x, i) { return i === 0 || /november|long shot/i.test(x); }).join(' ');
   }
   function flightCheckText() {
     var rec = (TRIP.flights.options || []).filter(function (o) { return o.recommended; })[0];
     var out = '';
     if (rec) {
-      out = 'The ' + rec.airline + ' fare (' + hkd(rec.fare_pp_hkd.low, rec.fare_pp_hkd.high) + ' each, ' + rec.fare_status + ') is a ' +
-        fmtDate(TRIP.meta.prices_checked).replace(/ \d{4}$/, '') + ' snapshot, and its flight numbers come from a 1 Nov search, so confirm both when booking. ' +
-        'Online bookings take 9 people at most, so book the crew in two groups. ';
+      out = Tv('heads.flightCheck', {
+        airline: tx(rec, 'airline'),
+        price: hkd(rec.fare_pp_hkd.low, rec.fare_pp_hkd.high),
+        status: tx(rec, 'fare_status'),
+        date: fmtDate(TRIP.meta.prices_checked).replace(/ \d{4}$/, '')
+      });
     }
-    var ds = sentences(TRIP.meta.disclaimer).filter(function (x) { return /^confirm every price/i.test(x); });
-    return out + (ds[0] || firstSentences(restSentences(TRIP.meta.disclaimer, 1), 1));
+    var ds = pickSentences(TRIP.meta, 'disclaimer', function (x) { return /^confirm every price/i.test(x); });
+    return out + (ds[0] || firstSentences(restSentences(tx(TRIP.meta, 'disclaimer'), 1), 1));
   }
   function renderKeypoints() {
-    renderInto('keypoints', TRIP.headline.key_points.map(function (k) {
-      var i = k.indexOf(': ');
-      if (i > 0 && i <= 34) return '<li><strong>' + esc(k.slice(0, i)) + '</strong> ' + esc(k.slice(i + 2)) + '</li>';
+    renderInto('keypoints', txs(TRIP.headline.key_points).map(function (k) {
+      var m = /[:\uff1a]\s*/.exec(k), i = m ? m.index : -1;
+      if (i > 0 && i <= 34) return '<li><strong>' + esc(k.slice(0, i)) + '</strong> ' + esc(k.slice(i + m[0].length)) + '</li>';
       return '<li>' + esc(k) + '</li>';
     }).join(''));
   }
@@ -1381,26 +2306,26 @@
   // Tapping a tile shows that plan everywhere (map stays, stay cards, day plan, calculator).
   function renderPlanPick() {
     var rec = recPlan(), rs = computeBudget(defaultState(rec.id));
-    var html = '<p class="lede">' + esc(TRIP.headline.one_liner) + '</p>' +
+    var html = '<p class="lede">' + esc(tx(TRIP.headline, 'one_liner')) + '</p>' +
       '<div class="pick-tiles">' + TRIP.plans.map(function (p) {
         var ds = defaultState(p.id), r = computeBudget(ds), isRec = p.id === rec.id;
         var more = !isRec && r.lo >= rs.lo && r.hi >= rs.hi;
         return '<button type="button" class="pick-tile' + (isRec ? ' is-rec' : '') + '" data-plan-tile="' + esc(p.id) + '" aria-pressed="false">' +
-          '<span class="pick-role">' + esc(isRec ? "The crew's plan (organiser's pick)" : planRole(p.id)) + '</span>' +
+          '<span class="pick-role">' + esc(isRec ? T('plan.recRole') : planRole(p.id)) + '</span>' +
           '<span class="pick-name">' + esc(planShort(p.id)) + '</span>' +
           '<span class="pick-desc">' + esc(planDesc(p.id)) + '</span>' +
           '<span class="pick-price">' + esc(hkd(r.lo, r.hi)) + '</span>' +
-          '<span class="pick-each">each, with flights ' + chip('estimate') + '</span>' +
-          '<span class="pick-group">Crew of ' + r.crew + ': ' + esc(hkd(r.groupLo, r.groupHi)) + '</span>' +
-          '<span class="pick-picks">Default picks: ' + esc(picksText(ds, true)) + '.</span>' +
-          (more ? '<span class="pick-delta">' + esc(hkdDelta(r, rs)) + ' more each than ' + esc(planShort(rec.id)) + ' (estimate).</span>' : '') +
+          '<span class="pick-each">' + Te('plan.eachWithFlights') + chip(T('status.legend.estimate'), 'estimate') + '</span>' +
+          '<span class="pick-group">' + Tve('plan.crewOf', { n: r.crew, price: hkd(r.groupLo, r.groupHi) }) + '</span>' +
+          '<span class="pick-picks">' + Tve('plan.defaultPicks', { picks: picksText(ds, true) }) + '</span>' +
+          (more ? '<span class="pick-delta">' + Tve('plan.moreThan', { delta: hkdDelta(r, rs), plan: planShort(rec.id) }) + '</span>' : '') +
           '<span class="pick-state" data-pick-state></span></button>';
       }).join('') + '</div>' +
       '<p class="estimate-mine" data-bind="estimate-mine" hidden></p>' +
-      '<p class="pick-links"><a class="more" href="#calc-title">Change the picks in the calculator</a>' +
-      ((TRIP.above_budget || []).length ? '<a class="more" href="#above-budget">An all-in surf resort: checked, above our budget</a>' : '') + '</p>';
+      '<p class="pick-links"><a class="more" href="#calc-title">' + Te('plan.changeInCalc') + '</a>' +
+      ((TRIP.above_budget || []).length ? '<a class="more" href="#above-budget">' + Te('plan.aboveLink') + '</a>' : '') + '</p>';
     var root = renderInto('plan-pick', html);
-    if (root) root.addEventListener('click', function (e) {
+    if (root) bindOnce(root, 'plan-pick', 'click', function (e) {
       var b = e.target.closest('[data-plan-tile]');
       if (b) setPlan(b.getAttribute('data-plan-tile'), 'pick');
     });
@@ -1408,10 +2333,10 @@
 
   function renderDecisions() {
     renderInto('decisions', TRIP.headline.big_decisions.map(function (d, i) {
-      return '<details class="decision"' + (i === 0 && isWide() ? ' open' : '') + '><summary><span class="q">' + esc(d.question) + '</span>' +
-        '<span class="pick">' + esc(d.our_pick) + '</span></summary>' +
-        '<div class="decision-body"><p>' + esc(d.why) + '</p>' +
-        (d.alternatives && d.alternatives.length ? '<p class="alt-h">Alternatives</p><ul class="alts">' + d.alternatives.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul>' : '') +
+      return '<details class="decision"' + (i === 0 && isWide() ? ' open' : '') + '><summary><span class="q">' + esc(tx(d, 'question')) + '</span>' +
+        '<span class="pick">' + esc(tx(d, 'our_pick')) + '</span></summary>' +
+        '<div class="decision-body"><p>' + esc(tx(d, 'why')) + '</p>' +
+        (d.alternatives && d.alternatives.length ? '<p class="alt-h">' + Te('decisions.alts') + '</p><ul class="alts">' + txs(d.alternatives).map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul>' : '') +
         '</div></details>';
     }).join(''));
   }
@@ -1421,27 +2346,28 @@
   // 1 Overview: what surfing in early November looks like.
   function renderSeason() {
     var s = TRIP.season;
-    var facts = [['Wind', s.wind], ['Swell', s.swell], ['Water', s.water_temp], ['Air', s.air_temp], ['Rain', s.rain]];
-    var html = '<h3 class="h-sub h-first" id="season-title">Surfing here in early November</h3>' +
-      '<div class="verdict"><p class="verdict-kicker">Season call for 1-10 Nov</p><p class="verdict-text">' + esc(s.verdict) + '</p></div>' +
+    var facts = [[T('season.factWind'), tx(s, 'wind')], [T('season.factSwell'), tx(s, 'swell')], [T('season.factWater'), tx(s, 'water_temp')],
+      [T('season.factAir'), tx(s, 'air_temp')], [T('season.factRain'), tx(s, 'rain')]];
+    var html = '<h3 class="h-sub h-first" id="season-title">' + Te('season.title') + '</h3>' +
+      '<div class="verdict"><p class="verdict-kicker">' + Te('season.kicker') + '</p><p class="verdict-text">' + esc(tx(s, 'verdict')) + '</p></div>' +
       '<ul class="expect">' + s.expectations.map(function (e, i) {
-        return '<li class="expect-item"><span class="expect-icon">' + (ICON[EXPECT_ICON[i]] || ICON.ask) + '</span><div><h4>' + esc(e.label) + '</h4><p>' + esc(e.note) + '</p></div></li>';
+        return '<li class="expect-item"><span class="expect-icon">' + (ICON[EXPECT_ICON[i]] || ICON.ask) + '</span><div><h4>' + esc(tx(e, 'label')) + '</h4><p>' + esc(tx(e, 'note')) + '</p></div></li>';
       }).join('') + '</ul>' +
       '<div class="facts">' + facts.map(function (f) {
         var rest = restSentences(f[1], 1);
         return '<div class="fact"><h4>' + esc(f[0]) + '</h4><p>' + esc(firstSentences(f[1], 1)) + '</p>' +
-          (rest ? '<details class="more-d"><summary>More on ' + esc(f[0].toLowerCase()) + '</summary><p>' + esc(rest) + '</p></details>' : '') + '</div>';
+          (rest ? '<details class="more-d"><summary>' + Tve('season.moreOn', { label: f[0].toLowerCase() }) + '</summary><p>' + esc(rest) + '</p></details>' : '') + '</div>';
       }).join('') + '</div>' +
-      '<p class="season-go"><a class="more" href="#spots">Where to surf: 5 Surf spots</a></p>';
+      '<p class="season-go"><a class="more" href="#spots">' + Te('season.goSpots') + '</a></p>';
     var root = renderInto('season', html);
-    if (root) foldBlock('season', [$('.expect', root), $('.facts', root)], 'season details');
+    if (root) foldBlock('season', [$('.expect', root), $('.facts', root)], 'season');
   }
 
   /* ------------------------------------------------------ 5 Surf spots module */
   var LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
   function levelBar(level) {
     var r = levelRange(level);
-    return '<span class="lvl" role="img" aria-label="Level: ' + esc(levelWords(level)) + '">' + LEVELS.map(function (n, i) {
+    return '<span class="lvl" role="img" aria-label="' + Tve('spots.levelAria', { level: levelWords(level) }) + '">' + LEVELS.map(function (n, i) {
       return '<span class="lvl-step' + (i >= r[0] && i <= r[1] ? ' is-on' : '') + '"></span>';
     }).join('') + '</span>';
   }
@@ -1457,19 +2383,20 @@
     var levels = uniq('level').sort(function (a, b) { var ra = levelRange(a), rb = levelRange(b); return ra[0] - rb[0] || ra[1] - rb[1]; });
     var opt = function (v, label) { return '<option value="' + esc(v) + '">' + esc(label) + '</option>'; };
     var html = '<div class="filter-row">' +
-      '<button type="button" class="toggle" aria-pressed="false" data-spot-pick>Crew picks only</button>' +
-      '<div class="seg-inline" role="group" aria-label="Region">' +
+      '<button type="button" class="toggle" aria-pressed="false" data-spot-pick>' + Te('filters.crewOnly') + '</button>' +
+      '<div class="seg-inline" role="group" aria-label="' + Te('filters.regionAria') + '">' +
       ['all'].concat(uniq('region')).map(function (r) {
-        return '<button type="button" class="toggle" data-spot-region="' + esc(r) + '" aria-pressed="' + (r === 'all') + '">' + esc(r === 'all' ? 'All regions' : r.replace('Male', 'Malé')) + '</button>';
+        return '<button type="button" class="toggle" data-spot-region="' + esc(r) + '" aria-pressed="' + (r === 'all') + '">' + esc(r === 'all' ? T('filters.allRegions') : regionLabel(r)) + '</button>';
       }).join('') + '</div></div>' +
       '<div class="filter-row">' +
-      '<label class="select"><span>Level</span><select data-spot-level>' + opt('all', 'All levels') + levels.map(function (l) { return opt(l, levelWords(l)); }).join('') + '</select></label>' +
-      '<label class="select"><span>Access</span><select data-spot-access>' + opt('all', 'Any access') + uniq('access').map(function (a) { return opt(a, a); }).join('') + '</select></label>' +
-      '<button type="button" class="btn btn-quiet" data-spot-reset>Clear filters</button>' +
+      '<label class="select"><span>' + Te('filters.level') + '</span><select data-spot-level>' + opt('all', T('filters.allLevels')) + levels.map(function (l) { return opt(l, levelWords(l)); }).join('') + '</select></label>' +
+      '<label class="select"><span>' + Te('filters.access') + '</span><select data-spot-access>' + opt('all', T('filters.anyAccess')) + uniq('access').map(function (a) { return opt(a, accessLabel(a)); }).join('') + '</select></label>' +
+      '<button type="button" class="btn btn-quiet" data-spot-reset>' + Te('filters.clear') + '</button>' +
       '</div>' +
-      '<p class="fine level-key">Levels are as the surf guides rate them. Int-Adv means intermediate to advanced; Beginner-Int means beginner to intermediate.</p>';
+      '<p class="fine level-key">' + Te('filters.levelKey') + '</p>';
     var el = renderInto('spot-filters', html);
-    el.addEventListener('click', function (e) {
+    syncSpotFilterInputs(el);
+    bindOnce(el, 'spot-filters-click', 'click', function (e) {
       var t = e.target.closest('button');
       if (!t) return;
       if (t.hasAttribute('data-spot-pick')) { spotFilter.pick = !spotFilter.pick; t.setAttribute('aria-pressed', String(spotFilter.pick)); }
@@ -1482,12 +2409,25 @@
       } else return;
       applySpotFilter();
     });
-    el.addEventListener('change', function (e) {
+    bindOnce(el, 'spot-filters-change', 'change', function (e) {
       if (e.target.hasAttribute('data-spot-level')) spotFilter.level = e.target.value;
       if (e.target.hasAttribute('data-spot-access')) spotFilter.access = e.target.value;
       applySpotFilter();
     });
   }
+  // Put the reader's filters back on freshly built controls (after a language switch).
+  function syncSpotFilterInputs(el) {
+    if (!el) return;
+    var pk = $('[data-spot-pick]', el), lv = $('[data-spot-level]', el), ac = $('[data-spot-access]', el);
+    if (pk) pk.setAttribute('aria-pressed', String(spotFilter.pick));
+    $$('[data-spot-region]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-spot-region') === spotFilter.region)); });
+    try {
+      if (lv && lv.value !== spotFilter.level) lv.value = spotFilter.level;
+      if (ac && ac.value !== spotFilter.access) ac.value = spotFilter.access;
+    } catch (e) { /* engines where <select>.value is read-only */ }
+  }
+  function regionLabel(r) { return T('region.' + r) || String(r).replace('Male', 'Malé'); }
+  function accessLabel(a) { return T('access.' + a) || a; }
   function resetSpotFilters(apply) {
     var el = $('[data-render="spot-filters"]');
     spotFilter = { pick: false, region: 'all', level: 'all', access: 'all' };
@@ -1512,20 +2452,23 @@
       return '<dl class="kv">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl>';
     };
     var main = [
-      ['Wave', s.type], ['Level', levelWords(s.level) + '. ' + s.level_note], ['Access', s.access + '. ' + s.access_note],
-      ['From Thulusdhoo', s.boat_from_thulusdhoo], ['Hazards', s.hazards], ['In November', s.november_note]
+      [T('spot.wave'), tx(s, 'type')],
+      [T('spot.level'), Tv('spot.levelVal', { level: levelWords(s.level), note: tx(s, 'level_note') })],
+      [T('spot.access'), Tv('spot.accessVal', { access: accessLabel(s.access), note: tx(s, 'access_note') })],
+      [Tv('spot.fromBase', { base: placeName(basePlace()) }), tx(s, 'boat_from_thulusdhoo')],
+      [T('spot.hazards'), tx(s, 'hazards')], [T('spot.november'), tx(s, 'november_note')]
     ];
     var more = [
-      ['Best swell', s.best_swell], ['Best wind', s.best_wind], ['Best tide', s.best_tide],
-      ['Map pin', s.lat.toFixed(3) + ', ' + s.lon.toFixed(3) + ' (' + s.coord_note + ')']
+      [T('spot.bestSwell'), tx(s, 'best_swell')], [T('spot.bestWind'), tx(s, 'best_wind')], [T('spot.bestTide'), tx(s, 'best_tide')],
+      [T('spot.mapPin'), Tv('spot.mapPinVal', { lat: s.lat.toFixed(3), lon: s.lon.toFixed(3), note: tx(s, 'coord_note') })]
     ];
-    return kv(main) + '<details class="more-d spot-more"><summary>Swell, wind, tide and sources</summary>' + kv(more) +
-      '<p class="src-row"><span class="src-lbl">Sources</span> ' + s.sources.map(function (u, i) {
-        var host = ''; try { host = new URL(u).hostname.replace(/^www\./, ''); } catch (e) { host = 'source ' + (i + 1); }
+    return kv(main) + '<details class="more-d spot-more"><summary>' + Te('spot.moreSummary') + '</summary>' + kv(more) +
+      '<p class="src-row"><span class="src-lbl">' + Te('spot.sourcesLbl') + '</span> ' + s.sources.map(function (u, i) {
+        var host = ''; try { host = new URL(u).hostname.replace(/^www\./, ''); } catch (e) { host = Tv('src.sourceN', { n: i + 1 }); }
         return srcLink(u, host);
       }).join(' ') + '</p></details>';
   }
-  function spotRegionLabel(s) { return s.region.replace('Male', 'Malé') + ', near ' + s.nearest_island; }
+  function spotRegionLabel(s) { return Tv('spot.regionNear', { region: regionLabel(s.region), island: tx(s, 'nearest_island') }); }
   // A photo appears on a spot only when the photo's own location names that break.
   function spotPhoto(s) {
     var base = String(s.name).split(' (')[0].toLowerCase().replace(/’/g, "'");
@@ -1536,6 +2479,7 @@
     var p = spotPhoto(s);
     return p ? photoFigure(p, '', '(min-width: 1000px) 420px, 92vw', 'spot-ph') : '';
   }
+  function levelShort(level) { return T('level.short.' + String(level || '')) || String(level || ''); }
   function renderSpotList() {
     var ul = $('#spot-list');
     ul.innerHTML = TRIP.spots.map(function (s) {
@@ -1544,17 +2488,17 @@
       return '<li class="spot' + (s.crew_pick ? ' is-pick' : '') + '" id="card-' + esc(s.id) + '" data-spot="' + esc(s.id) + '">' +
         '<div class="spot-head">' +
         '<button type="button" class="spot-toggle" aria-expanded="false" aria-controls="spot-body-' + esc(s.id) + '" data-spot-open="' + esc(s.id) + '">' +
-        '<span class="spot-name">' + esc(s.name) + '</span>' +
-        '<span class="spot-meta">' + esc(s.type) + ', ' + esc(spotRegionLabel(s)) + '</span>' +
+        '<span class="spot-name">' + esc(tx(s, 'name')) + '</span>' +
+        '<span class="spot-meta">' + Tve('spot.meta', { type: tx(s, 'type'), region: spotRegionLabel(s) }) + '</span>' +
         '</button>' +
-        '<div class="spot-tags">' + (s.crew_pick ? '<span class="tag tag-pick">Crew pick</span>' : '') +
-        '<span class="tag">' + esc(s.access) + '</span>' + levelBar(s.level) + '<span class="lvl-text">' + esc(s.level) + '</span></div>' +
+        '<div class="spot-tags">' + (s.crew_pick ? '<span class="tag tag-pick">' + Te('tag.crewPick') + '</span>' : '') +
+        '<span class="tag">' + esc(accessLabel(s.access)) + '</span>' + levelBar(s.level) + '<span class="lvl-text">' + esc(levelShort(s.level)) + '</span></div>' +
         '</div>' +
         '<div class="spot-body" id="spot-body-' + esc(s.id) + '" hidden>' + spotPhotoHtml(s) + spotFacts(s) +
-        '<button type="button" class="btn btn-quiet" data-spot-map="' + esc(s.id) + '">Show on the map</button></div>' +
+        '<button type="button" class="btn btn-quiet" data-spot-map="' + esc(s.id) + '">' + Te('spot.showOnMap') + '</button></div>' +
         '</li>';
     }).join('');
-    ul.addEventListener('click', function (e) {
+    bindOnce(ul, 'spot-list', 'click', function (e) {
       var b = e.target.closest('[data-spot-open]');
       if (b) {
         var id = b.getAttribute('data-spot-open');
@@ -1598,8 +2542,8 @@
   }
   function setSpotCount(n) {
     var c = $('#spot-count');
-    if (c) c.textContent = n === TRIP.spots.length ? 'All ' + n + ' spots' :
-      n ? n + ' of ' + TRIP.spots.length + ' spots match' + (mapViewEmpty() ? ' (none of them in this map view)' : '') : 'No spots match these filters. Clear a filter to see more.';
+    if (c) c.textContent = n === TRIP.spots.length ? Tv('spots.countAll', { n: n }) :
+      n ? Tv('spots.countSome', { n: n, total: TRIP.spots.length, extra: mapViewEmpty() ? T('spots.countNoneInView') : '' }) : T('spots.countNone');
     updateMapHint();
   }
   function markerBaseZ(id) {
@@ -1625,7 +2569,10 @@
     if (from !== 'built') renderSpotDetail(s);
     var sheet = isSheetMode(), moves = from !== 'init';
     var st = $('#spot-status');
-    if (st && from !== 'init' && from !== 'built') st.textContent = s.name + (s.crew_pick ? ', crew pick' : '') + '. Details ' + (sheet ? (sheetSide() ? 'in the panel at the side of the screen.' : 'in the panel at the bottom of the screen.') : 'under the map.');
+    if (st && from !== 'init' && from !== 'built') st.textContent = Tv('spots.statusDetail', {
+      name: tx(s, 'name'), pick: s.crew_pick ? T('spots.crewPickSuffix') : '',
+      where: T(sheet ? (sheetSide() ? 'spots.detailsSide' : 'spots.detailsBottom') : 'spots.detailsUnder')
+    });
     // The map follows the spot: a South Malé spot switches "Near our base" to "South Malé" (and back).
     if (moves) showSpotView(s);
     if (from === 'map' || from === 'link' || from === 'show') openSheet();
@@ -1682,9 +2629,9 @@
   function renderSpotDetail(s) {
     var d = $('#spot-detail');
     if (!d) return;
-    d.innerHTML = '<div class="detail-head"><h3 id="spot-detail-title">' + esc(s.name) + '</h3>' +
-      (s.crew_pick ? '<span class="tag tag-pick">Crew pick</span>' : '') + '</div>' +
-      '<p class="detail-sub">' + esc(s.type) + ', ' + esc(spotRegionLabel(s)) + '</p>' + spotPhotoHtml(s) + spotFacts(s);
+    d.innerHTML = '<div class="detail-head"><h3 id="spot-detail-title">' + esc(tx(s, 'name')) + '</h3>' +
+      (s.crew_pick ? '<span class="tag tag-pick">' + Te('tag.crewPick') + '</span>' : '') + '</div>' +
+      '<p class="detail-sub">' + Tve('spot.meta', { type: tx(s, 'type'), region: spotRegionLabel(s) }) + '</p>' + spotPhotoHtml(s) + spotFacts(s);
   }
 
   /* -------------------------------------------- spot detail: a bottom sheet on phones */
@@ -1808,26 +2755,26 @@
     return 'pin' + (s.crew_pick ? ' pin-pick' : '') + (accessKind(s) === 'resort' ? ' pin-resort' : '') + (isAdvanced(s) ? ' pin-adv' : '');
   }
   function spotAria(s) {
-    var bt = boatTime(s), base = basePlace().name;
-    var boat = bt.kind === 'time' ? bt.text + ' from ' + base : bt.kind === 'unknown' ? 'Boat time from ' + base + ' not confirmed' : bt.text;
-    return s.name + (s.crew_pick ? ', crew pick' : '') + ', ' + levelWords(s.level) + ', ' + s.access + ' access. ' + boat + '.';
+    var bt = boatTime(s), base = placeName(basePlace());
+    var boat = bt.kind === 'time' ? Tv('boat.ariaFrom', { text: bt.text, base: base }) :
+      bt.kind === 'unknown' ? Tv('boat.ariaUnknown', { base: base }) : bt.text;
+    return Tv('spots.aria', {
+      name: tx(s, 'name'), pick: s.crew_pick ? T('spots.crewPickSuffix') : '',
+      level: levelWords(s.level), access: accessLabel(s.access), boat: boat
+    });
   }
   // Nothing is booked: a plan lists stay options, and the crew books one of them.
   function stayAria(g) {
-    var names = g.options.map(function (o) { return o.name; }).join(', ');
-    return 'Stay option' + (g.options.length > 1 ? 's' : '') + ' on the ' + planShort(state.plan) + ' plan (we book one): ' + names + ', on ' + g.place.name + ' (approx. island location)';
+    var names = g.options.map(function (o) { return tx(o, 'name'); }).join(T('words.listSep'));
+    return Tv(g.options.length > 1 ? 'map.stayAriaMany' : 'map.stayAriaOne', { plan: planShort(state.plan), names: names, place: placeName(g.place) });
   }
   function airportLeg() { return (TRIP.transport.legs || []).filter(function (l) { return /^airport-to/.test(l.id); })[0] || null; }
   function airportBoatText() {
     var leg = airportLeg(), o = leg && (leg.options || []).filter(function (x) { return /\d+\s*-?\s*\d*\s*min/.test(x.duration); })[0];
-    return o ? o.duration + ' to ' + basePlace().name : 'boat to ' + basePlace().name;
+    return o ? Tv('map.airportBoat', { duration: tx(o, 'duration'), base: placeName(basePlace()) }) : Tv('map.airportBoatFallback', { base: placeName(basePlace()) });
   }
-  var SKETCH_CREDIT = 'Sketch drawn to scale from the approximate pin coordinates in our research (about 2-3 km), not from map images. Pins that would overlap are nudged apart by up to about 3 km. Dotted lines show the boat trips from Thulusdhoo to the crew picks, not exact routes.';
-  var ROUTE_NOTE = ' Dotted lines show the boat trips from Thulusdhoo to the crew picks, not exact routes.';
-  var CREDIT = {
-    Satellite: 'Satellite tiles: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP and the GIS User Community. Map by Leaflet. Pins are approximate (about 2-3 km) and nudged apart by up to about 3 km where they would overlap; zoomed out, close pins overlap.' + ROUTE_NOTE,
-    Map: 'Map data: OpenStreetMap contributors (openstreetmap.org/copyright), ODbL. Map by Leaflet. Pins are approximate (about 2-3 km) and nudged apart by up to about 3 km where they would overlap; zoomed out, close pins overlap.' + ROUTE_NOTE
-  };
+  function sketchCredit() { return T('map.sketchCredit'); }
+  function mapCredit(kind) { return T('map.credit' + kind) + T('map.routeNote'); }
   function setCredit(el, text) { if (el) el.textContent = text; }
   // Map buttons and cards as rectangles inside a map, so labels keep clear of them.
   function relRects(container, els) {
@@ -1891,6 +2838,16 @@
   }
 
   var maps = {};
+  // The base-layer switcher's own labels, rebuilt when the language changes.
+  function addLayerControl(M) {
+    var L = W.L;
+    if (!M || !M.esri || !M.osm || !L) return;
+    if (M.layerControl) { try { M.map.removeControl(M.layerControl); } catch (e) { /* already gone */ } }
+    var opts = {};
+    opts[T('map.layerSatellite')] = M.esri;
+    opts[T('map.layerMap')] = M.osm;
+    M.layerControl = L.control.layers(opts, null, { position: 'topright' }).addTo(M.map);
+  }
   // One builder for both maps. cfg: el, view, layers, tooltips, credit, pad(), blocks(), filter(s), onSpot(id),
   // onStay(placeId), onAirport(), selected(), z(id), onTiles(), onTilesFailed().
   function buildMap(key, cfg) {
@@ -1926,7 +2883,7 @@
       if (!t.switched && t.loaded === 0 && t.errors >= 6) {
         t.switched = true;
         map.removeLayer(esri); osm.addTo(map);
-        credit(CREDIT.Map + ' Satellite tiles did not load, so this shows the street map.');
+        credit(mapCredit('Map') + T('map.tilesFellBack'));
       }
     });
     osm.on('tileload', function () { t.osmLoaded++; if (t.osmLoaded >= 3) tilesOk(); });
@@ -1939,10 +2896,11 @@
       }
     });
     esri.addTo(map);
-    credit(CREDIT.Satellite);
+    credit(mapCredit('Satellite'));
     if (cfg.layers) {
-      L.control.layers({ Satellite: esri, Map: osm }, null, { position: 'topright' }).addTo(map);
-      map.on('baselayerchange', function (e) { if (!t.failed) credit(CREDIT[e.name] || ''); });
+      M.esri = esri; M.osm = osm;
+      addLayerControl(M);
+      map.on('baselayerchange', function (e) { if (!t.failed) credit(mapCredit(e.name === T('map.layerMap') ? 'Map' : 'Satellite')); });
     }
 
     var air = airportPlace();
@@ -1955,7 +2913,7 @@
       M.airport.on('add', function () {
         var me = M.airport.getElement();
         if (!me) return;
-        me.setAttribute('aria-label', air.name + '. ' + airportBoatText() + '.');
+        me.setAttribute('aria-label', Tv('map.airportAria', { name: tx(air, 'name'), boat: airportBoatText() }));
         if (cfg.onAirport) me.setAttribute('role', 'button');
         else me.setAttribute('aria-hidden', 'true');
       });
@@ -1980,7 +2938,7 @@
         me.classList.toggle('is-selected', !!cfg.selected && cfg.selected() === s.id);
         if (mk.setZIndexOffset) mk.setZIndexOffset(cfg.z ? cfg.z(s.id) : (s.crew_pick ? Z_PICK : 0));
       });
-      if (cfg.tooltips && !s.crew_pick) mk.bindTooltip(s.name, { direction: 'top', offset: [0, -18], className: 'spot-label' });
+      if (cfg.tooltips && !s.crew_pick) mk.bindTooltip(tx(s, 'name'), { direction: 'top', offset: [0, -18], className: 'spot-label' });
       if (!cfg.filter || cfg.filter(s)) mk.addTo(map);
       M.markers[s.id] = mk;
     });
@@ -2119,17 +3077,16 @@
   // "Jailbreaks" / "time not confirmed" when the data has no minutes.
   function pickLabelLines(s) {
     var bt = boatTime(s), name = spotShort(s);
-    var full = [[name, 'lbl-b', 'f'], [bt.kind === 'unknown' ? 'boat time not confirmed' : bt.short, 'lbl-s', 'f']];
-    var mins = /(\d+(?:-\d+)?) min/.exec(bt.short);
-    var compact = bt.kind === 'time' && mins ? [[name + ' \u00b7 ' + mins[1] + ' min', 'lbl-b', 'c']] :
-      [[name, 'lbl-b', 'c'], [bt.kind === 'unknown' ? 'time not confirmed' : bt.short, 'lbl-s', 'c']];
+    var full = [[name, 'lbl-b', 'f'], [bt.kind === 'unknown' ? T('boat.unknownShort') : bt.short, 'lbl-s', 'f']];
+    var compact = bt.kind === 'time' && bt.mins ? [[Tv('boat.compactTime', { name: name, mins: bt.mins }), 'lbl-b', 'c']] :
+      [[name, 'lbl-b', 'c'], [bt.kind === 'unknown' ? T('boat.unknownCompact') : bt.short, 'lbl-s', 'c']];
     return full.concat(compact);
   }
   function mapLabelSpecs(stays, spots, hasAirport, narrow) {
     var out = [];
     stays.forEach(function (g) {
       out.push({ id: 'stay-' + g.place.id, kind: 'stay', lat: g.place.lat, lon: g.place.lon, prio: 3, g: 20, must: true, key: true,
-        lines: (narrow ? [] : [[g.place.name, 'lbl-k']]).concat(g.options.map(function (o) { return [o.name, 'lbl-b']; })).concat([['approx. island location', 'lbl-s']]) });
+        lines: (narrow ? [] : [[placeName(g.place), 'lbl-k']]).concat(g.options.map(function (o) { return [tx(o, 'name'), 'lbl-b']; })).concat([[T('map.approxIsland'), 'lbl-s']]) });
     });
     spots.forEach(function (s) {
       if (!s.crew_pick) return;
@@ -2137,7 +3094,7 @@
         lines: pickLabelLines(s) });
     });
     var air = airportPlace();
-    if (air && hasAirport) out.push({ id: 'airport', kind: 'air', lat: air.lat, lon: air.lon, prio: 2.5, g: 18, key: true, lines: [[air.name, 'lbl-b'], [airportBoatText(), 'lbl-s', 'f']] });
+    if (air && hasAirport) out.push({ id: 'airport', kind: 'air', lat: air.lat, lon: air.lon, prio: 2.5, g: 18, key: true, lines: [[tx(air, 'name'), 'lbl-b'], [airportBoatText(), 'lbl-s', 'f']] });
     return out;
   }
   function labelLines(lines, compact) {
@@ -2247,7 +3204,7 @@
   function initOverview() {
     var box = $('#ov-box');
     if (!box) return;
-    setCredit($('#ov-credit'), SKETCH_CREDIT);
+    setCredit($('#ov-credit'), sketchCredit());
     renderOverviewLists();
     var sk = $('#ov-schematic');
     if (sk) bindSchematic(sk, 'ov');
@@ -2285,13 +3242,15 @@
       }, { threshold: 0.05 }).observe(box);
     } else box.classList.add('map-live');
     loadLeaflet(function (ok) {
-      if (!ok) { ovNote('The satellite map could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. Everything on it is tappable.'); return; }
+      if (!ok) { ovNoteKey = 'map.ovNoLeaflet'; ovNote(T(ovNoteKey)); return; }
       try { buildOverviewMap(); } catch (e) {
         reportError(e);
-        ovNote('The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates.');
+        ovNoteKey = 'map.ovNoStart';
+        ovNote(T(ovNoteKey));
       }
     });
   }
+  var ovNoteKey = '';
   function ovNote(msg) {
     var n = $('#ov-note');
     if (!n) return;
@@ -2330,8 +3289,9 @@
     var box = $('#ov-box'), sk = $('#ov-schematic'), mv = $('#ov-move');
     box.classList.add('is-leaflet');
     $('#ov-map').removeAttribute('inert');
+    ovNoteKey = '';
     ovNote('');
-    setCredit($('#ov-credit'), ov.M.creditText || CREDIT.Satellite);
+    setCredit($('#ov-credit'), ov.M.creditText || mapCredit('Satellite'));
     if (mv && ov.M.touch) mv.hidden = false;
     var card = $('#ov-card');
     if (card) { card.classList.remove('is-top'); card.style.maxHeight = ''; }
@@ -2347,8 +3307,9 @@
     if (el) el.hidden = true;
     if (mv) mv.hidden = true;
     if (sk) sk.hidden = false;
-    setCredit($('#ov-credit'), SKETCH_CREDIT);
-    ovNote('Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. Everything on it is tappable.');
+    setCredit($('#ov-credit'), sketchCredit());
+    ovNoteKey = 'map.ovNoTiles';
+    ovNote(T(ovNoteKey));
     drawSchematic('ov');
   }
   function setOvDrag(on) {
@@ -2357,7 +3318,7 @@
     if (on) M.map.dragging.enable(); else M.map.dragging.disable();
     // The words say the state ("Move map" / "Done moving"), so the button has no pressed state as well.
     mv.classList.toggle('is-on', on);
-    mv.textContent = on ? 'Done moving' : 'Move map';
+    mv.textContent = T(on ? 'ov.doneMoving' : 'ov.moveMap');
     $('#ov-box').classList.toggle('map-dragging', on);
   }
   function setOvView(v) {
@@ -2365,42 +3326,43 @@
     var b = $('#ov-south');
     if (b) {
       b.classList.toggle('is-on', v === 'all');
-      b.textContent = v === 'all' ? 'Back to North Malé' : 'Show South Malé too';
+      b.textContent = T(v === 'all' ? 'ov.backNorth' : 'ov.showSouth');
     }
     if (ov.leaflet && ov.M) fitView(ov.M, v, true);
     else drawSchematic('ov');
   }
   function ovCardTop(kickerHtml) {
     return '<div class="ov-card-top"><p class="ov-card-kicker">' + kickerHtml + '</p>' +
-      '<button type="button" class="icon-btn ov-card-x" data-ov-close aria-label="Close this card">' + CLOSE_SVG + '</button></div>';
+      '<button type="button" class="icon-btn ov-card-x" data-ov-close aria-label="' + Te('ov.cardClose') + '">' + CLOSE_SVG + '</button></div>';
   }
   function ovCardSpot(s) {
     var bt = boatTime(s);
-    var kick = s.crew_pick ? '<span class="tag tag-pick">Crew pick</span>' : '<span class="tag">' + esc(accessKind(s) === 'resort' ? 'Resort guests only' : 'Surf break') + '</span>';
-    var km = (bt.kind === 'time' || bt.kind === 'unknown') ? ', about ' + bt.km + ' km ' + (bt.kmFrom === 'pins' ? 'between the map pins' : 'in a straight line') : '';
-    return ovCardTop(kick) + '<p class="ov-card-name">' + esc(s.name) + '</p>' +
-      '<p class="ov-card-meta">' + esc(s.type) + ', ' + esc(levelWords(s.level)) + '. Access: ' + esc(s.access) + '.</p>' +
-      '<p class="ov-card-boat"><strong>From ' + esc(basePlace().name) + ':</strong> ' + esc(bt.text) + esc(km) + '.</p>' +
-      '<a class="btn btn-solid ov-card-go" href="#spot-' + esc(s.id) + '">Open in Surf spots</a>';
+    var kick = s.crew_pick ? '<span class="tag tag-pick">' + Te('tag.crewPick') + '</span>' : '<span class="tag">' + Te(accessKind(s) === 'resort' ? 'ov.tagResort' : 'ov.tagBreak') + '</span>';
+    var km = (bt.kind === 'time' || bt.kind === 'unknown') ? Tv('ov.aboutKm', { km: bt.km, how: T(bt.kmFrom === 'pins' ? 'ov.kmPins' : 'ov.kmLine') }) : '';
+    return ovCardTop(kick) + '<p class="ov-card-name">' + esc(tx(s, 'name')) + '</p>' +
+      '<p class="ov-card-meta">' + Tve('ov.accessLine', { type: tx(s, 'type'), level: levelWords(s.level), access: accessLabel(s.access) }) + '</p>' +
+      '<p class="ov-card-boat"><strong>' + Tve('ov.fromBase', { base: placeName(basePlace()) }) + '</strong> ' + esc(bt.text) + esc(km) + '.</p>' +
+      '<a class="btn btn-solid ov-card-go" href="#spot-' + esc(s.id) + '">' + Te('ov.openSpots') + '</a>';
   }
   function ovCardStay(g) {
     var base = basePlace();
-    return ovCardTop('Stay option' + (g.options.length > 1 ? 's' : '') + ' on the ' + esc(planShort(state.plan)) + ' plan (we book one)') +
-      '<p class="ov-card-name">' + esc(g.place.name) + '</p><p class="ov-card-meta">The pin is the approx. island location, not the guesthouse address.' +
-      (g.place.id !== base.id ? ' The boat times on this map are from ' + esc(base.name) + ', not from ' + esc(g.place.name) + '.' : '') + '</p>' +
+    return ovCardTop(Tve(g.options.length > 1 ? 'ov.stayKickerMany' : 'ov.stayKickerOne', { plan: planShort(state.plan) })) +
+      '<p class="ov-card-name">' + esc(placeName(g.place)) + '</p><p class="ov-card-meta">' + Te('ov.stayPinNote') +
+      (g.place.id !== base.id ? Tve('ov.stayBoatNote', { base: placeName(base), place: placeName(g.place) }) : '') + '</p>' +
       '<ul class="ov-card-list">' + g.options.map(function (o) {
-        return '<li><span class="ov-card-li-name">' + esc(o.name) + '</span> <span class="ov-card-li-price">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + ' each, ' + tripNights() + ' nights</span> ' + chip(o.status) + '</li>';
+        return '<li><span class="ov-card-li-name">' + esc(tx(o, 'name')) + '</span> <span class="ov-card-li-price">' +
+          Tve('ov.eachNights', { price: hkd(o.pp_hkd.low, o.pp_hkd.high), nights: tripNights() }) + '</span> ' + chipT(o, 'status') + '</li>';
       }).join('') + '</ul>' +
-      '<a class="btn btn-solid ov-card-go" href="#stay">Open in Accommodation</a>';
+      '<a class="btn btn-solid ov-card-go" href="#stay">' + Te('ov.openStay') + '</a>';
   }
   function ovCardAirport() {
     var air = airportPlace(), leg = airportLeg();
-    return ovCardTop('Where we land') + '<p class="ov-card-name">' + esc(air ? air.name : 'Malé airport') + '</p>' +
-      (leg ? '<p class="ov-card-meta">' + esc(leg.title) + ':</p><ul class="ov-card-list">' + leg.options.map(function (o) {
-        return '<li><span class="ov-card-li-name">' + esc(o.mode) + '</span> <span class="ov-card-li-price">' + esc(o.duration) + ', ' +
-          (o.cost_hkd.high === 0 ? 'HKD 0' : esc(hkd(o.cost_hkd.low, o.cost_hkd.high))) + ' ' + esc(PER[o.per] || o.per) + '</span> ' + chip(o.status) + '</li>';
+    return ovCardTop(Te('ov.airportKicker')) + '<p class="ov-card-name">' + esc(air ? tx(air, 'name') : T('ov.airportFallbackName')) + '</p>' +
+      (leg ? '<p class="ov-card-meta">' + esc(tx(leg, 'title')) + ':</p><ul class="ov-card-list">' + leg.options.map(function (o) {
+        return '<li><span class="ov-card-li-name">' + esc(tx(o, 'mode')) + '</span> <span class="ov-card-li-price">' + esc(tx(o, 'duration')) + ', ' +
+          (o.cost_hkd.high === 0 ? Te('money.zero') : esc(hkd(o.cost_hkd.low, o.cost_hkd.high))) + ' ' + esc(perLabel(o.per)) + '</span> ' + chipT(o, 'status') + '</li>';
       }).join('') + '</ul>' : '') +
-      '<a class="btn btn-solid ov-card-go" href="#transport">Open in Local transport</a>';
+      '<a class="btn btn-solid ov-card-go" href="#transport">' + Te('ov.openTransport') + '</a>';
   }
   function ovSelect(type, id) {
     var card = $('#ov-card');
@@ -2478,36 +3440,37 @@
     var stays = staysForPlan(state.plan), nights = tripNights(), base = basePlace();
     var picks = TRIP.spots.filter(function (s) { return s.crew_pick; });
     var southN = TRIP.spots.filter(isSouth).length;
-    el.innerHTML = '<div class="ov-list"><p class="ov-list-h">Where we could stay on the ' + esc(planShort(state.plan)) + ' plan (we book one)</p><ul class="ov-rows">' +
+    el.innerHTML = '<div class="ov-list"><p class="ov-list-h">' + Tve('ov.listStayH', { plan: planShort(state.plan) }) + '</p><ul class="ov-rows">' +
       stays.map(function (g) {
         return g.options.map(function (o) {
           return '<li><a class="ov-row" href="#stay"><span class="ov-row-ic" aria-hidden="true">' + STAY_SVG + '</span>' +
-            '<span class="ov-row-main"><span class="ov-row-name">' + esc(o.name) + '</span><span class="ov-row-sub">' + esc(g.place.name) + ' (approx. island location)</span></span>' +
-            '<span class="ov-row-side"><span class="ov-row-price">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + ' each, ' + nights + ' nights</span>' + chip(o.status) + '</span></a></li>';
+            '<span class="ov-row-main"><span class="ov-row-name">' + esc(tx(o, 'name')) + '</span><span class="ov-row-sub">' + Tve('ov.approxIsland', { place: placeName(g.place) }) + '</span></span>' +
+            '<span class="ov-row-side"><span class="ov-row-price">' + Tve('ov.eachNights', { price: hkd(o.pp_hkd.low, o.pp_hkd.high), nights: nights }) + '</span>' + chipT(o, 'status') + '</span></a></li>';
         }).join('');
       }).join('') + '</ul></div>' +
-      '<div class="ov-list"><p class="ov-list-h">Where we surf: the crew picks</p><ul class="ov-rows">' + picks.map(function (s) {
+      '<div class="ov-list"><p class="ov-list-h">' + Te('ov.listPicksH') + '</p><ul class="ov-rows">' + picks.map(function (s) {
         return '<li><a class="ov-row" href="#spot-' + esc(s.id) + '"><span class="ov-row-ic" aria-hidden="true">' + PICK_SVG + '</span>' +
-          '<span class="ov-row-main"><span class="ov-row-name">' + esc(s.name) + '</span><span class="ov-row-sub">From ' + esc(base.name) + ': ' + esc(boatTime(s).short) + '</span></span>' +
+          '<span class="ov-row-main"><span class="ov-row-name">' + esc(tx(s, 'name')) + '</span><span class="ov-row-sub">' + Tve('ov.fromBaseShort', { base: placeName(base), boat: boatTime(s).short }) + '</span></span>' +
           '<span class="ov-row-side"><span class="ov-row-lvl">' + esc(levelWords(s.level)) + '</span></span></a></li>';
       }).join('') + '</ul>' +
-      '<p class="ov-more"><a class="more" href="#spots">All ' + TRIP.spots.length + ' breaks in 5 Surf spots</a>' +
-      (southN ? '<span class="fine">' + southN + ' of them are in South Malé, an optional day trip by boat.</span>' : '') + '</p></div>';
+      '<p class="ov-more"><a class="more" href="#spots">' + Tve('ov.allBreaks', { n: TRIP.spots.length }) + '</a>' +
+      (southN ? '<span class="fine">' + Tve('ov.southNote', { n: southN }) + '</span>' : '') + '</p></div>';
   }
 
   /* ========================================================= the module map */
   var mod = { view: 'north', started: false, fallback: false, M: null, pendingSpot: null };
   function renderMapViews() {
-    var root = renderInto('map-views', '<div class="seg-inline" role="group" aria-label="Map view">' +
-      '<button type="button" class="toggle" data-view="north" aria-pressed="true">Near our base</button>' +
-      '<button type="button" class="toggle" data-view="all" aria-pressed="false">All ' + TRIP.spots.length + ' spots</button>' +
-      '<button type="button" class="toggle" data-view="south" aria-pressed="false">South Malé</button></div>');
-    if (root) root.addEventListener('click', function (e) {
+    var root = renderInto('map-views', '<div class="seg-inline" role="group" aria-label="' + Te('spots.viewAria') + '">' +
+      ['north', 'all', 'south'].map(function (v) {
+        return '<button type="button" class="toggle" data-view="' + v + '" aria-pressed="' + (v === mod.view) + '">' +
+          (v === 'all' ? Tve('spots.viewAll', { n: TRIP.spots.length }) : Te(v === 'north' ? 'spots.viewNorth' : 'spots.viewSouth')) + '</button>';
+      }).join('') + '</div>');
+    if (root) bindOnce(root, 'map-views', 'click', function (e) {
       var b = e.target.closest('[data-view]');
       if (b) setModView(b.getAttribute('data-view'));
     });
     var hint = $('#map-hint');
-    if (hint) hint.addEventListener('click', function (e) {
+    if (hint) bindOnce(hint, 'map-hint', 'click', function (e) {
       if (e.target.closest('[data-view-go]')) setModView('all');
     });
   }
@@ -2529,7 +3492,7 @@
     var hint = $('#map-hint'), n = mapViewEmpty();
     if (!hint) return;
     hint.hidden = !n;
-    if (n) $('[data-hint-text]', hint).textContent = (n === 1 ? 'The spot that matches is' : 'The ' + n + ' spots that match are') + ' not in this map view.';
+    if (n) $('[data-hint-text]', hint).textContent = n === 1 ? T('spots.hintOne') : Tv('spots.hintMany', { n: n });
   }
   function initModuleMapWhenNear() {
     var box = $('#map-box');
@@ -2544,10 +3507,10 @@
     if (mod.started || !$('#map-box')) return;
     mod.started = true;
     loadLeaflet(function (ok) {
-      if (!ok) { moduleFallback('The satellite map could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.'); return; }
+      if (!ok) { moduleFallback('map.modNoLeaflet'); return; }
       try { buildModuleMap(); } catch (e) {
         reportError(e);
-        moduleFallback('The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.');
+        moduleFallback('map.modNoStart');
       }
     });
   }
@@ -2562,7 +3525,7 @@
       onSpot: function (id) { selectSpot(id, 'map'); },
       selected: function () { return selectedSpot; },
       z: markerBaseZ,
-      onTilesFailed: function () { moduleFallback('Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.'); }
+      onTilesFailed: function () { moduleFallback('map.modNoTiles'); }
     });
     // A spot chosen before the map was ready (a fresh #spot-<id> link, "Open in Surf spots", a card): centre on it now.
     if (selectedSpot) selectSpot(selectedSpot, mod.pendingSpot === selectedSpot ? 'built' : 'init');
@@ -2572,7 +3535,7 @@
       if (!M.touch || !touchBtn) return;
       if (on) M.map.dragging.enable(); else M.map.dragging.disable();
       touchBtn.classList.toggle('is-on', on);
-      touchBtn.textContent = on ? 'Done moving the map' : 'Move the map';
+      touchBtn.textContent = T(on ? 'spots.doneMovingMap' : 'spots.moveMap');
       box.classList.toggle('map-dragging', on);
     }
     if (M.touch && touchWrap && touchBtn) {
@@ -2589,15 +3552,16 @@
       }, { threshold: 0.05 }).observe(box);
     } else box.classList.add('map-live');
   }
-  function moduleFallback(msg) {
+  function moduleFallback(msgKey) {
     mod.fallback = true;
+    mod.fallbackKey = msgKey;
     var el = $('#spot-map'), mt = $('#map-touch'), sk = $('#spot-schematic'), fb = $('#map-fallback'), box = $('#map-box');
     if (el) el.hidden = true;
     if (mt) mt.hidden = true;
     if (box) box.classList.add('is-sketch');
     if (sk) { sk.hidden = false; bindSchematic(sk, 'mod'); }
-    if (fb) { fb.hidden = false; fb.textContent = msg; }
-    setCredit($('#map-credit'), SKETCH_CREDIT);
+    if (fb) { fb.hidden = false; fb.textContent = T(msgKey); }
+    setCredit($('#map-credit'), sketchCredit());
     drawSchematic('mod');
     if (box) watchSize(box, function () { drawSchematic('mod'); });
   }
@@ -2719,13 +3683,13 @@
     });
     if (airPt) {
       pinParts.push('<g class="sk-place sk-air" transform="translate(' + r1(airPt.x) + ' ' + r1(airPt.y) + ')"' + (isOv ? ' data-sk-air="1" data-sk-key="airport" role="button" tabindex="0"' : ' role="img"') +
-        ' aria-label="' + esc(air.name + '. ' + airportBoatText() + '.') + '"><circle class="sk-hit" r="22"/><circle class="sk-ring" r="17"/><circle class="sk-air-disc" r="11"/>' +
+        ' aria-label="' + Tve('map.airportAria', { name: tx(air, 'name'), boat: airportBoatText() }) + '"><circle class="sk-hit" r="22"/><circle class="sk-ring" r="17"/><circle class="sk-air-disc" r="11"/>' +
         '<path class="sk-air-plane" transform="translate(-10 -10)" d="' + PLANE_PATH + '"/></g>');
     }
     // North arrow and scale bar, top left.
     var kmBar = [1, 2, 5, 10, 20, 50].filter(function (k) { return k * prj.sc >= 56; })[0] || 50, barW = kmBar * prj.sc;
-    parts.push('<g class="sk-scale" aria-hidden="true"><path class="sk-north" d="M20 14l6 16-6-4-6 4z"/><text x="20" y="46" text-anchor="middle">N</text>' +
-      '<path class="sk-bar" d="M40 30v6H' + r1(40 + barW) + 'v-6"/><text x="' + r1(40 + barW / 2) + '" y="24" text-anchor="middle">' + kmBar + ' km</text></g>');
+    parts.push('<g class="sk-scale" aria-hidden="true"><path class="sk-north" d="M20 14l6 16-6-4-6 4z"/><text x="20" y="46" text-anchor="middle">' + Te('sketch.north') + '</text>' +
+      '<path class="sk-bar" d="M40 30v6H' + r1(40 + barW) + 'v-6"/><text x="' + r1(40 + barW / 2) + '" y="24" text-anchor="middle">' + Tve('sketch.kmBar', { n: kmBar }) + '</text></g>');
     var blocks = [[6, 6, 50 + barW, 52]].concat(isOv ? relRects(box, [$('#ov-south'), $('#ov-card')]) : []);
     if (cover && cover.b) blocks.push([0, Ht - cover.b, Wd, Ht]);
     if (cover && cover.r) blocks.push([Wd - cover.r, 0, Wd, Ht]);
@@ -2756,7 +3720,7 @@
     });
     parts = parts.concat(pinParts, pickParts);
     host.innerHTML = '<svg class="sk" viewBox="0 0 ' + Wd + ' ' + Ht + '" width="100%" height="100%" role="group" aria-label="' +
-      esc('To-scale sketch of ' + (view === 'south' ? 'the South Malé breaks' : view === 'all' ? 'all ' + TRIP.spots.length + ' breaks, the stay options and the airport' : 'the North Malé breaks, the stay options and the airport') + ', drawn from the pin coordinates') + '">' + parts.join('') + '</svg>';
+      Tve('sketch.aria', { what: view === 'south' ? T('sketch.whatSouth') : view === 'all' ? Tv('sketch.whatAll', { n: TRIP.spots.length }) : T('sketch.whatNorth') }) + '">' + parts.join('') + '</svg>';
     if (focusKey) {
       var again = $('[data-sk-key="' + focusKey + '"]', host);
       if (again) { try { again.focus({ preventScroll: true }); } catch (e) { /* older browsers */ } }
@@ -2780,13 +3744,13 @@
       var ba = boatTime(a), bb = boatTime(b);
       return (b.crew_pick ? 1 : 0) - (a.crew_pick ? 1 : 0) || kindRank[ba.kind] - kindRank[bb.kind] || ba.km - bb.km;
     });
-    var html = '<p class="fine">From ' + esc(base.name) + ', as the surf guides give it. Guides differ, so ask the boat crew; prices per trip are in 7 Local transport. Distances are straight lines.</p>' +
+    var html = '<p class="fine">' + Tve('spots.boatIntro', { base: placeName(base) }) + '</p>' +
       '<ul class="bt-list">' + rows.map(function (s) {
         var bt = boatTime(s);
-        var km = bt.kind === 'time' || bt.kind === 'unknown' ? 'about ' + bt.km + ' km' + (bt.kmFrom === 'pins' ? ' (between the map pins)' : '') : '';
+        var km = bt.kind === 'time' || bt.kind === 'unknown' ? Tv('spots.aboutKm', { km: bt.km }) + (bt.kmFrom === 'pins' ? T('spots.betweenPins') : '') : '';
         return '<li class="bt bt--' + bt.kind + (s.crew_pick ? ' is-pick' : '') + '">' +
-          '<a class="bt-name" href="#spot-' + esc(s.id) + '">' + esc(s.name) + '</a>' +
-          '<span class="bt-tags">' + (s.crew_pick ? '<span class="tag tag-pick">Crew pick</span>' : '') + '<span class="tag">' + esc(s.region.replace('Male', 'Malé')) + '</span></span>' +
+          '<a class="bt-name" href="#spot-' + esc(s.id) + '">' + esc(tx(s, 'name')) + '</a>' +
+          '<span class="bt-tags">' + (s.crew_pick ? '<span class="tag tag-pick">' + Te('tag.crewPick') + '</span>' : '') + '<span class="tag">' + esc(regionLabel(s.region)) + '</span></span>' +
           '<span class="bt-time">' + esc(bt.text) + '</span>' + (km ? '<span class="bt-km">' + esc(km) + '</span>' : '') + '</li>';
       }).join('') + '</ul>';
     var root = renderInto('boat-times', html);
@@ -2794,13 +3758,18 @@
   }
   function renderAccessRules() {
     var groups = [
-      ['public', 'Open to anyone who gets there', function (names, paddle) {
-        return 'Listed as public access in our sources. ' + (paddle.length ? listWords(paddle) + (paddle.length === 1 ? ' is' : ' are') + ' a paddle from ' + basePlace().name + '; the rest need a boat.' : 'All of them need a boat.');
+      ['public', T('access.publicH'), function (names, paddle) {
+        return T('access.publicIntro') + (paddle.length ?
+          Tv(paddle.length === 1 ? 'access.publicPaddleOne' : 'access.publicPaddleMany', { names: listWords(paddle), base: placeName(basePlace()) }) :
+          T('access.publicAllBoat'));
       }],
-      ['limited', 'Access not confirmed', function () { return 'They break in front of or near a resort, and whether people who are not guests may surf them is not confirmed. Check before planning a day there.'; }],
-      ['resort', 'Resort guests only', function () { return 'Only guests on that resort\'s surf package can surf them, so they are not an option from our base.'; }]
+      ['limited', T('access.limitedH'), function () { return T('access.limitedBody'); }],
+      ['resort', T('access.resortH'), function () { return T('access.resortBody'); }]
     ];
-    var rule = (TRIP.essentials.culture || []).filter(function (x) { return /guests only/i.test(x) && /surf|wave/i.test(x); })[0];
+    var culture = TRIP.essentials.culture || [];
+    var ruleIdx = -1;
+    culture.forEach(function (x, i) { if (ruleIdx === -1 && /guests only/i.test(x) && /surf|wave/i.test(x)) ruleIdx = i; });
+    var rule = ruleIdx === -1 ? null : txi(culture, ruleIdx);
     var html = '<ul class="access-list">' + groups.map(function (g) {
       var ss = TRIP.spots.filter(function (s) { return accessKind(s) === g[0]; });
       if (!ss.length) return '';
@@ -2809,7 +3778,7 @@
         '<p>' + esc(g[2](ss, paddle)) + '</p><p class="access-spots">' + ss.map(function (s) {
           return '<a href="#spot-' + esc(s.id) + '">' + esc(spotShort(s)) + '</a>';
         }).join(', ') + '</p></li>';
-    }).join('') + '</ul>' + (rule ? '<p class="fine">' + richHtml(rule) + '</p>' : '');
+    }).join('') + '</ul>' + (rule ? '<p class="fine">' + richHtml(rule, false, culture[ruleIdx]) + '</p>' : '');
     renderInto('access-rules', html);
   }
 
@@ -2821,57 +3790,58 @@
     var typical = (s.sun || [])[0] || { sunrise: '05:52', sunset: '17:50' };
     var rows = days.map(function (d) {
       var x = sunBy[d.date];
-      var sr = x ? x.sunrise : 'about ' + typical.sunrise, ss = x ? x.sunset : 'about ' + typical.sunset;
-      return '<tr><th scope="row">' + esc(d.label) + '</th><td>' + esc(sr) + '</td><td>' + esc(ss) + '</td><td>' + esc(d.tide_hint) + '</td></tr>';
+      var sr = x ? x.sunrise : Tv('tides.about', { t: typical.sunrise }), ss = x ? x.sunset : Tv('tides.about', { t: typical.sunset });
+      return '<tr><th scope="row">' + esc(tx(d, 'label')) + '</th><td>' + esc(sr) + '</td><td>' + esc(ss) + '</td><td>' + esc(tx(d, 'tide_hint')) + '</td></tr>';
     }).join('');
     var tideCount = (s.tides || []).length;
-    renderInto('tides', '<div class="note note-warn">' + ICON.hazard + '<p><strong>' + esc(firstSentences(s.tide_note, 1)) + '</strong>' + (tideCount ? '' : ' Below: sunrise, sunset and a tide outlook worked out from moon phases.') +
-      '</p></div><details class="more-d"><summary>What we know about the tides</summary><p>' + esc(restSentences(s.tide_note, 1)) + '</p></details>' +
-      '<div class="table-wrap" tabindex="0" role="region" aria-label="Sunrise, sunset and tide outlook table"><table class="tide-table"><thead><tr><th scope="col">Day</th><th scope="col">Sunrise</th><th scope="col">Sunset</th><th scope="col">Tide outlook (estimate, from moon phases)</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
-      '<p class="fine">Exact sunrise and sunset times are for 1 and 10 Nov; the days between are within a minute of them. Times are Maldives time (HK time minus 3 hours).</p>');
+    var tideNote = tx(s, 'tide_note');
+    renderInto('tides', '<div class="note note-warn">' + ICON.hazard + '<p><strong>' + esc(firstSentences(tideNote, 1)) + '</strong>' + (tideCount ? '' : Te('tides.below')) +
+      '</p></div><details class="more-d"><summary>' + Te('tides.moreSummary') + '</summary><p>' + esc(restSentences(tideNote, 1)) + '</p></details>' +
+      '<div class="table-wrap" tabindex="0" role="region" aria-label="' + Te('tides.tableAria') + '"><table class="tide-table"><thead><tr><th scope="col">' + Te('tides.day') + '</th><th scope="col">' + Te('tides.sunrise') + '</th><th scope="col">' + Te('tides.sunset') + '</th><th scope="col">' + Te('tides.outlook') + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="fine">' + Te('tides.fine') + '</p>');
     var root = $('[data-render="tides"]');
-    if (root) foldBlock('tides', [$('details', root), $('.table-wrap', root), $('.fine', root)], 'sunrise, sunset and tides');
+    if (root) foldBlock('tides', [$('details', root), $('.table-wrap', root), $('.fine', root)], 'tides');
   }
 
   function renderRhythm() {
-    var root = renderInto('rhythm', TRIP.season.daily_rhythm.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join(''));
-    clipList('rhythm', root, 'steps of the day', 2);
+    var root = renderInto('rhythm', txs(TRIP.season.daily_rhythm).map(function (r) { return '<li>' + esc(r) + '</li>'; }).join(''));
+    clipList('rhythm', root, 'rhythm', 2);
   }
 
   /* --------------------------------------------------------------- itinerary */
   var showAllPlans = false;
   function dayKind(d) {
     var t = d.title;
-    if (/flex/i.test(t)) return ['Flex day', 'flex'];
-    if (/buffer/i.test(t)) return ['Buffer day', 'buffer'];
-    if (/^surf day/i.test(t)) return ['Surf day', 'surf'];
-    if (/last surf/i.test(t)) return ['Surf, then fly', 'surf'];
-    if (/^land in malé/i.test(t)) return ['Arrive', 'travel'];
-    return ['Travel', 'travel'];
+    if (/flex/i.test(t)) return [T('itin.kindFlex'), 'flex'];
+    if (/buffer/i.test(t)) return [T('itin.kindBuffer'), 'buffer'];
+    if (/^surf day/i.test(t)) return [T('itin.kindSurf'), 'surf'];
+    if (/last surf/i.test(t)) return [T('itin.kindSurfFly'), 'surf'];
+    if (/^land in malé/i.test(t)) return [T('itin.kindArrive'), 'travel'];
+    return [T('itin.kindTravel'), 'travel'];
   }
   function renderItinerary() {
     var html = '<div class="itin-tools">' +
       '<p class="itin-plan" data-itin-plan></p>' +
-      '<label class="check"><input type="checkbox" data-itin-all><span>' + (TRIP.plans.length === 2 ? 'Show both plans\' times for each day' : 'Show every plan\'s times for each day') + '</span></label>' +
-      '<div class="itin-btns"><button type="button" class="btn btn-quiet" data-itin-expand="1">Open all days</button>' +
-      '<button type="button" class="btn btn-quiet" data-itin-expand="0">Close all days</button></div></div>' +
+      '<label class="check"><input type="checkbox" data-itin-all' + (showAllPlans ? ' checked' : '') + '><span>' + Te(TRIP.plans.length === 2 ? 'itin.showBoth' : 'itin.showEvery') + '</span></label>' +
+      '<div class="itin-btns"><button type="button" class="btn btn-quiet" data-itin-expand="1">' + Te('itin.openAll') + '</button>' +
+      '<button type="button" class="btn btn-quiet" data-itin-expand="0">' + Te('itin.closeAll') + '</button></div></div>' +
       '<div class="days-wrap"><span class="days-progress" aria-hidden="true"></span><ol class="days">' + TRIP.itinerary.map(function (d, i) {
         var k = dayKind(d);
         return '<li class="day day--' + k[1] + '" id="day-' + esc(d.date) + '">' +
           '<h3 class="day-h"><button type="button" class="day-toggle" aria-expanded="' + (i === 0 ? 'true' : 'false') + '" aria-controls="day-body-' + i + '">' +
-          '<span class="day-date">' + esc(d.label) + '</span>' +
-          '<span class="day-title">' + esc(d.title) + '</span>' +
+          '<span class="day-date">' + esc(tx(d, 'label')) + '</span>' +
+          '<span class="day-title">' + esc(tx(d, 'title')) + '</span>' +
           '<span class="day-kind">' + esc(k[0]) + '</span>' +
           '</button></h3>' +
           '<div class="day-body" id="day-body-' + i + '"' + (i === 0 ? '' : ' hidden') + '>' +
-          '<p class="day-surf"><strong>Surf:</strong> ' + esc(d.surf) + '</p>' +
+          '<p class="day-surf"><strong>' + Te('itin.surf') + '</strong> ' + esc(tx(d, 'surf')) + '</p>' +
           '<ol class="blocks" data-day-blocks="' + i + '"></ol>' +
-          '<div class="day-extra"><p><strong>If it is flat or windy:</strong> ' + esc(d.flat_day_alt) + '</p>' +
-          '<p><strong>Tide:</strong> ' + esc(d.tide_hint) + '</p></div>' +
+          '<div class="day-extra"><p><strong>' + Te('itin.flat') + '</strong> ' + esc(tx(d, 'flat_day_alt')) + '</p>' +
+          '<p><strong>' + Te('itin.tide') + '</strong> ' + esc(tx(d, 'tide_hint')) + '</p></div>' +
           '</div></li>';
       }).join('') + '</ol></div>';
     var root = renderInto('itinerary', html);
-    root.addEventListener('click', function (e) {
+    bindOnce(root, 'itin-click', 'click', function (e) {
       var b = e.target.closest('.day-toggle');
       if (b) {
         var open = b.getAttribute('aria-expanded') !== 'true';
@@ -2890,7 +3860,7 @@
       }
       timelineNudge();
     });
-    root.addEventListener('change', function (e) {
+    bindOnce(root, 'itin-change', 'change', function (e) {
       if (e.target.hasAttribute('data-itin-all')) { showAllPlans = e.target.checked; updateItineraryBlocks(); }
     });
     updateItineraryBlocks();
@@ -2898,9 +3868,11 @@
   }
   // The line down the side of the days fills as you scroll through them (a transform, updated once per frame).
   var timelineNudge = function () {};
+  var timelineIO = null, timelineBound = false;
   function initTimeline() {
     var wrap = $('.days-wrap'), bar = $('.days-progress');
     if (!wrap || !bar) return;
+    if (timelineIO) { try { timelineIO.disconnect(); } catch (e) { /* ignore */ } timelineIO = null; }
     if (reduceMotion || !W.requestAnimationFrame) { bar.style.setProperty('--p', '1'); return; }
     var active = true, raf = 0;
     function update() {
@@ -2913,119 +3885,128 @@
     function onScroll() { if (active && !raf) raf = W.requestAnimationFrame(update); }
     timelineNudge = onScroll;
     if ('IntersectionObserver' in W) {
-      new IntersectionObserver(function (entries) {
+      timelineIO = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) { active = en.isIntersecting; if (active) onScroll(); });
-      }, { rootMargin: '200px 0px' }).observe(wrap);
+      }, { rootMargin: '200px 0px' });
+      timelineIO.observe(wrap);
     }
-    W.addEventListener('scroll', onScroll, { passive: true });
-    W.addEventListener('resize', onScroll);
+    if (!timelineBound) {
+      timelineBound = true;
+      W.addEventListener('scroll', function () { timelineNudge(); }, { passive: true });
+      W.addEventListener('resize', function () { timelineNudge(); });
+    }
     update();
   }
   function recFlightName() {
     var rec = (TRIP.flights.options || []).filter(function (o) { return o.recommended; })[0];
-    if (!rec) return 'recommended';
-    return rec.airline + ' (' + rec.outbound.legs[0].flight + ' out, ' + rec.return.legs[0].flight + ' home)';
+    if (!rec) return T('flights.recFallback');
+    return Tv('flights.recName', { airline: tx(rec, 'airline'), out: rec.outbound.legs[0].flight, home: rec.return.legs[0].flight });
   }
   function updateItineraryBlocks() {
     var p = state.plan;
     var planP = $('[data-itin-plan]');
-    if (planP) planP.innerHTML = 'Showing the <strong>' + esc(planShort(p)) + ' plan</strong> (' + esc(planRole(p).toLowerCase()) + '). Times marked with a plan name only apply to that plan; change the plan in the top bar (phones) or the side panel (desktop) to compare. ' +
-      'Travel times follow our recommended ' + esc(recFlightName()) + ' flights, whichever flight you pick in the budget calculator.';
+    if (planP) planP.innerHTML = Th('itin.planNote', { role: planRole(p).toLowerCase(), flights: recFlightName() },
+      { plan: '<strong>' + Tve('itin.planNoteStrong', { plan: planShort(p) }) + '</strong>' });
     TRIP.itinerary.forEach(function (d, i) {
       var ol = $('[data-day-blocks="' + i + '"]');
       if (!ol) return;
       ol.innerHTML = d.blocks.filter(function (b) { return showAllPlans || appliesTo(b.plans, p); }).map(function (b) {
         var specific = b.plans && b.plans.indexOf('all') === -1;
-        var tag = specific ? '<span class="plan-tag plan-tag--' + esc(b.plans[0]) + '">' + esc(b.plans.map(function (x) { return planShort(x); }).join(' and ')) + ' plan</span>' : '';
+        var tag = specific ? '<span class="plan-tag plan-tag--' + esc(b.plans[0]) + '">' +
+          Tve('itin.planTag', { plans: b.plans.map(function (x) { return planShort(x); }).join(T('words.listAnd')) }) + '</span>' : '';
         var dim = specific && !appliesTo(b.plans, p) ? ' is-other' : '';
-        return '<li class="block' + (specific ? ' is-specific' : '') + dim + '"><span class="block-time">' + esc(b.time) + '</span><div class="block-what">' + tag + '<p>' + esc(b.what) + '</p></div></li>';
+        return '<li class="block' + (specific ? ' is-specific' : '') + dim + '"><span class="block-time">' + esc(tx(b, 'time')) + '</span><div class="block-what">' + tag + '<p>' + esc(tx(b, 'what')) + '</p></div></li>';
       }).join('');
     });
   }
 
   /* ----------------------------------------------------------------- flights */
   function legTime(t) {
-    if (!t || /--:--/.test(t)) return '<span class="t-unknown">time not listed</span>';
+    if (!t || /--:--/.test(t)) return '<span class="t-unknown">' + Te('flights.timeUnknown') + '</span>';
     return esc(t);
   }
   function routeHtml(dir, j) {
     var legs = j.legs, a = legs[0], z = legs[legs.length - 1];
     var vias = legs.slice(0, -1).map(function (l) { return l.to; });
     return '<div class="route">' +
-      '<p class="route-dir">' + esc(dir) + ' <span>' + esc(j.date) + '</span></p>' +
+      '<p class="route-dir">' + esc(dir) + ' <span>' + esc(tx(j, 'date')) + '</span></p>' +
       '<div class="route-line">' +
       '<div class="port"><span class="code">' + esc(a.from) + '</span><span class="time">' + legTime(a.dep) + '</span></div>' +
       '<div class="via"><span class="via-track" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M2 13l8-1 6-8h2l-3 8 5 .5 2-2.5h2l-1.5 4 1.5 4h-2l-2-2.5-5 .5 3 8h-2l-6-8-8-1z" fill="currentColor"/></svg></span>' +
-      '<span class="via-text">via ' + esc(vias.join(', ')) + '</span><span class="via-lay">' + esc(j.layover) + '</span></div>' +
+      '<span class="via-text">' + Tve('flights.via', { list: vias.join(T('words.listSep')) }) + '</span><span class="via-lay">' + esc(tx(j, 'layover')) + '</span></div>' +
       '<div class="port port-end"><span class="code">' + esc(z.to) + '</span><span class="time">' + legTime(z.arr) + '</span></div>' +
       '</div>' +
-      '<p class="route-meta">' + esc(legs.map(function (l) { return l.flight; }).join(' + ')) + '. Total ' + esc(j.duration) + '.</p>' +
+      '<p class="route-meta">' + Tve('flights.routeMeta', { flights: legs.map(function (l) { return l.flight; }).join(' + '), duration: tx(j, 'duration') }) + '</p>' +
       '</div>';
   }
   function boardChip(o) {
     var l = TRIP.budget.lines.filter(function (x) { return x.choice === 'flight' && x.choice_id === o.id && /board/i.test(x.id); })[0];
-    return l ? chip(l.status) : '<span class="status status--quote">Confirm in writing</span>';
+    return l ? chipT(l, 'status') : '<span class="status status--quote">' + Te('flights.confirmWriting') + '</span>';
   }
   function renderFlights() {
     var F = TRIP.flights;
     var opts = F.options.slice().sort(function (a, b) { return (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0); });
-    var html = '<p class="lede">' + esc(F.summary) + '</p>' +
+    var html = '<p class="lede">' + esc(tx(F, 'summary')) + '</p>' +
+      bookSummary(opts, { id: 'bookit-flights', nameField: 'airline', noneKey: 'book.sumNoneFlights' }) +
       '<div class="passes">' + opts.map(function (o) {
         var fee = o.board.fee_pp_hkd;
         return '<article class="pass' + (o.recommended ? ' is-rec' : '') + '" id="flight-' + esc(o.id) + '">' +
           '<div class="pass-main">' +
-          '<header class="pass-head"><p class="pass-airline">' + esc(o.airline) + '</p>' +
-          (o.recommended ? '<span class="stamp">Our pick</span>' : '') +
-          '<h3 class="pass-title">' + esc(o.label) + '</h3></header>' +
-          routeHtml('Out', o.outbound) + routeHtml('Home', o.return) +
+          '<header class="pass-head"><p class="pass-airline">' + esc(tx(o, 'airline')) + '</p>' +
+          (o.recommended ? '<span class="stamp">' + Te('flights.ourPick') + '</span>' : '') +
+          '<h3 class="pass-title">' + esc(tx(o, 'label')) + '</h3></header>' +
+          routeHtml(T('flights.dirOut'), o.outbound) + routeHtml(T('flights.dirHome'), o.return) +
           '</div>' +
           '<div class="pass-stub">' +
-          '<p class="stub-lbl">Return fare, each</p><p class="stub-fare">' + esc(hkd(o.fare_pp_hkd.low, o.fare_pp_hkd.high)) + '</p>' + chip(o.fare_status) +
-          '<p class="stub-lbl">Board bag, each</p><p class="stub-board">' + (fee.high === 0 ? 'HKD 0 inside the allowance' : esc(hkd(fee.low, fee.high))) + '</p>' + boardChip(o) +
+          '<p class="stub-lbl">' + Te('flights.fareLbl') + '</p><p class="stub-fare">' + esc(hkd(o.fare_pp_hkd.low, o.fare_pp_hkd.high)) + '</p>' + chipT(o, 'fare_status') +
+          '<p class="stub-lbl">' + Te('flights.boardLbl') + '</p><p class="stub-board">' + (fee.high === 0 ? Te('flights.boardFree') : esc(hkd(fee.low, fee.high))) + '</p>' + boardChip(o) +
           '</div>' +
           '<div class="pass-more">' +
-          '<details class="more-d"><summary>Board rules</summary><p>' + esc(o.board.policy) + '</p><p>' + esc(o.board.limits) + '</p></details>' +
-          '<details class="more-d"><summary>Good and bad</summary><div class="procon"><div><p class="pc-h">Good</p><ul>' + o.pros.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul></div>' +
-          '<div><p class="pc-h">Watch out</p><ul>' + o.cons.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul></div></div></details>' +
-          srcLink(o.source, 'Fare search (Google Flights)') +
+          bookingAction(o, 'flight') +
+          '<details class="more-d"><summary>' + Te('flights.boardRules') + '</summary><p>' + esc(tx(o.board, 'policy')) + '</p><p>' + esc(tx(o.board, 'limits')) + '</p></details>' +
+          '<details class="more-d"><summary>' + Te('common.goodBad') + '</summary><div class="procon"><div><p class="pc-h">' + Te('common.good') + '</p><ul>' + txs(o.pros).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
+          '<div><p class="pc-h">' + Te('common.watchOut') + '</p><ul>' + txs(o.cons).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div></div></details>' +
+          srcLink(o.source, T('flights.fareSearch')) +
           '</div></article>';
       }).join('') + '</div>' +
-      '<div class="two-col"><div><h3 class="h-sub">Booking tips</h3><ul class="ticks">' + F.booking_tips.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' +
-      '<div><h3 class="h-sub">Taxes</h3><p>' + esc(F.taxes_note) + '</p>' +
-      '<details class="more-d"><summary>Flight sources (' + F.sources.length + ')</summary><ul class="src-list">' + F.sources.map(function (u) { return '<li>' + srcLink(u, hostOf(u)) + '</li>'; }).join('') + '</ul></details></div></div>';
+      '<div class="two-col"><div><h3 class="h-sub">' + Te('flights.bookingTips') + '</h3><ul class="ticks">' + txs(F.booking_tips).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' +
+      '<div><h3 class="h-sub">' + Te('flights.taxes') + '</h3><p>' + esc(tx(F, 'taxes_note')) + '</p>' +
+      '<details class="more-d"><summary>' + Tve('flights.sources', { n: F.sources.length }) + '</summary><ul class="src-list">' + F.sources.map(function (u) { return '<li>' + srcLink(u, hostOf(u)) + '</li>'; }).join('') + '</ul></details></div></div>';
     var root = renderInto('flights', html);
-    clipList('flights', $('.passes', root), 'flight options', 1);
-    clipList('booking-tips', $('.two-col .ticks', root), 'booking tips', 3);
+    clipList('flights', $('.passes', root), 'flights', 1);
+    clipList('booking-tips', $('.two-col .ticks', root), 'bookingTips', 3);
   }
   function hostOf(u) {
     try { var x = new URL(u); return x.hostname.replace(/^www\./, '') + (x.pathname.length > 1 ? x.pathname.replace(/\/$/, '').slice(0, 40) : ''); } catch (e) { return u; }
   }
 
   /* --------------------------------------------------------------- transport */
-  var PER = { boat: 'per boat', person: 'per person', group: 'for the group' };
+  function perLabel(per) { return T('per.' + per) || per; }
   // The airport boat and the daily surf boats are part of both plans; the South Malé day and airport taxis are extras.
   var CORE_LEGS = ['airport-to-thulusdhoo', 'daily-surf-boats'];
   function transportRelevant(legId) { return CORE_LEGS.indexOf(legId) !== -1; }
   function renderTransport() {
-    var T = TRIP.transport;
-    var html = '<div class="notes-grid"><ul class="ticks">' + T.notes.slice(0, 4).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul>' +
-      '<ul class="ticks">' + T.notes.slice(4).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>' +
-      '<div class="boats-box"><h3>Daily surf boats</h3><p>' + esc(T.daily_boats.summary) + '</p>' +
-      '<div class="boats-nums"><p><span class="num">' + esc(hkd(T.daily_boats.cost_pp_trip_hkd.low, T.daily_boats.cost_pp_trip_hkd.high)) + '</span> each, per session</p>' +
-      '<p><span class="num">' + esc(hkd(T.daily_boats.cost_pp_stay_hkd.low, T.daily_boats.cost_pp_stay_hkd.high)) + '</span> each, for the trip</p>' + chip('estimate') + '</div>' +
-      '<details class="more-d"><summary>How this adds up</summary><p>' + esc(T.daily_boats.basis) + '</p>' + srcLink(T.daily_boats.source) + '</details></div>' +
-      '<div class="legs">' + T.legs.map(function (leg) {
-        return '<article class="leg" data-leg="' + esc(leg.id) + '">' + photoFigure(photoById(LEG_PHOTOS[leg.id]), 'card-ph', '(min-width: 1000px) 45vw, 92vw') + '<header class="leg-head"><h3>' + esc(leg.title) + '</h3><span class="tag tag-plan" data-leg-tag hidden>' + (TRIP.plans.length === 2 ? 'Both plans use this' : 'Every plan uses this') + '</span></header>' +
+    var TR = TRIP.transport;
+    var notes = txs(TR.notes);
+    var html = '<div class="notes-grid"><ul class="ticks">' + notes.slice(0, 4).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul>' +
+      '<ul class="ticks">' + notes.slice(4).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="boats-box"><h3>' + Te('transport.dailyTitle') + '</h3><p>' + esc(tx(TR.daily_boats, 'summary')) + '</p>' +
+      '<div class="boats-nums"><p><span class="num">' + esc(hkd(TR.daily_boats.cost_pp_trip_hkd.low, TR.daily_boats.cost_pp_trip_hkd.high)) + '</span> ' + Te('transport.perSession') + '</p>' +
+      '<p><span class="num">' + esc(hkd(TR.daily_boats.cost_pp_stay_hkd.low, TR.daily_boats.cost_pp_stay_hkd.high)) + '</span> ' + Te('transport.forTrip') + '</p>' + chip(T('status.legend.estimate'), 'estimate') + '</div>' +
+      '<details class="more-d"><summary>' + Te('transport.addsUp') + '</summary><p>' + esc(tx(TR.daily_boats, 'basis')) + '</p>' + srcLink(TR.daily_boats.source) + '</details></div>' +
+      '<div class="legs">' + TR.legs.map(function (leg) {
+        return '<article class="leg" data-leg="' + esc(leg.id) + '">' + photoFigure(photoById(LEG_PHOTOS[leg.id]), 'card-ph', '(min-width: 1000px) 45vw, 92vw') + '<header class="leg-head"><h3>' + esc(tx(leg, 'title')) + '</h3><span class="tag tag-plan" data-leg-tag hidden>' + Te(TRIP.plans.length === 2 ? 'transport.bothPlans' : 'transport.everyPlan') + '</span></header>' +
           '<ul class="leg-opts">' + leg.options.map(function (o) {
-            return '<li class="leg-opt"><div class="leg-main"><h4>' + esc(o.mode) + '</h4><p class="leg-dur">' + esc(o.duration) + '</p></div>' +
-              '<div class="leg-price"><p class="num">' + (o.cost_hkd.high === 0 ? 'HKD 0' : esc(hkd(o.cost_hkd.low, o.cost_hkd.high))) + '</p><p class="per">' + esc(PER[o.per] || o.per) + '</p>' + chip(o.status) + '</div>' +
-              '<details class="more-d leg-notes"><summary>Details</summary><p>' + esc(o.notes) + '</p>' + srcLink(o.source) + '</details></li>';
+            return '<li class="leg-opt"><div class="leg-main"><h4>' + esc(tx(o, 'mode')) + '</h4><p class="leg-dur">' + esc(tx(o, 'duration')) + '</p></div>' +
+              '<div class="leg-price"><p class="num">' + (o.cost_hkd.high === 0 ? Te('money.zero') : esc(hkd(o.cost_hkd.low, o.cost_hkd.high))) + '</p><p class="per">' + esc(perLabel(o.per)) + '</p>' + chipT(o, 'status') + '</div>' +
+              '<details class="more-d leg-notes"><summary>' + Te('common.details') + '</summary><p>' + esc(tx(o, 'notes')) + '</p>' + srcLink(o.source) + '</details>' +
+              bookingAction(o, 'inline') + '</li>';
           }).join('') + '</ul></article>';
       }).join('') + '</div>';
     var root = renderInto('transport', html);
     var noteLists = $$('.notes-grid > .ticks', root);
     clipList('transport-notes', noteLists[0], 'notes', 3, null, { more: noteLists.slice(1), after: $('.notes-grid', root) });
-    clipList('legs', $('.legs', root), 'journeys', 2, function (el) { return transportRelevant(el.getAttribute('data-leg')); });
+    clipList('legs', $('.legs', root), 'legs', 2, function (el) { return transportRelevant(el.getAttribute('data-leg')); });
     updateTransportPlan();
   }
   function updateTransportPlan() {
@@ -3038,41 +4019,47 @@
   }
 
   /* -------------------------------------------------------------------- stay */
-  function list(items, cls) {
-    return '<ul class="' + (cls || 'ticks') + '">' + (items || []).map(function (x) { return '<li>' + richHtml(x) + '</li>'; }).join('') + '</ul>';
+  // items: the strings to show (already in the reader's language); en: the English source, so the
+  // status chip and the source links survive translation.
+  function list(items, cls, en) {
+    return '<ul class="' + (cls || 'ticks') + '">' + (items || []).map(function (x, i) {
+      return '<li>' + richHtml(x, false, en && en[i]) + '</li>';
+    }).join('') + '</ul>';
   }
+  function listOf(arr, cls) { return list(txs(arr), cls, arr); }
   function stayChips(p) {
     var line = TRIP.budget.lines.filter(function (l) {
       return l.category === 'Stay' && !l.optional && !l.choice && l.high_hkd > 0 && (l.plans || []).indexOf(p.id) !== -1;
     })[0];
-    var st = line ? line.status : p.status;
-    var out = chip(st);
-    if (line && statusKind(line.status) !== statusKind(p.status)) out += '<p class="fine plan-status-note">This figure: ' + esc(line.status) + '. The package as a whole: ' + chip(p.status) + '</p>';
+    var src = line || p;
+    var out = chipT(src, 'status');
+    if (line && statusKind(line.status) !== statusKind(p.status)) out += '<p class="fine plan-status-note">' + Tve('stay.figureNote', { status: tx(line, 'status') }) + chipT(p, 'status') + '</p>';
     return out;
   }
   function renderStay() {
-    var html = '<div class="plans">' + TRIP.plans.map(function (p, i) {
+    // "Book it" sits above the plan cards and follows the chosen plan (see updateStayPlan).
+    var html = '<div data-book-stay></div><div class="plans">' + TRIP.plans.map(function (p, i) {
       return '<article class="plan-card" data-plan-card="' + esc(p.id) + '">' + photoFigure(photoById(STAY_PHOTOS[i]), 'card-ph', '(min-width: 1100px) 40vw, (min-width: 900px) 45vw, 92vw') +
-        '<header><p class="plan-short">' + esc(planShort(p.id)) + ' plan</p>' + (p.recommended ? '<span class="stamp">Crew\'s plan</span>' : '<span class="stamp stamp-quiet">' + esc(planRole(p.id)) + '</span>') +
-        '<h3>' + esc(p.name) + '</h3><p class="plan-tag-line">' + esc(p.tagline) + '</p></header>' +
-        '<p class="plan-base">' + esc(p.base) + '</p>' +
-        '<div class="plan-price"><p class="stub-lbl">Stay, each, ' + tripNights() + ' nights</p><p class="num">' + esc(hkd(p.stay_pp_hkd.low, p.stay_pp_hkd.high)) + '</p>' + stayChips(p) +
-        '<p class="stub-lbl">Whole trip, each, with the calculator picks</p><p class="num num-sm" data-plan-total="' + esc(p.id) + '"></p>' + chip('estimate') + '</div>' +
-        '<button type="button" class="btn btn-choose" data-plan-choose="' + esc(p.id) + '" aria-pressed="false">Show this plan</button>' +
-        '<p class="plan-who">' + esc(p.who_for) + '</p>' +
-        '<details class="more-d"><summary>What the price covers</summary><p class="pc-h">Included</p>' + list(p.includes) + '<p class="pc-h">Not included</p>' + list(p.excludes) + '<p class="fine">' + esc(p.stay_basis) + '</p></details>' +
-        '<details class="more-d"><summary>Good and bad</summary><p class="pc-h">Good</p>' + list(p.pros) + '<p class="pc-h">Watch out</p>' + list(p.cons) + '</details>' +
+        '<header><p class="plan-short">' + Tve('stay.planShort', { plan: planShort(p.id) }) + '</p>' + (p.recommended ? '<span class="stamp">' + Te('stay.stampCrew') + '</span>' : '<span class="stamp stamp-quiet">' + esc(planRole(p.id)) + '</span>') +
+        '<h3>' + esc(tx(p, 'name')) + '</h3><p class="plan-tag-line">' + esc(tx(p, 'tagline')) + '</p></header>' +
+        '<p class="plan-base">' + esc(tx(p, 'base')) + '</p>' +
+        '<div class="plan-price"><p class="stub-lbl">' + Tve('stay.stayEach', { nights: tripNights() }) + '</p><p class="num">' + esc(hkd(p.stay_pp_hkd.low, p.stay_pp_hkd.high)) + '</p>' + stayChips(p) +
+        '<p class="stub-lbl">' + Te('stay.wholeTrip') + '</p><p class="num num-sm" data-plan-total="' + esc(p.id) + '"></p>' + chip(T('status.legend.estimate'), 'estimate') + '</div>' +
+        '<button type="button" class="btn btn-choose" data-plan-choose="' + esc(p.id) + '" aria-pressed="false">' + Te('plan.show') + '</button>' +
+        '<p class="plan-who">' + esc(tx(p, 'who_for')) + '</p>' +
+        '<details class="more-d"><summary>' + Te('stay.covers') + '</summary><p class="pc-h">' + Te('stay.included') + '</p>' + listOf(p.includes) + '<p class="pc-h">' + Te('stay.notIncluded') + '</p>' + listOf(p.excludes) + '<p class="fine">' + esc(tx(p, 'stay_basis')) + '</p></details>' +
+        '<details class="more-d"><summary>' + Te('common.goodBad') + '</summary><p class="pc-h">' + Te('common.good') + '</p>' + listOf(p.pros) + '<p class="pc-h">' + Te('common.watchOut') + '</p>' + listOf(p.cons) + '</details>' +
         '</article>';
     }).join('') + '</div>' +
-      '<h3 class="h-sub" id="stay-options-title" data-stay-title>Places to stay</h3><p class="fine" data-stay-hint></p>' +
+      '<h3 class="h-sub" id="stay-options-title" data-stay-title>' + Te('stay.placesTitle') + '</h3><p class="fine" data-stay-hint></p>' +
       '<div class="props" data-props></div>' +
       aboveBudgetHtml() +
-      '<h3 class="h-sub" id="stay-not-available">Checked, and not available for 1-10 Nov</h3>' +
+      '<h3 class="h-sub" id="stay-not-available">' + Te('stay.naTitle') + '</h3>' +
       '<ul class="na-list">' + TRIP.not_available.map(function (n, i) {
-        return '<li class="na' + (i === 0 ? ' na-lead' : '') + '"><h4>' + esc(n.name) + '</h4><p>' + esc(n.why) + '</p>' + srcLink(n.source) + '</li>';
+        return '<li class="na' + (i === 0 ? ' na-lead' : '') + '"><h4>' + esc(tx(n, 'name')) + '</h4><p>' + esc(tx(n, 'why')) + '</p>' + srcLink(n.source) + '</li>';
       }).join('') + '</ul>';
     var root = renderInto('stay', html);
-    root.addEventListener('click', function (e) {
+    bindOnce(root, 'stay-click', 'click', function (e) {
       var b = e.target.closest('[data-plan-choose]');
       if (b) setPlan(b.getAttribute('data-plan-choose'), 'stay');
       var m = e.target.closest('[data-ov-stay]');
@@ -3084,7 +4071,7 @@
         try { if (W.history && history.pushState) history.pushState(null, '', '#top'); } catch (err) { /* sandboxed */ }
       }
     });
-    clipList('not-available', $('.na-list', root), 'checked options', 2);
+    clipList('not-available', $('.na-list', root), 'notAvailable', 2);
     updateStayPlan();
   }
   function stayPlaceId(o) {
@@ -3095,11 +4082,12 @@
   function aboveBudgetHtml() {
     var A = TRIP.above_budget || [];
     if (!A.length) return '';
-    return '<aside class="above" id="above-budget" aria-labelledby="above-budget-title"><h3 id="above-budget-title">Considered, above our budget</h3><ul class="above-list">' + A.map(function (a) {
-      return '<li class="above-item"><h4>' + esc(a.name) + '</h4>' +
-        '<p class="above-price"><span class="num num-sm">' + esc(hkd(a.pp_hkd.low, a.pp_hkd.high)) + ' each, before flights</span>' + chip(a.status) + '</p>' +
-        '<p>' + esc(firstSentences(a.why_not, 1)) + '</p>' +
-        '<details class="more-d"><summary>Other reasons, and what the package covers</summary><p>' + esc(restSentences(a.why_not, 1)) + '</p><p>' + esc(a.what) + '</p></details>' +
+    return '<aside class="above" id="above-budget" aria-labelledby="above-budget-title"><h3 id="above-budget-title">' + Te('above.title') + '</h3><ul class="above-list">' + A.map(function (a) {
+      var whyNot = tx(a, 'why_not');
+      return '<li class="above-item"><h4>' + esc(tx(a, 'name')) + '</h4>' +
+        '<p class="above-price"><span class="num num-sm">' + Tve('above.eachBefore', { price: hkd(a.pp_hkd.low, a.pp_hkd.high) }) + '</span>' + chipT(a, 'status') + '</p>' +
+        '<p>' + esc(firstSentences(whyNot, 1)) + '</p>' +
+        '<details class="more-d"><summary>' + Te('above.moreSummary') + '</summary><p>' + esc(restSentences(whyNot, 1)) + '</p><p>' + esc(tx(a, 'what')) + '</p></details>' +
         srcLink(a.source) + '</li>';
     }).join('') + '</ul></aside>';
   }
@@ -3108,54 +4096,60 @@
     $$('[data-plan-card]').forEach(function (c) { c.classList.toggle('is-selected', c.getAttribute('data-plan-card') === state.plan); });
     updatePlanEstimates();
     var t = $('[data-stay-title]');
-    if (t) t.textContent = 'Places to stay on the ' + planShort(p.id) + ' plan';
+    if (t) t.textContent = Tv('stay.placesOnPlan', { plan: planShort(p.id) });
     var hint = $('[data-stay-hint]');
     var crewN = crewBase(), nights = tripNights();
-    if (hint) hint.textContent = 'Room prices were found for a crew of ' + crewN + ': group totals cover all ' + crewN + ' for ' + nights + ' nights, and the price each is that total divided by ' + crewN + '. Change the plan to see the ' + (TRIP.plans.length === 2 ? 'other plan\'s' : 'other plans\'') + ' places.';
+    if (hint) hint.textContent = Tv('stay.placesHint', { crew: crewN, nights: nights, other: T(TRIP.plans.length === 2 ? 'stay.otherPlan' : 'stay.otherPlans') });
     var box = $('[data-props]');
     if (!box) return;
     box.innerHTML = p.options.map(function (o) {
-      var rows = [['Rooms for ' + crewN, o.rooms_for_11], ['Meals', o.meals], ['Taxes', o.taxes], ['Cancelling', o.cancellation], ['Rating', o.rating], ['Availability', o.availability]];
-      return '<article class="prop"><header class="prop-head"><div><h4>' + esc(o.name) + '</h4><p class="prop-island">' + esc(o.island) + '</p><p class="prop-type">' + esc(o.type) + '</p></div>' +
-        '<div class="prop-price"><p class="num">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + '</p><p class="per">each, ' + nights + ' nights</p>' +
-        '<p class="per">' + esc(hkd(o.total_group_hkd.low, o.total_group_hkd.high)) + ' for the group</p>' + chip(o.status) + '</div></header>' +
-        '<p class="prop-cancel"><strong>Cancelling:</strong> ' + esc(o.cancellation) + '</p>' +
-        '<details class="more-d"><summary>Rooms, meals, taxes and availability</summary><dl class="kv">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl></details>' +
-        '<p class="src-row">' + srcLink(o.url, 'See the listing') + (stayPlaceId(o) ? '<a class="map-link" href="#top" data-ov-stay="' + esc(stayPlaceId(o)) + '">See the island on the map</a>' : '') + '</p></article>';
+      var rows = [[Tv('stay.roomsFor', { n: crewN }), tx(o, 'rooms_for_11')], [T('stay.meals'), tx(o, 'meals')], [T('stay.taxes'), tx(o, 'taxes')],
+        [T('stay.cancelling'), tx(o, 'cancellation')], [T('stay.rating'), tx(o, 'rating')], [T('stay.availability'), tx(o, 'availability')]];
+      return '<article class="prop"><header class="prop-head"><div><h4>' + esc(tx(o, 'name')) + '</h4><p class="prop-island">' + esc(tx(o, 'island')) + '</p><p class="prop-type">' + esc(tx(o, 'type')) + '</p></div>' +
+        '<div class="prop-price"><p class="num">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + '</p><p class="per">' + Tve('stay.eachNights', { nights: nights }) + '</p>' +
+        '<p class="per">' + Tve('stay.forGroup', { price: hkd(o.total_group_hkd.low, o.total_group_hkd.high) }) + '</p>' + chipT(o, 'status') + '</div></header>' +
+        '<p class="prop-cancel"><strong>' + Te('stay.cancellingLbl') + '</strong> ' + esc(tx(o, 'cancellation')) + '</p>' +
+        '<details class="more-d"><summary>' + Te('stay.roomsSummary') + '</summary><dl class="kv">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl></details>' +
+        bookingAction(o, 'stay') +
+        '<p class="src-row">' + srcLink(o.url, T('stay.seeListing')) + (stayPlaceId(o) ? '<a class="map-link" href="#top" data-ov-stay="' + esc(stayPlaceId(o)) + '">' + Te('stay.seeIsland') + '</a>' : '') + '</p></article>';
     }).join('');
-    clipList('props', box, 'places to stay', 1);
+    var sum = $('[data-book-stay]');
+    if (sum) sum.innerHTML = bookSummary(p.options, { id: 'bookit-stay', nameField: 'name', noneKey: 'book.pricesChange' });
+    clipList('props', box, 'props', 1);
   }
 
   /* ---------------------------------------------------------------- coaching */
   function renderCoaching() {
     var C = TRIP.coaching;
-    var html = '<p class="lede">' + esc(C.summary) + '</p>' +
-      '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>Reality check.</strong> ' + esc(firstSentences(C.reality_check, 2)) + '</p>' +
-      '<details class="more-d"><summary>The rest of the reality check</summary><p>' + esc(restSentences(C.reality_check, 2)) + '</p></details></div></div>' +
+    var reality = tx(C, 'reality_check');
+    var html = '<p class="lede">' + esc(tx(C, 'summary')) + '</p>' +
+      '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>' + Te('coach.realityCheck') + '</strong> ' + esc(firstSentences(reality, 2)) + '</p>' +
+      '<details class="more-d"><summary>' + Te('coach.realityMore') + '</summary><p>' + esc(restSentences(reality, 2)) + '</p></details></div></div>' +
       '<div class="coach-plan" data-coach-plan></div>' +
-      '<h3 class="h-sub">Coaching packages (' + (TRIP.plans.length === 2 ? 'both plans' : 'every plan') + ')</h3>' +
+      '<h3 class="h-sub">' + Te(TRIP.plans.length === 2 ? 'coach.packagesBoth' : 'coach.packagesEvery') + '</h3>' +
       '<ol class="packages">' + C.packages.map(function (k) {
-        return '<li class="package" data-package="' + esc(k.id) + '"><header><h4>' + esc(k.name) + '</h4>' + defaultTags('coaching', k.id) + '</header>' +
-          '<p class="num">' + (k.pp_hkd.high === 0 ? 'HKD 0' : esc(hkd(k.pp_hkd.low, k.pp_hkd.high))) + '</p><p class="per">each, for the trip</p>' + chip(k.status) +
-          '<p>' + esc(k.what) + '</p><p class="fine">' + esc(k.ratio) + '</p>' +
-          '<details class="more-d"><summary>How it is priced</summary><p>' + esc(k.basis) + '</p></details></li>';
+        return '<li class="package" data-package="' + esc(k.id) + '"><header><h4>' + esc(tx(k, 'name')) + '</h4>' + defaultTags('coaching', k.id) + '</header>' +
+          '<p class="num">' + (k.pp_hkd.high === 0 ? Te('money.zero') : esc(hkd(k.pp_hkd.low, k.pp_hkd.high))) + '</p><p class="per">' + Te('transport.forTrip') + '</p>' + chipT(k, 'status') +
+          '<p>' + esc(tx(k, 'what')) + '</p><p class="fine">' + esc(tx(k, 'ratio')) + '</p>' +
+          '<details class="more-d"><summary>' + Te('coach.howPriced') + '</summary><p>' + esc(tx(k, 'basis')) + '</p></details></li>';
       }).join('') + '</ol>' +
-      '<h3 class="h-sub">The 8-day coaching programme</h3>' +
+      '<h3 class="h-sub">' + Te('coach.programmeTitle') + '</h3>' +
       '<ol class="programme">' + C.programme.map(function (d) {
-        return '<li><h4>' + esc(d.day) + '</h4><p><strong>Focus:</strong> ' + esc(d.focus) + '</p><p><strong>Where:</strong> ' + esc(d.spot_idea) + '</p>' +
-          '<details class="more-d"><summary>Drills</summary><p>' + esc(d.drills) + '</p></details></li>';
+        return '<li><h4>' + esc(tx(d, 'day')) + '</h4><p><strong>' + Te('coach.focus') + '</strong> ' + esc(tx(d, 'focus')) + '</p><p><strong>' + Te('coach.where') + '</strong> ' + esc(tx(d, 'spot_idea')) + '</p>' +
+          '<details class="more-d"><summary>' + Te('coach.drills') + '</summary><p>' + esc(tx(d, 'drills')) + '</p></details></li>';
       }).join('') + '</ol>' +
-      '<h3 class="h-sub">Who could coach us</h3>' +
-      '<div class="two-col">' + [[false, 'Open to a guesthouse crew'], [true, 'Only for their own guests or package buyers']].map(function (g) {
+      '<h3 class="h-sub">' + Te('coach.whoTitle') + '</h3>' +
+      '<div class="two-col">' + [[false, T('coach.openGroup')], [true, T('coach.guestsGroup')]].map(function (g) {
         var ps = C.providers.filter(function (p) { return !!p.guests_only === g[0]; });
-        return '<div><h4 class="group-h">' + esc(g[1]) + ' (' + ps.length + ')</h4><ul class="providers">' + ps.map(function (p) {
-          return '<li class="provider"><h5>' + esc(p.name) + '</h5><p class="fine">' + esc(p.where) + '</p>' +
-            '<p class="tags">' + (p.video ? '<span class="tag">Films sessions</span>' : '') + (p.guests_only ? '<span class="tag">Guests only</span>' : '<span class="tag">No stay needed</span>') + chip(p.status) + '</p>' +
-            '<p>' + esc(p.price_note) + '</p><details class="more-d"><summary>What they offer</summary><p>' + esc(p.offer) + '</p></details>' + srcLink(p.source) + '</li>';
+        return '<div><h4 class="group-h">' + Tve('coach.groupCount', { label: g[1], n: ps.length }) + '</h4><ul class="providers">' + ps.map(function (p) {
+          return '<li class="provider"><h5>' + esc(tx(p, 'name')) + '</h5><p class="fine">' + esc(tx(p, 'where')) + '</p>' +
+            '<p class="tags">' + (p.video ? '<span class="tag">' + Te('coach.filmsTag') + '</span>' : '') + '<span class="tag">' + Te(p.guests_only ? 'coach.guestsTag' : 'coach.noStayTag') + '</span>' + chipT(p, 'status') + '</p>' +
+            '<p>' + esc(tx(p, 'price_note')) + '</p><details class="more-d"><summary>' + Te('coach.offer') + '</summary><p>' + esc(tx(p, 'offer')) + '</p></details>' + srcLink(p.source) +
+            bookingAction(p, 'inline') + '</li>';
         }).join('') + '</ul></div>';
       }).join('') + '</div>';
     var root = renderInto('coaching', html);
-    clipList('programme', $('.programme', root), 'days', 0, null, { text: function (open, n) { return open ? 'Hide the programme' : 'Show the ' + n + '-day programme'; } });
+    clipList('programme', $('.programme', root), 'days', 0, null, { text: function (open, n) { return open ? T('clip.programmeHide') : Tv('clip.programmeShow', { n: n }); } });
     $$('.providers', root).forEach(function (ul, i) { clipList('providers-' + i, ul, 'coaches', 1); });
     updateCoachingPlan();
   }
@@ -3166,19 +4160,21 @@
     if (choiceIds('coaching', state.plan).length) {
       $$('[data-package]').forEach(function (li) { li.classList.toggle('is-chosen', li.getAttribute('data-package') === r.eff.coaching); });
       var pk = C_pkg(r.eff.coaching);
-      box.innerHTML = '<p>On the <strong>' + esc(planShort(state.plan)) + ' plan</strong> the budget calculator counts <strong>' + esc(pk ? pk.name : r.eff.coaching) + '</strong>' +
-        (r.eff.coaching === defaultChoice('coaching', state.plan) ? ' (this plan\'s default)' : '') + '. Change it in the budget calculator.</p>';
+      box.innerHTML = '<p>' + Th('coach.planCounts', { dflt: r.eff.coaching === defaultChoice('coaching', state.plan) ? T('coach.planDefault') : '' }, {
+        plan: '<strong>' + Tve('stay.planShort', { plan: planShort(state.plan) }) + '</strong>',
+        pkg: '<strong>' + esc(pk ? tx(pk, 'name') : r.eff.coaching) + '</strong>'
+      }) + '</p>';
     } else {
       $$('[data-package]').forEach(function (li) { li.classList.remove('is-chosen'); });
       var lines = TRIP.budget.lines.filter(function (l) { return l.category === 'Coaching' && !l.choice && appliesTo(l.plans, state.plan) && l.plans.indexOf('all') === -1; });
-      box.innerHTML = '<p>On the <strong>' + esc(planShort(state.plan)) + ' plan</strong> these packages do not apply. What the budget counts instead:</p><ul class="ticks">' +
-        lines.map(function (l) { return '<li>' + esc(l.label) + ': ' + (l.high_hkd === 0 ? 'HKD 0' : esc(hkd(l.low_hkd, l.high_hkd))) + (l.basis === 'per_group' ? ' for the group' : ' each') + ' ' + chip(l.status) + '</li>'; }).join('') + '</ul>';
+      box.innerHTML = '<p>' + Th('coach.planNone', {}, { plan: '<strong>' + Tve('stay.planShort', { plan: planShort(state.plan) }) + '</strong>' }) + '</p><ul class="ticks">' +
+        lines.map(function (l) { return '<li>' + esc(tx(l, 'label')) + ': ' + (l.high_hkd === 0 ? Te('money.zero') : esc(hkd(l.low_hkd, l.high_hkd))) + Te(l.basis === 'per_group' ? 'budget.forGroup' : 'budget.each') + ' ' + chipT(l, 'status') + '</li>'; }).join('') + '</ul>';
     }
   }
   // "Budget default" / "Mid default" tags, from budget.defaults.
   function defaultTags(group, id) {
     return TRIP.plans.filter(function (p) { return defaultChoice(group, p.id) === id; }).map(function (p) {
-      return '<span class="stamp stamp-sm">' + esc(planShort(p.id)) + ' default</span>';
+      return '<span class="stamp stamp-sm">' + Tve('budget.planDefault', { plan: planShort(p.id) }) + '</span>';
     }).join('');
   }
   function C_pkg(id) { return (TRIP.coaching.packages || []).filter(function (p) { return p.id === id; })[0]; }
@@ -3186,36 +4182,37 @@
   /* -------------------------------------------------------------------- food */
   var foodFilter = { island: 'all', top: false };
   function islandLabel(i, filter) {
-    if (/^resort day pass$/i.test(i)) return filter ? 'Resort day passes' : 'Resort (day pass)';
-    return i.replace(/^Male$/, 'Malé').replace(/^Hulhumale$/, 'Hulhumalé');
+    if (/^resort day pass$/i.test(i)) return T(filter ? 'food.islandResortFilter' : 'food.islandResort');
+    return T('food.island.' + i) || i.replace(/^Male$/, 'Malé').replace(/^Hulhumale$/, 'Hulhumalé');
   }
   function renderFood() {
     var Fd = TRIP.food;
     var islands = [];
     Fd.restaurants.forEach(function (r) { if (islands.indexOf(r.island) === -1) islands.push(r.island); });
-    var html = '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>Alcohol rules.</strong> ' + esc(Fd.alcohol[0]) + ' ' + esc(Fd.alcohol[1]) + '</p>' +
-      '<details class="more-d"><summary>More drink rules (' + Math.max(0, Fd.alcohol.length - 2) + ')</summary>' + list(Fd.alcohol.slice(2)) + '</details></div></div>' +
-      '<h3 class="h-sub">Daily food budget</h3><div class="food-budget">' + Fd.daily_budget.map(function (b) {
-        return '<div class="fb" data-food-style="' + esc(b.id) + '"><p class="fb-style">' + esc(b.style) + '</p><p class="fb-tags">' + defaultTags('food', b.id) + '</p>' +
-          '<p class="num">' + esc(hkd(b.pp_day_hkd.low, b.pp_day_hkd.high)) + '</p><p class="per">each, per day</p>' + chip(parseStatus(b.basis)) +
-          '<details class="more-d"><summary>How this is worked out</summary><p>' + esc(b.basis.replace(/^Status:[^.]*\.\s*/i, '')) + '</p></details></div>';
+    var alcohol = txs(Fd.alcohol);
+    var html = '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>' + Te('food.alcoholTitle') + '</strong> ' + esc(alcohol[0]) + ' ' + esc(alcohol[1]) + '</p>' +
+      '<details class="more-d"><summary>' + Tve('food.moreRules', { n: Math.max(0, Fd.alcohol.length - 2) }) + '</summary>' + list(alcohol.slice(2), null, Fd.alcohol.slice(2)) + '</details></div></div>' +
+      '<h3 class="h-sub">' + Te('food.budgetTitle') + '</h3><div class="food-budget">' + Fd.daily_budget.map(function (b) {
+        return '<div class="fb" data-food-style="' + esc(b.id) + '"><p class="fb-style">' + esc(tx(b, 'style')) + '</p><p class="fb-tags">' + defaultTags('food', b.id) + '</p>' +
+          '<p class="num">' + esc(hkd(b.pp_day_hkd.low, b.pp_day_hkd.high)) + '</p><p class="per">' + Te('food.perDay') + '</p>' + chipParsed(b, 'basis') +
+          '<details class="more-d"><summary>' + Te('food.howWorked') + '</summary><p>' + esc(tx(b, 'basis').replace(/^Status:[^.]*\.\s*/i, '')) + '</p></details></div>';
       }).join('') + '</div><p class="fine" data-food-plan></p>' +
-      '<h3 class="h-sub">Where to eat</h3>' +
-      '<div class="filters"><div class="filter-row"><div class="seg-inline" role="group" aria-label="Island">' + ['all'].concat(islands).map(function (i) {
-        return '<button type="button" class="toggle" data-food-island="' + esc(i) + '" aria-pressed="' + (i === 'all') + '">' + esc(i === 'all' ? 'Everywhere' : islandLabel(i, true)) + '</button>';
-      }).join('') + '</div><button type="button" class="toggle" data-food-top aria-pressed="false">Top picks only</button></div></div>' +
+      '<h3 class="h-sub">' + Te('food.whereTitle') + '</h3>' +
+      '<div class="filters"><div class="filter-row"><div class="seg-inline" role="group" aria-label="' + Te('food.islandAria') + '">' + ['all'].concat(islands).map(function (i) {
+        return '<button type="button" class="toggle" data-food-island="' + esc(i) + '" aria-pressed="' + (i === foodFilter.island) + '">' + esc(i === 'all' ? T('food.everywhere') : islandLabel(i, true)) + '</button>';
+      }).join('') + '</div><button type="button" class="toggle" data-food-top aria-pressed="' + foodFilter.top + '">' + Te('food.topOnly') + '</button></div></div>' +
       '<p class="count" data-food-count aria-live="polite"></p>' +
       '<ul class="eats">' + Fd.restaurants.map(function (r, i) {
-        var price = r.pp_hkd ? '<p class="num num-sm">' + esc(hkd(r.pp_hkd.low, r.pp_hkd.high)) + ' each</p>' + chip(parseStatus(r.group_note)) : '<span class="status status--none">Price not checked</span>';
-        return '<li class="eat' + (r.top_pick ? ' is-top' : '') + '" data-eat="' + i + '"><div class="eat-main"><h4>' + esc(r.name) + (r.top_pick ? ' <span class="tag tag-pick">Top pick</span>' : '') + '</h4>' +
-          '<p class="fine">' + esc(islandLabel(r.island, false)) + ', ' + esc(r.cuisine) + '</p>' +
-          '<p><strong>Order:</strong> ' + esc(r.order) + '</p><p>' + esc(r.pp_hkd ? stripStatusTail(r.group_note) : r.group_note) + '</p></div>' +
-          '<div class="eat-side"><p class="fine">' + esc(r.rating) + '</p>' + price + srcLink(r.source) + '</div></li>';
+        var price = r.pp_hkd ? '<p class="num num-sm">' + Tve('food.eachPrice', { price: hkd(r.pp_hkd.low, r.pp_hkd.high) }) + '</p>' + chipParsed(r, 'group_note') : '<span class="status status--none">' + Te('food.noPrice') + '</span>';
+        return '<li class="eat' + (r.top_pick ? ' is-top' : '') + '" data-eat="' + i + '"><div class="eat-main"><h4>' + esc(tx(r, 'name')) + (r.top_pick ? ' <span class="tag tag-pick">' + Te('food.topPick') + '</span>' : '') + '</h4>' +
+          '<p class="fine">' + Tve('food.meta', { island: islandLabel(r.island, false), cuisine: tx(r, 'cuisine') }) + '</p>' +
+          '<p><strong>' + Te('food.order') + '</strong> ' + esc(tx(r, 'order')) + '</p><p>' + esc(r.pp_hkd ? stripStatusTail(tx(r, 'group_note')) : tx(r, 'group_note')) + '</p></div>' +
+          '<div class="eat-side"><p class="fine">' + esc(tx(r, 'rating')) + '</p>' + price + srcLink(r.source) + '</div></li>';
       }).join('') + '</ul>' +
-      '<h3 class="h-sub">Dishes to try</h3><div class="dishes-wrap">' + photoFigure(photoById(DISH_PHOTO), '', '(min-width: 1000px) 320px, 92vw', 'dish-ph') +
-      '<dl class="dishes">' + Fd.dishes.map(function (d) { return '<div><dt>' + esc(d.name) + '</dt><dd>' + esc(d.what) + '</dd></div>'; }).join('') + '</dl></div>';
+      '<h3 class="h-sub">' + Te('food.dishesTitle') + '</h3><div class="dishes-wrap">' + photoFigure(photoById(DISH_PHOTO), '', '(min-width: 1000px) 320px, 92vw', 'dish-ph') +
+      '<dl class="dishes">' + Fd.dishes.map(function (d) { return '<div><dt>' + esc(tx(d, 'name')) + '</dt><dd>' + esc(tx(d, 'what')) + '</dd></div>'; }).join('') + '</dl></div>';
     var root = renderInto('food', html);
-    root.addEventListener('click', function (e) {
+    bindOnce(root, 'food-click', 'click', function (e) {
       var b = e.target.closest('[data-food-island]');
       if (b) {
         foodFilter.island = b.getAttribute('data-food-island');
@@ -3238,7 +4235,7 @@
       if (ok) n++;
     });
     var c = $('[data-food-count]'), total = TRIP.food.restaurants.length;
-    if (c) c.textContent = !n ? 'No places match. Pick another island.' : n === total ? total + ' places' : n + ' of ' + total + ' places match';
+    if (c) c.textContent = !n ? T('food.noneMatch') : n === total ? Tv('food.countAll', { n: total }) : Tv('food.countSome', { n: n, total: total });
     clipList('eats', $('.eats'), 'places', 4);
   }
   function updateFoodPlan() {
@@ -3247,34 +4244,36 @@
     var r = computeBudget(state);
     $$('[data-food-style]').forEach(function (d) { d.classList.toggle('is-chosen', d.getAttribute('data-food-style') === r.eff.food); });
     var line = r.counted.filter(function (c) { return c.line.category === 'Food'; })[0];
-    el.innerHTML = 'On the <strong>' + esc(planShort(state.plan)) + ' plan</strong> the calculator counts: ' +
-      (line ? esc(line.line.label) + ', ' + esc(hkd(line.lo, line.hi)) + ' each ' + chip(line.line.status) : 'no food line.');
+    el.innerHTML = Th('food.planCounts', {}, { plan: '<strong>' + Tve('stay.planShort', { plan: planShort(state.plan) }) + '</strong>' }) +
+      (line ? Tve('food.planLine', { label: tx(line.line, 'label'), price: hkd(line.lo, line.hi) }) + chipT(line.line, 'status') : Te('food.noLine'));
   }
 
   /* -------------------------------------------------------------- activities */
   var actFilter = 'all';
+  function actForLabel(t) { return T('act.for.' + t) || cap(t); }
   function renderActivities() {
     var A = TRIP.activities;
     var tags = [];
     A.forEach(function (a) { if (tags.indexOf(a.best_for) === -1) tags.push(a.best_for); });
     var flat = TRIP.headline.big_decisions.filter(function (d) { return /flat/i.test(d.question); })[0];
-    var html = (flat ? '<div class="flatplan"><h3>' + esc(flat.question) + '</h3><p class="flat-pick">' + esc(flat.our_pick) + '</p><p>' + esc(flat.why) + '</p>' + list(flat.alternatives) + '</div>' : '') +
-      '<h3 class="h-sub">Ideas for the rest of the day</h3>' +
-      '<div class="filters"><div class="filter-row"><div class="seg-inline" role="group" aria-label="Best for">' + ['all'].concat(tags).map(function (t) {
-        return '<button type="button" class="toggle" data-act="' + esc(t) + '" aria-pressed="' + (t === 'all') + '">' + esc(t === 'all' ? 'Everything' : cap(t)) + '</button>';
+    var html = (flat ? '<div class="flatplan"><h3>' + esc(tx(flat, 'question')) + '</h3><p class="flat-pick">' + esc(tx(flat, 'our_pick')) + '</p><p>' + esc(tx(flat, 'why')) + '</p>' + listOf(flat.alternatives) + '</div>' : '') +
+      '<h3 class="h-sub">' + Te('act.ideasTitle') + '</h3>' +
+      '<div class="filters"><div class="filter-row"><div class="seg-inline" role="group" aria-label="' + Te('act.bestForAria') + '">' + ['all'].concat(tags).map(function (t) {
+        return '<button type="button" class="toggle" data-act="' + esc(t) + '" aria-pressed="' + (t === actFilter) + '">' + esc(t === 'all' ? T('act.everything') : actForLabel(t)) + '</button>';
       }).join('') + '</div></div></div><p class="count" data-act-count aria-live="polite"></p>' +
       '<ul class="acts">' + A.map(function (a, i) {
         var free = a.pp_hkd.high === 0 && statusKind(a.status) !== 'quote';
         var ph = photoById(ACT_PHOTOS[a.id]);
         return '<li class="act' + (ph ? ' has-ph' : '') + '" data-act-i="' + i + '">' + (ph ? photoFigure(ph, 'card-ph', '(min-width: 1200px) 30vw, (min-width: 700px) 45vw, 92vw') : '') +
-          '<header><span class="tag tag-for">' + esc(cap(a.best_for)) + '</span><h4>' + esc(a.name) + '</h4></header>' +
-          '<p class="fine">' + esc(a.where) + '. ' + esc(a.duration) + '.</p>' +
-          '<p class="act-price"><span class="num num-sm">' + (free ? 'Free' : esc(hkd(a.pp_hkd.low, a.pp_hkd.high)) + ' each') + '</span> ' + chip(a.status) + '</p>' +
-          '<p>' + esc(a.group_note) + '</p>' +
-          '<details class="more-d"><summary>Season and tax notes</summary><p>' + esc(a.season_note) + '</p><p>' + esc(a.tax_note) + '</p></details>' + srcLink(a.source) + '</li>';
+          '<header><span class="tag tag-for">' + esc(actForLabel(a.best_for)) + '</span><h4>' + esc(tx(a, 'name')) + '</h4></header>' +
+          '<p class="fine">' + Tve('act.meta', { where: tx(a, 'where'), duration: tx(a, 'duration') }) + '</p>' +
+          '<p class="act-price"><span class="num num-sm">' + (free ? Te('act.free') : Tve('act.eachPrice', { price: hkd(a.pp_hkd.low, a.pp_hkd.high) })) + '</span> ' + chipT(a, 'status') + '</p>' +
+          '<p>' + esc(tx(a, 'group_note')) + '</p>' +
+          '<details class="more-d"><summary>' + Te('act.seasonTax') + '</summary><p>' + esc(tx(a, 'season_note')) + '</p><p>' + esc(tx(a, 'tax_note')) + '</p></details>' + srcLink(a.source) +
+          bookingAction(a, 'inline') + '</li>';
       }).join('') + '</ul>';
     var root = renderInto('activities', html);
-    root.addEventListener('click', function (e) {
+    bindOnce(root, 'act-click', 'click', function (e) {
       var b = e.target.closest('[data-act]');
       if (!b) return;
       actFilter = b.getAttribute('data-act');
@@ -3292,7 +4291,7 @@
       if (ok) n++;
     });
     var c = $('[data-act-count]'), total = TRIP.activities.length;
-    if (c) c.textContent = n === total ? total + ' ideas' : n + ' of ' + total + ' ideas match';
+    if (c) c.textContent = n === total ? Tv('act.countAll', { n: total }) : Tv('act.countSome', { n: n, total: total });
     // Phones: the ideas with photos first, then "Show all".
     clipList('acts', $('.acts'), 'ideas', 4, function (li) { return li.classList.contains('has-ph'); });
   }
@@ -3305,45 +4304,45 @@
   }
   function renderBudget() {
     var B = TRIP.budget, rec = recPlan();
-    var html = '<p class="lede">Pick a plan, a flight, coaching, food style and extras. The totals are per person, and group totals are that times the crew size. It opens on ' + esc(planShort(rec.id)) + ', the crew\'s plan. Prices checked ' + esc(fmtDate(TRIP.meta.prices_checked)) + '; all are estimates to re-check before booking.</p>' +
+    var html = '<p class="lede">' + Tve('budget.lede', { plan: planShort(rec.id), date: fmtDate(TRIP.meta.prices_checked) }) + '</p>' +
       '<div class="calc">' +
       '<form class="calc-controls" data-calc-form onsubmit="return false">' +
-      '<fieldset class="cf"><legend>Plan</legend><p class="calc-note">Changing the plan loads that plan\'s own flight, coaching and food picks. Add-ons and crew size stay.</p><div class="opts" data-calc-plan></div></fieldset>' +
-      '<fieldset class="cf"><legend>Flight</legend><div class="opts" data-calc-flight></div></fieldset>' +
-      '<fieldset class="cf"><legend>Coaching</legend><div class="opts" data-calc-coaching></div></fieldset>' +
-      '<fieldset class="cf"><legend>Food</legend><div class="opts" data-calc-food></div></fieldset>' +
-      '<fieldset class="cf"><legend>Optional add-ons</legend><div class="opts" data-calc-addons></div></fieldset>' +
-      '<fieldset class="cf"><legend>Crew size</legend><div class="crew">' +
-      '<button type="button" class="step" data-crew-step="-1" aria-label="One fewer person">−</button>' +
-      '<label class="crew-num"><span class="vh">Number of people</span><input type="number" inputmode="numeric" min="' + crewMin() + '" max="' + crewMax() + '" step="1" value="' + crewBase() + '" data-crew-input></label>' +
-      '<button type="button" class="step" data-crew-step="1" aria-label="One more person">+</button>' +
-      '<input type="range" min="' + crewMin() + '" max="' + crewMax() + '" step="1" value="' + crewBase() + '" data-crew-range aria-label="Crew size slider">' +
-      '</div><p class="fine">From ' + crewMin() + ' to ' + crewMax() + ' people. Shared costs (the airport boat, the Mid crew boat, permits) are split across the crew. Room prices were found for ' + crewBase() + ', so a different crew size needs new room quotes.</p></fieldset>' +
-      '<button type="button" class="btn btn-quiet" data-calc-reset>Reset to the crew\'s plan (' + esc(planShort(rec.id)) + ')</button>' +
+      '<fieldset class="cf"><legend>' + Te('budget.legPlan') + '</legend><p class="calc-note">' + Te('budget.planNote') + '</p><div class="opts" data-calc-plan></div></fieldset>' +
+      '<fieldset class="cf"><legend>' + Te('budget.legFlight') + '</legend><div class="opts" data-calc-flight></div></fieldset>' +
+      '<fieldset class="cf"><legend>' + Te('budget.legCoaching') + '</legend><div class="opts" data-calc-coaching></div></fieldset>' +
+      '<fieldset class="cf"><legend>' + Te('budget.legFood') + '</legend><div class="opts" data-calc-food></div></fieldset>' +
+      '<fieldset class="cf"><legend>' + Te('budget.legAddons') + '</legend><div class="opts" data-calc-addons></div></fieldset>' +
+      '<fieldset class="cf"><legend>' + Te('budget.legCrew') + '</legend><div class="crew">' +
+      '<button type="button" class="step" data-crew-step="-1" aria-label="' + Te('budget.stepDown') + '">−</button>' +
+      '<label class="crew-num"><span class="vh">' + Te('budget.numPeople') + '</span><input type="number" inputmode="numeric" min="' + crewMin() + '" max="' + crewMax() + '" step="1" value="' + state.crew + '" data-crew-input></label>' +
+      '<button type="button" class="step" data-crew-step="1" aria-label="' + Te('budget.stepUp') + '">+</button>' +
+      '<input type="range" min="' + crewMin() + '" max="' + crewMax() + '" step="1" value="' + state.crew + '" data-crew-range aria-label="' + Te('budget.crewSlider') + '">' +
+      '</div><p class="fine">' + Tve('budget.crewFine', { min: crewMin(), max: crewMax(), base: crewBase() }) + '</p></fieldset>' +
+      '<button type="button" class="btn btn-quiet" data-calc-reset>' + Tve('budget.reset', { plan: planShort(rec.id) }) + '</button>' +
       '</form>' +
       // The totals block is built once and updated in place, so its numbers can tween and the dock can watch it.
       '<div class="calc-result" data-calc-result>' +
       '<div class="res-head" data-res-head>' +
-      '<p class="res-lbl">Each person ' + chip('estimate') + '</p><p class="res-pp" data-res-pp data-pp-low="" data-pp-high=""></p>' +
-      '<p class="res-lbl">Whole crew of <span data-res-crew></span></p><p class="res-group" data-res-group data-group-low="" data-group-high=""></p>' +
+      '<p class="res-lbl">' + Te('budget.eachPerson') + chip(T('status.legend.estimate'), 'estimate') + '</p><p class="res-pp" data-res-pp data-pp-low="" data-pp-high=""></p>' +
+      '<p class="res-lbl">' + Te('budget.wholeCrew') + '<span data-res-crew></span></p><p class="res-group" data-res-group data-group-low="" data-group-high=""></p>' +
       '<p class="res-note" data-res-note></p>' +
       '<p class="res-picks" data-res-picks></p></div>' +
       '<div data-res-warn></div>' +
-      '<p class="res-sub">Where the money goes, each ' + chip('estimate') + '</p>' +
-      '<p class="res-key">Each subtotal is an estimate, added up from the lines below. Darker bar = low end, lighter = high end.</p>' +
+      '<p class="res-sub">' + Te('budget.whereMoney') + chip(T('status.legend.estimate'), 'estimate') + '</p>' +
+      '<p class="res-key">' + Te('budget.barsKey') + '</p>' +
       '<ul class="bars" data-res-bars>' + CATEGORY_ORDER.map(function (c) {
-        return '<li class="bar" data-cat="' + esc(c) + '"><div class="bar-top"><span class="bar-name">' + esc(c) + '</span><span class="bar-val"></span></div>' +
+        return '<li class="bar" data-cat="' + esc(c) + '"><div class="bar-top"><span class="bar-name">' + esc(T('cat.' + c) || c) + '</span><span class="bar-val"></span></div>' +
           '<span class="bar-track is-new" aria-hidden="true"><span class="bar-hi"></span><span class="bar-lo"></span></span></li>';
       }).join('') + '</ul>' +
       '<div data-res-lines></div>' +
       '</div>' +
       '</div>' +
       '<p class="vh" role="status" data-calc-status></p>' +
-      '<div class="calc-dock" data-calc-dock hidden><div class="dock-nums"><p class="dock-note">Estimate with your picks (<span data-dock-plan></span>)</p>' +
-      '<p class="dock-row"><span class="dock-lbl">Each</span> <span class="dock-pp" data-dock-pp></span></p>' +
-      '<p class="dock-row"><span class="dock-lbl">Crew of <span data-dock-crew></span></span> <span class="dock-group" data-dock-group></span></p></div>' +
-      '<button type="button" class="btn btn-solid dock-btn" data-dock-jump>Details</button></div>' +
-      '<details class="more-d method"><summary>How the calculator works</summary><p>' + esc(B.method_note) + '</p></details>';
+      '<div class="calc-dock" data-calc-dock hidden><div class="dock-nums"><p class="dock-note">' + Th('budget.dockNote', {}, { plan: '<span data-dock-plan></span>' }) + '</p>' +
+      '<p class="dock-row"><span class="dock-lbl">' + Te('budget.dockEach') + '</span> <span class="dock-pp" data-dock-pp></span></p>' +
+      '<p class="dock-row"><span class="dock-lbl">' + Th('budget.dockCrewOf', {}, { n: '<span data-dock-crew></span>' }) + '</span> <span class="dock-group" data-dock-group></span></p></div>' +
+      '<button type="button" class="btn btn-solid dock-btn" data-dock-jump>' + Te('common.details') + '</button></div>' +
+      '<details class="more-d method"><summary>' + Te('budget.howWorks') + '</summary><p>' + esc(tx(B, 'method_note')) + '</p></details>';
     var root = renderInto('budget', html);
     renderCalcControls(true);
     initCalcDock(root);
@@ -3373,7 +4372,7 @@
     form.addEventListener('click', function (e) {
       var s = e.target.closest('[data-crew-step]');
       if (s) {
-        if (s.getAttribute('aria-disabled') === 'true') { toast('The calculator goes from ' + crewMin() + ' to ' + crewMax() + ' people'); return; }
+        if (s.getAttribute('aria-disabled') === 'true') { toast(Tv('toast.crewRange', { min: crewMin(), max: crewMax() })); return; }
         setCrew(state.crew + Number(s.getAttribute('data-crew-step')));
         return;
       }
@@ -3384,13 +4383,16 @@
         store.remove(PLAN_KEY);
         syncPlanInputs();
         emit(planChanged ? 'plan' : 'reset');
-        toast('Back to the crew\'s plan: ' + planShort(d.plan) + ' with its default picks');
+        toast(Tv('toast.reset', { plan: planShort(d.plan) }));
       }
     });
   }
+  var calcDockIOs = [];
   function initCalcDock(root) {
     var dock = $('[data-calc-dock]', root), controls = $('[data-calc-form]', root), head = $('[data-res-head]', root), result = $('[data-calc-result]', root);
     if (!dock || !controls || !head) return;
+    calcDockIOs.forEach(function (io) { try { io.disconnect(); } catch (e) { /* ignore */ } });
+    calcDockIOs = [];
     $('[data-dock-jump]', dock).addEventListener('click', function () {
       result.setAttribute('tabindex', '-1');
       result.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
@@ -3405,17 +4407,23 @@
       dock.hidden = !on;
       document.body.classList.toggle('dock-on', on);
     }
-    new IntersectionObserver(function (entries) {
+    var io1 = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { controlsIn = en.isIntersecting; });
       sync();
-    }, { rootMargin: '0px 0px -80px 0px' }).observe(controls);
-    new IntersectionObserver(function (entries) {
+    }, { rootMargin: '0px 0px -80px 0px' });
+    io1.observe(controls);
+    var io2 = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { headIn = en.isIntersecting && en.intersectionRatio >= 0.85; });
       sync();
-    }, { threshold: [0, 0.5, 0.85, 1] }).observe(head);
+    }, { threshold: [0, 0.5, 0.85, 1] });
+    io2.observe(head);
+    calcDockIOs = [io1, io2];
+    if (calcDockMq) return;
+    calcDockMq = true;
     if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
   }
 
+  var calcDockMq = false;
   // Count-up between the old and new totals (about half a second). data-* attributes carry the exact values at once.
   var tweens = {};
   function tweenRange(el, key, lo, hi) {
@@ -3455,7 +4463,7 @@
     clearTimeout(calcStatusTimer);
     calcStatusTimer = setTimeout(function () {
       var st = $('[data-calc-status]'), q = computeBudget(state);
-      if (st) st.textContent = planShort(q.plan) + ' plan. Each person ' + hkd(q.lo, q.hi) + ', whole crew of ' + q.crew + ' ' + hkd(q.groupLo, q.groupHi) + '. Estimates.';
+      if (st) st.textContent = Tv('budget.statusLine', { plan: planShort(q.plan), pp: hkd(q.lo, q.hi), n: q.crew, group: hkd(q.groupLo, q.groupHi) });
     }, 600);
   }
   // typing: the value comes from the number field while someone is typing in it, so the field is left alone.
@@ -3476,7 +4484,7 @@
       '<span class="opt-body"><span class="opt-title">' + esc(title) + '</span>' + (sub ? '<span class="opt-sub">' + sub + '</span>' : '') + (statusHtml || '') + '</span></label>';
   }
   function defaultStamp(group, id, plan) {
-    return defaultChoice(group, plan) === id ? ' <span class="stamp stamp-sm">' + esc(planShort(plan)) + ' default</span>' : '';
+    return defaultChoice(group, plan) === id ? ' <span class="stamp stamp-sm">' + Tve('budget.planDefault', { plan: planShort(plan) }) + '</span>' : '';
   }
   function renderCalcControls(all) {
     var crew = state.crew, plan = state.plan;
@@ -3484,13 +4492,14 @@
     if (all) {
       $('[data-calc-plan]').innerHTML = TRIP.plans.map(function (p) {
         var est = computeBudget(stateForPlan(state, p.id));
-        return radio('calc-plan', p.id, p.id === plan, planShort(p.id) + ': ' + planDesc(p.id), esc(planRole(p.id)) + ', about <span data-plan-est-calc="' + esc(p.id) + '">' + esc(hkd(est.lo, est.hi)) + '</span> each', chip('estimate'));
+        return radio('calc-plan', p.id, p.id === plan, Tv('budget.optPlanTitle', { plan: planShort(p.id), desc: planDesc(p.id) }),
+          Th('budget.optPlanSub', { role: planRole(p.id) }, { price: '<span data-plan-est-calc="' + esc(p.id) + '">' + esc(hkd(est.lo, est.hi)) + '</span>' }), chip(T('status.legend.estimate'), 'estimate'));
       }).join('');
       $$('[data-calc-plan] input').forEach(function (i) { i.setAttribute('data-plan-input', ''); });
       var fl = $('[data-calc-flight]');
       fl.innerHTML = TRIP.flights.options.map(function (o) {
         var s = sumLines(choiceLines('flight', o.id, plan), crew);
-        return radio('calc-flight', o.id, o.id === r.eff.flight, o.label, esc(hkd(s[0], s[1])) + ' each, fare plus bag and board costs' + defaultStamp('flight', o.id, plan), flightChips(o, plan));
+        return radio('calc-flight', o.id, o.id === r.eff.flight, tx(o, 'label'), Tve('budget.optFlightSub', { price: hkd(s[0], s[1]) }) + defaultStamp('flight', o.id, plan), flightChips(o, plan));
       }).join('');
     } else {
       $$('[data-calc-flight] input').forEach(function (i) { i.checked = i.value === r.eff.flight; });
@@ -3501,11 +4510,11 @@
     }
     var coachIds = choiceIds('coaching', plan), foodIds = choiceIds('food', plan);
     var addons = TRIP.budget.lines.filter(function (l) { return l.optional && appliesTo(l.plans, plan); });
-    var coachSub = function (id) { var s = sumLines(choiceLines('coaching', id, plan), crew); return esc(hkd(s[0], s[1])) + ' each' + defaultStamp('coaching', id, plan); };
-    var foodSub = function (id) { var s = sumLines(choiceLines('food', id, plan), crew); return esc(hkd(s[0], s[1])) + ' each, for the ' + tripNights() + '-night trip' + defaultStamp('food', id, plan); };
+    var coachSub = function (id) { var s = sumLines(choiceLines('coaching', id, plan), crew); return Tve('budget.optEach', { price: hkd(s[0], s[1]) }) + defaultStamp('coaching', id, plan); };
+    var foodSub = function (id) { var s = sumLines(choiceLines('food', id, plan), crew); return Tve('budget.optFoodSub', { price: hkd(s[0], s[1]), nights: tripNights() }) + defaultStamp('food', id, plan); };
     var addonSub = function (l) {
       var d = l.basis === 'per_group' ? crew : 1;
-      return l.basis === 'per_group' ? esc(hkd(l.low_hkd, l.high_hkd)) + ' for the group, ' + esc(hkd(l.low_hkd / d, l.high_hkd / d)) + ' each' : esc(hkd(l.low_hkd, l.high_hkd)) + ' each';
+      return l.basis === 'per_group' ? Tve('budget.optAddonGroup', { group: hkd(l.low_hkd, l.high_hkd), each: hkd(l.low_hkd / d, l.high_hkd / d) }) : Tve('budget.optEach', { price: hkd(l.low_hkd, l.high_hkd) });
     };
     if (!all) {
       // Same plan: the options are already there. Only ticks and amounts change, so focus and screen readers stay put.
@@ -3525,26 +4534,26 @@
     } else {
       $('[data-calc-coaching]').innerHTML = coachIds.length ? coachIds.map(function (id) {
         var pk = C_pkg(id), ls = choiceLines('coaching', id, plan);
-        return radio('calc-coaching', id, id === r.eff.coaching, pk ? pk.name : id, coachSub(id), chip(ls[0] && ls[0].status));
-      }).join('') : '<p class="opt-none">' + esc(planShort(plan)) + ' plan: no coaching package to choose.</p>';
+        return radio('calc-coaching', id, id === r.eff.coaching, pk ? tx(pk, 'name') : id, coachSub(id), ls[0] ? chipT(ls[0], 'status') : '');
+      }).join('') : '<p class="opt-none">' + Tve('budget.noCoachOpt', { plan: planShort(plan) }) + '</p>';
       $('[data-calc-food]').innerHTML = foodIds.length ? foodIds.map(function (id) {
         var ls = choiceLines('food', id, plan);
-        return radio('calc-food', id, id === r.eff.food, foodName(id), foodSub(id), chip(ls[0] && ls[0].status));
-      }).join('') : '<p class="opt-none">' + esc(planShort(plan)) + ' plan: no food choice.</p>';
+        return radio('calc-food', id, id === r.eff.food, foodName(id), foodSub(id), ls[0] ? chipT(ls[0], 'status') : '');
+      }).join('') : '<p class="opt-none">' + Tve('budget.noFoodOpt', { plan: planShort(plan) }) + '</p>';
       $('[data-calc-addons]').innerHTML = addons.length ? addons.map(function (l) {
         return '<label class="opt opt-check"><input type="checkbox" value="' + esc(l.id) + '" data-addon' + (state.addons.has(l.id) ? ' checked' : '') + '>' +
-          '<span class="opt-body"><span class="opt-title">' + esc(l.label) + '</span><span class="opt-sub">' + addonSub(l) + '</span>' + chip(l.status) + '</span></label>';
-      }).join('') : '<p class="opt-none">No add-ons for this plan.</p>';
+          '<span class="opt-body"><span class="opt-title">' + esc(tx(l, 'label')) + '</span><span class="opt-sub">' + addonSub(l) + '</span>' + chipT(l, 'status') + '</span></label>';
+      }).join('') : '<p class="opt-none">' + Te('budget.noAddons') + '</p>';
     }
     var inp = $('[data-crew-input]'), rng = $('[data-crew-range]');
     if (inp && document.activeElement !== inp) inp.value = crew;
     if (rng) rng.value = crew;
     syncCrewSteps(crew);
     $$('[data-calc-plan] input').forEach(function (i) { i.checked = i.value === plan; });
-    clipList('addons', $('[data-calc-addons]'), 'add-ons', 0, function (el) {
+    clipList('addons', $('[data-calc-addons]'), 'addons', 0, function (el) {
       var box = el.querySelector && el.querySelector('input');
       return !box || box.checked;
-    }, { text: function (open, n) { return open ? 'Show fewer add-ons' : 'Show add-ons (' + n + ')'; } });
+    }, { text: function (open, n) { return open ? T('clip.addonsFewer') : Tv('clip.addonsShow', { n: n }); } });
   }
   // At the smallest or largest crew the matching step button says so (it stays focusable, so focus is never lost).
   function syncCrewSteps(crew) {
@@ -3556,14 +4565,15 @@
   }
   function flightChips(o, plan) {
     // Fare status first; then any other line in this option whose price is less solid than the fare.
-    var fareRank = statusRank(o.fare_status), weaker = {};
+    var fareRank = statusRank(o.fare_status), weaker = {}, weakLine = {};
     choiceLines('flight', o.id, plan).forEach(function (l) {
       if (/fare/.test(l.id) || statusRank(l.status) >= fareRank) return;
-      var name = /board/.test(l.id) ? 'board fee' : /bag/.test(l.id) ? 'bag' : /card/.test(l.id) ? 'card fee' : 'extras';
+      var name = T(/board/.test(l.id) ? 'flights.chipBoard' : /bag/.test(l.id) ? 'flights.chipBag' : /card/.test(l.id) ? 'flights.chipCard' : 'flights.chipExtras');
       (weaker[l.status] = weaker[l.status] || []).push(name);
+      weakLine[l.status] = weakLine[l.status] || l;
     });
-    var out = chipLabeled('Fare', o.fare_status);
-    Object.keys(weaker).forEach(function (st) { out += chipLabeled(cap(weaker[st].join(', ')), st); });
+    var out = chipLabeled(T('flights.chipFare'), o.fare_status, tx(o, 'fare_status'));
+    Object.keys(weaker).forEach(function (st) { out += chipLabeled(cap(weaker[st].join(T('words.listSep'))), st, tx(weakLine[st], 'status')); });
     return '<span class="chips">' + out + '</span>';
   }
   function updateFlightSubs() {
@@ -3573,7 +4583,7 @@
       var inp = $('input', lab), sub = $('.opt-sub', lab);
       if (!inp || !sub) return;
       var s = sumLines(choiceLines('flight', inp.value, plan), crew);
-      sub.innerHTML = esc(hkd(s[0], s[1])) + ' each, fare plus bag and board costs' + defaultStamp('flight', inp.value, plan);
+      sub.innerHTML = Tve('budget.optFlightSub', { price: hkd(s[0], s[1]) }) + defaultStamp('flight', inp.value, plan);
     });
   }
   var barsWatch = false;
@@ -3587,17 +4597,17 @@
     tweenRange(pp, 'res-pp', r.lo, r.hi);
     tweenRange(gp, 'res-group', r.groupLo, r.groupHi);
     $('[data-res-crew]', box).textContent = String(r.crew);
-    $('[data-res-note]', box).textContent = 'That is the per-person figure above, times ' + r.crew + ' (worked out before rounding, so a hand check can be a few dollars off).';
+    $('[data-res-note]', box).textContent = Tv('budget.resNote', { n: r.crew });
     $('[data-res-picks]', box).textContent = cap(picksText(state)) + '.';
-    var unpriced = r.unpriced.map(function (l) { return l.label; });
-    $('[data-res-warn]', box).innerHTML = unpriced.length ? '<div class="res-warn">' + ICON.hazard + '<div><p><strong>Not priced yet, counted as HKD 0:</strong></p><ul>' + unpriced.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div></div>' : '';
+    var unpriced = r.unpriced.map(function (l) { return tx(l, 'label'); });
+    $('[data-res-warn]', box).innerHTML = unpriced.length ? '<div class="res-warn">' + ICON.hazard + '<div><p><strong>' + Te('budget.notPriced') + '</strong></p><ul>' + unpriced.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div></div>' : '';
     var maxHi = 0;
     CATEGORY_ORDER.forEach(function (c) { maxHi = Math.max(maxHi, r.cats[c].hi); });
     CATEGORY_ORDER.forEach(function (c) {
       var li = $('.bar[data-cat="' + c + '"]', box);
       if (!li) return;
       var k = r.cats[c];
-      var value = !k.n ? 'Not in this selection' : k.hi === 0 ? (k.quote ? 'HKD 0, not priced yet' : (c === 'Coaching' && r.eff.coaching === 'none') ? 'HKD 0, none chosen' : 'HKD 0, included') : hkd(k.lo, k.hi);
+      var value = !k.n ? T('budget.barNone') : k.hi === 0 ? T(k.quote ? 'budget.barZeroQuote' : (c === 'Coaching' && r.eff.coaching === 'none') ? 'budget.barZeroNone' : 'budget.barZeroIncl') : hkd(k.lo, k.hi);
       li.setAttribute('data-lo', k.lo.toFixed(2)); li.setAttribute('data-hi', k.hi.toFixed(2));
       $('.bar-val', li).textContent = value;
       var hiEl = $('.bar-hi', li), loEl = $('.bar-lo', li);
@@ -3624,16 +4634,16 @@
     var counted = CATEGORY_ORDER.map(function (c) {
       var rows = r.counted.filter(function (x) { return x.line.category === c; });
       if (!rows.length) return '';
-      return '<li class="cl-group"><p class="cl-cat">' + esc(c) + '</p><ul>' + rows.map(function (x) {
+      return '<li class="cl-group"><p class="cl-cat">' + esc(T('cat.' + c) || c) + '</p><ul>' + rows.map(function (x) {
         var l = x.line;
-        var basis = l.basis === 'per_group' ? esc(hkd(l.low_hkd, l.high_hkd)) + ' for the group, split by ' + r.crew : 'per person';
-        return '<li class="cl"><div class="cl-row"><span class="cl-label">' + esc(l.label) + '</span><span class="cl-amt">' + esc(hkd(x.lo, x.hi)) + '</span></div>' +
-          '<p class="cl-basis">' + basis + ' ' + chip(l.status) + '</p>' +
-          '<details class="more-d"><summary>Working and source</summary>' + richHtml(l.note, true) + srcLink(l.source) + '</details></li>';
+        var basis = l.basis === 'per_group' ? Tve('budget.lineGroup', { price: hkd(l.low_hkd, l.high_hkd), n: r.crew }) : Te('budget.linePerPerson');
+        return '<li class="cl"><div class="cl-row"><span class="cl-label">' + esc(tx(l, 'label')) + '</span><span class="cl-amt">' + esc(hkd(x.lo, x.hi)) + '</span></div>' +
+          '<p class="cl-basis">' + basis + ' ' + chipT(l, 'status') + '</p>' +
+          '<details class="more-d"><summary>' + Te('budget.working') + '</summary>' + richHtml(tx(l, 'note'), true, l.note) + srcLink(l.source) + '</details></li>';
       }).join('') + '</ul></li>';
     }).join('');
-    linesBox.innerHTML = '<details class="more-d res-lines"' + (open[0] ? ' open' : '') + '><summary>Every line in this total (' + r.counted.length + ')</summary><ul class="cl-list">' + counted + '</ul></details>' +
-      '<details class="more-d res-lines"' + (open[open.length - 1] && open.length > 1 ? ' open' : '') + '><summary>Not included in any total</summary>' + list(TRIP.budget.not_included) + '</details>';
+    linesBox.innerHTML = '<details class="more-d res-lines"' + (open[0] ? ' open' : '') + '><summary>' + Tve('budget.everyLine', { n: r.counted.length }) + '</summary><ul class="cl-list">' + counted + '</ul></details>' +
+      '<details class="more-d res-lines"' + (open[open.length - 1] && open.length > 1 ? ' open' : '') + '><summary>' + Te('budget.notInTotal') + '</summary>' + listOf(TRIP.budget.not_included) + '</details>';
   }
 
   /* --------------------------------------------------------------- prep */
@@ -3644,12 +4654,13 @@
   };
   var PACK_KEY = 'maldives-surf-2026:packing:v2';
   var PACK_KEY_V1 = 'maldives-surf-2026:packing:v1';
-  var ESSENTIALS = [['entry', 'Entry and visa'], ['taxes', 'Taxes and fees'], ['money', 'Money'], ['connectivity', 'Phone, internet and plugs'], ['health', 'Health and safety'], ['culture', 'Local rules and culture'], ['weather', 'Weather']];
-  function packItem(it, gi, ii) {
+  var ESSENTIALS = [['entry', 'prep.entry'], ['taxes', 'prep.taxes'], ['money', 'prep.money'], ['connectivity', 'prep.connectivity'], ['health', 'prep.health'], ['culture', 'prep.culture'], ['weather', 'prep.weather']];
+  function packItem(it, gi, ii, arr) {
     // Items carry stable ids in the data; plain strings (older data) fall back to position + text.
     var text = typeof it === 'string' ? it : it.text;
+    var shown = typeof it === 'string' ? txi(arr, ii) : tx(it, 'text');
     var legacy = 'p' + gi + '-' + ii + '-' + slug(text).slice(0, 24);
-    return { id: typeof it === 'string' ? legacy : it.id, text: text, legacy: legacy };
+    return { id: typeof it === 'string' ? legacy : it.id, text: shown, legacy: legacy };
   }
   function storageWorks() {
     try {
@@ -3659,6 +4670,7 @@
       return true;
     } catch (e) { return false; }
   }
+  var packTicks = null;
   function readTicks(items) {
     var raw = store.get(PACK_KEY), ids = [];
     try { ids = JSON.parse(raw || 'null'); } catch (e) { ids = null; }
@@ -3673,29 +4685,29 @@
   function renderPrep() {
     var E = TRIP.essentials;
     var groups = E.packing.map(function (g, gi) {
-      return { group: g.group, items: g.items.map(function (it, ii) { return packItem(it, gi, ii); }) };
+      return { group: tx(g, 'group'), items: g.items.map(function (it, ii) { return packItem(it, gi, ii, g.items); }) };
     });
     var allItems = [];
     groups.forEach(function (g) { allItems = allItems.concat(g.items); });
-    var ticked = readTicks(allItems);
+    var ticked = packTicks || readTicks(allItems);
     var canSave = storageWorks();
-    var html = '<div class="prep-grid"><div><h3 class="h-sub">Timeline</h3><ol class="timeline">' + E.todo.map(function (t) {
-      return '<li><p class="tl-when">' + esc(t.when) + '</p><p class="tl-task">' + esc(t.task) + '</p>' +
-        '<details class="more-d"><summary>Why</summary>' + richHtml(t.why, true) + (safeUrl(t.link) ? srcLink(t.link, 'Link') : '') + '</details></li>';
+    var html = '<div class="prep-grid"><div><h3 class="h-sub">' + Te('prep.timeline') + '</h3><ol class="timeline">' + E.todo.map(function (t) {
+      return '<li><p class="tl-when">' + esc(tx(t, 'when')) + '</p><p class="tl-task">' + esc(tx(t, 'task')) + '</p>' +
+        '<details class="more-d"><summary>' + Te('prep.why') + '</summary>' + richHtml(tx(t, 'why'), true, t.why) + (safeUrl(t.link) ? srcLink(t.link, T('prep.link')) : '') + '</details></li>';
     }).join('') + '</ol></div>' +
-      '<div><h3 class="h-sub">Packing checklist</h3><p class="pack-progress" data-pack-progress aria-live="polite"></p>' +
+      '<div><h3 class="h-sub">' + Te('prep.packTitle') + '</h3><p class="pack-progress" data-pack-progress aria-live="polite"></p>' +
       '<span class="pack-meter" aria-hidden="true"><span data-pack-meter></span></span>' +
-      (canSave ? '' : '<p class="pack-warn" data-pack-warn>Ticks can\'t be saved in this browser (private mode or blocked site data), so they will be gone after a reload. The list still works for this visit.</p>') +
+      (canSave ? '' : '<p class="pack-warn" data-pack-warn>' + Te('prep.packWarn') + '</p>') +
       '<div class="pack" data-pack>' + groups.map(function (g) {
         return '<fieldset class="pack-group"><legend>' + esc(g.group) + '</legend>' + g.items.map(function (it) {
           return '<label class="check"><input type="checkbox" value="' + esc(it.id) + '"' + (ticked.indexOf(it.id) !== -1 ? ' checked' : '') + '><span>' + esc(it.text) + '</span></label>';
         }).join('') + '</fieldset>';
       }).join('') + '</div>' +
-      '<div class="pack-tools"><button type="button" class="btn btn-quiet" data-pack-clear>Untick everything</button>' +
-      '<p class="pack-undo" data-pack-undo-row hidden><span data-pack-undo-msg></span> <button type="button" class="btn btn-quiet" data-pack-undo>Undo</button></p></div>' +
-      '<p class="fine" data-pack-note>' + (canSave ? 'Ticks are saved in this browser only, on this device.' : '') + '</p>' +
-      '<h3 class="h-sub">Essentials</h3><div class="accordions">' + ESSENTIALS.map(function (k) {
-        return '<details class="acc"><summary>' + esc(k[1]) + ' <span class="acc-n">(' + (E[k[0]] || []).length + ')</span></summary>' + list(E[k[0]]) + '</details>';
+      '<div class="pack-tools"><button type="button" class="btn btn-quiet" data-pack-clear>' + Te('prep.untick') + '</button>' +
+      '<p class="pack-undo" data-pack-undo-row hidden><span data-pack-undo-msg></span> <button type="button" class="btn btn-quiet" data-pack-undo>' + Te('prep.undo') + '</button></p></div>' +
+      '<p class="fine" data-pack-note>' + (canSave ? Te('prep.packNote') : '') + '</p>' +
+      '<h3 class="h-sub">' + Te('prep.essentials') + '</h3><div class="accordions">' + ESSENTIALS.map(function (k) {
+        return '<details class="acc"><summary>' + Tve('prep.accSummary', { label: T(k[1]), n: (E[k[0]] || []).length }).replace(/ \(/, ' <span class="acc-n">(') + '</span></summary>' + listOf(E[k[0]]) + '</details>';
       }).join('') + '</div></div></div>';
     var root = renderInto('prep', html);
     clipList('timeline', $('.timeline', root), 'steps', 6);
@@ -3704,16 +4716,17 @@
       return $$('input[type=checkbox]', pack).filter(function (i) { return i.checked; }).map(function (i) { return i.value; });
     }
     function save() {
-      var ok = store.set(PACK_KEY, JSON.stringify(checkedIds()));
+      packTicks = checkedIds();
+      var ok = store.set(PACK_KEY, JSON.stringify(packTicks));
       if (!ok && !$('[data-pack-warn]', root)) {
-        $('[data-pack-progress]', root).insertAdjacentHTML('afterend', '<p class="pack-warn" data-pack-warn>Ticks can\'t be saved in this browser (private mode or blocked site data), so they will be gone after a reload. The list still works for this visit.</p>');
+        $('[data-pack-progress]', root).insertAdjacentHTML('afterend', '<p class="pack-warn" data-pack-warn>' + Te('prep.packWarn') + '</p>');
         $('[data-pack-note]', root).textContent = '';
       }
       progress();
     }
     function progress() {
       var all = $$('input[type=checkbox]', pack), on = all.filter(function (i) { return i.checked; }).length;
-      $('[data-pack-progress]', root).textContent = on + ' of ' + all.length + ' packed';
+      $('[data-pack-progress]', root).textContent = Tv('prep.packed', { n: on, total: all.length });
       $('[data-pack-meter]', root).style.setProperty('--w', (all.length ? on / all.length : 0).toFixed(4));
     }
     var undoIds = null, undoTimer;
@@ -3722,11 +4735,11 @@
     pack.addEventListener('change', function () { hideUndo(); save(); });
     $('[data-pack-clear]', root).addEventListener('click', function () {
       var before = checkedIds();
-      if (!before.length) { toast('Nothing is ticked yet'); return; }
+      if (!before.length) { toast(T('toast.nothingTicked')); return; }
       $$('input[type=checkbox]', pack).forEach(function (i) { i.checked = false; });
       save();
       undoIds = before;
-      $('[data-pack-undo-msg]', root).textContent = 'Unticked ' + before.length + (before.length === 1 ? ' item.' : ' items.');
+      $('[data-pack-undo-msg]', root).textContent = Tv(before.length === 1 ? 'prep.untickedOne' : 'prep.untickedMany', { n: before.length });
       undoRow.hidden = false;
       clearTimeout(undoTimer);
       undoTimer = setTimeout(hideUndo, 15000);
@@ -3738,7 +4751,7 @@
       hideUndo();
       save();
       $('[data-pack-clear]', root).focus();
-      toast('Ticks restored');
+      toast(T('toast.ticksRestored'));
     });
     progress();
   }
@@ -3752,7 +4765,7 @@
     'Food': 'Eat & drink', 'Essentials': 'Before you go'
   };
   var SOURCE_ORDER = Object.keys(SOURCE_LABELS);
-  function sourceLabel(g) { return SOURCE_LABELS[g] || g; }
+  function sourceLabel(g) { return T('srcGroup.' + g) || SOURCE_LABELS[g] || g; }
   function relabelUsedFor(t) {
     return String(t || '').replace(/(^|;\s*)([^:;]+?)(?=\s*(?::|;|$))/g, function (m, pre, g) { return pre + (SOURCE_LABELS[g.trim()] ? sourceLabel(g.trim()) : g); });
   }
@@ -3767,30 +4780,31 @@
       var ia = SOURCE_ORDER.indexOf(a), ib = SOURCE_ORDER.indexOf(b);
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     });
-    var html = '<div class="disclaimer"><p><strong>Prices checked ' + esc(fmtDate(m.prices_checked)) + '.</strong> ' + esc(m.disclaimer) + '</p><p class="fine">' + esc(m.fx.note) + '</p></div>' +
-      '<h3 class="h-sub">To confirm before anyone pays (' + TRIP.to_confirm.length + ')</h3>' +
+    var html = '<div class="disclaimer"><p><strong>' + Tve('top.pricesChecked', { date: fmtDate(m.prices_checked) }) + '</strong> ' + esc(tx(m, 'disclaimer')) + '</p><p class="fine">' + esc(tx(m.fx, 'note')) + '</p></div>' +
+      '<h3 class="h-sub">' + Tve('sources.confirmTitle', { n: TRIP.to_confirm.length }) + '</h3>' +
       '<ul class="confirm">' + TRIP.to_confirm.map(function (c) {
-        return '<li class="confirm-item">' + ICON.hazard + '<div><p class="confirm-what">' + esc(c.item) + '</p>' +
-          '<p class="confirm-meta"><span><strong>Who:</strong> ' + esc(c.who) + '</span><span><strong>By:</strong> ' + esc(c.by_when) + '</span></p>' +
-          '<p class="fine">' + esc(c.why) + '</p></div></li>';
+        return '<li class="confirm-item">' + ICON.hazard + '<div><p class="confirm-what">' + esc(tx(c, 'item')) + '</p>' +
+          '<p class="confirm-meta"><span><strong>' + Te('sources.who') + '</strong> ' + esc(tx(c, 'who')) + '</span><span><strong>' + Te('sources.by') + '</strong> ' + esc(tx(c, 'by_when')) + '</span></p>' +
+          '<p class="fine">' + esc(tx(c, 'why')) + '</p></div></li>';
       }).join('') + '</ul>' +
-      '<h3 class="h-sub">Sources (' + TRIP.sources.length + ')</h3><div class="accordions">' + names.map(function (g) {
+      '<h3 class="h-sub">' + Tve('sources.title', { n: TRIP.sources.length }) + '</h3><div class="accordions">' + names.map(function (g) {
         return '<details class="acc"><summary>' + esc(sourceLabel(g)) + ' <span class="acc-n">(' + groups[g].length + ')</span></summary><ul class="src-list">' + groups[g].map(function (s) {
-          return '<li>' + srcLink(s.url, s.title) + '<span class="fine">' + esc(relabelUsedFor(s.used_for)) + '</span></li>';
+          var uf = tx(s, 'used_for');
+          return '<li>' + srcLink(s.url, tx(s, 'title')) + '<span class="fine">' + esc(uf === s.used_for ? relabelUsedFor(uf) : uf) + '</span></li>';
         }).join('') + '</ul></details>';
       }).join('') + '</div>' + photoCreditsHtml();
     var root = renderInto('sources', html);
-    clipList('confirm', $('.confirm', root), 'things to confirm', 3);
-    clipList('credits', $('.credits', root), 'photo credits', 4);
+    clipList('confirm', $('.confirm', root), 'confirm', 3);
+    clipList('credits', $('.credits', root), 'credits', 4);
   }
   // Every photo on the page, in page order, with its licence and source page.
   function photoCreditsHtml() {
     if (!usedPhotos.length) return '';
-    return '<h3 class="h-sub" id="photo-credits">Photo credits (' + usedPhotos.length + ')</h3>' +
-      '<p class="fine">The photos are shown straight from Wikimedia Commons, Unsplash and Pexels (not copied into this site), under the licence named for each. A caption names a place only where the photo\'s own page does.</p>' +
+    return '<h3 class="h-sub" id="photo-credits">' + Tve('sources.photoTitle', { n: usedPhotos.length }) + '</h3>' +
+      '<p class="fine">' + Te('sources.photoNote') + '</p>' +
       '<ul class="credits">' + usedPhotos.map(function (p) {
-        return '<li><p class="credit-who">' + esc(p.credit) + '</p><p class="fine">' + esc(captionText(p)) + '</p>' +
-          '<p class="credit-links">' + srcLink(p.license_url, 'Licence: ' + p.license) + srcLink(p.source_page, 'Source page') + '</p></li>';
+        return '<li><p class="credit-who">' + esc(tx(p, 'credit')) + '</p><p class="fine">' + esc(captionText(p)) + '</p>' +
+          '<p class="credit-links">' + srcLink(p.license_url, Tv('sources.licence', { license: tx(p, 'license') })) + srcLink(p.source_page, T('sources.sourcePage')) + '</p></li>';
       }).join('') + '</ul>';
   }
 
@@ -3855,27 +4869,184 @@
     if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
   }
 
+  /* ------------------------------------------------------------ language */
+  // Static markup carries data-i18n (text) and data-i18n-attr (one attribute).
+  function applyI18nDom(root) {
+    $$('[data-i18n]', root || document).forEach(function (el) {
+      var val = T(el.getAttribute('data-i18n'));
+      if (!val) return;
+      var attr = el.getAttribute('data-i18n-attr');
+      if (attr) el.setAttribute(attr, val); else el.textContent = val;
+    });
+    document.documentElement.setAttribute('lang', htmlLangFor(lang));
+  }
+  // The switcher: a two-state EN / 中文 control in the menu panel and in the desktop
+  // rail, plus a compact always-visible button in the sticky top bar on phones.
+  function renderLangUI() {
+    $$('[data-lang-seg]').forEach(function (box) {
+      box.innerHTML = ['en', 'zh'].map(function (l) {
+        var on = l === lang, off = !langReady(l);
+        return '<button type="button" class="lang-opt' + (on ? ' is-on' : '') + (off ? ' is-off' : '') + '" data-lang-set="' + l + '"' +
+          ' lang="' + (l === 'zh' ? htmlLangFor('zh') : 'en') + '"' +
+          ' aria-pressed="' + on + '"' + (on ? ' aria-current="true"' : '') + '>' +
+          '<span class="lang-opt-code">' + Te('lang.' + l) + '</span><span class="vh"> ' + Te('lang.' + l + 'Full') + '</span></button>';
+      }).join('');
+    });
+    var b = $('#lang-btn');
+    if (!b) return;
+    var other = lang === 'en' ? 'zh' : 'en';
+    b.setAttribute('data-lang-set', other);
+    b.setAttribute('aria-pressed', lang === 'zh' ? 'true' : 'false');
+    b.setAttribute('aria-label', T(other === 'zh' ? 'lang.toZh' : 'lang.toEn'));
+    b.setAttribute('lang', other === 'zh' ? htmlLangFor('zh') : 'en');
+    var txt = $('.lang-btn-text', b);
+    if (txt) txt.textContent = T('lang.' + other);
+  }
+  // What the reader had open and where they were, so a switch lands in the same place.
+  function captureView() {
+    var bar = $('#topbar'), barH = bar && bar.offsetHeight ? bar.offsetHeight : 0;
+    var anchor = null;
+    $$('main > section, main > footer').forEach(function (s) {
+      if (!s.getBoundingClientRect) return;
+      var top = s.getBoundingClientRect().top;
+      if (top <= barH + 8) anchor = { id: s.id, delta: top };
+    });
+    return {
+      anchor: anchor,
+      y: scrollTopNow(),
+      details: $$('details').map(function (d) { return !!d.open; }),
+      spots: $$('[data-spot-open]').filter(function (b) { return b.getAttribute('aria-expanded') === 'true'; })
+        .map(function (b) { return b.getAttribute('data-spot-open'); }),
+      days: $$('.day-toggle').map(function (b) { return b.getAttribute('aria-expanded') === 'true'; }),
+      sheet: !!($('#spot-sheet') && $('#spot-sheet').classList.contains('is-open'))
+    };
+  }
+  function restoreView(v) {
+    $$('details').forEach(function (d, i) { if (v.details[i] !== undefined) d.open = v.details[i]; });
+    v.spots.forEach(function (id) {
+      var b = $('[data-spot-open="' + id + '"]'), body = $('#spot-body-' + id);
+      if (b) b.setAttribute('aria-expanded', 'true');
+      if (body) body.hidden = false;
+    });
+    $$('.day-toggle').forEach(function (b, i) {
+      if (v.days[i] === undefined) return;
+      b.setAttribute('aria-expanded', String(v.days[i]));
+      var body = document.getElementById(b.getAttribute('aria-controls'));
+      if (body) body.hidden = !v.days[i];
+    });
+    if (v.sheet && isSheetMode()) openSheet();
+    if (typeof W.scrollTo !== 'function') return;
+    var go = function () {
+      var y = v.y;
+      if (v.anchor) {
+        var el = document.getElementById(v.anchor.id);
+        if (el && el.getBoundingClientRect) y = Math.max(0, el.getBoundingClientRect().top + scrollTopNow() - v.anchor.delta);
+      }
+      scrollInstant(function () { W.scrollTo(0, y); });
+    };
+    go();
+    if (W.requestAnimationFrame) W.requestAnimationFrame(go);
+  }
+  // Everything the language touches, rebuilt in place. State (plan, calculator picks,
+  // filters, checklist ticks, the chosen spot) lives outside the DOM, so it survives.
+  function rerenderAll() {
+    [renderPlanPickers, renderNav, renderShare, renderTop, renderPlates, renderSeason, renderHeads, renderKeypoints,
+      renderDecisions, renderCrew, renderVibe, renderPlanPick, renderBudget, renderFlights, renderStay, renderMapViews,
+      renderSpotFilters, renderSpotList, applySpotFilter, renderBoatTimes, renderAccessRules, renderTides, renderRhythm,
+      renderCoaching, renderTransport, renderActivities, renderFood, renderItinerary, renderPrep, renderSources
+    ].forEach(function (fn, i) { safe(fn, 'lang-' + i); });
+    emit('init');
+    syncPlanInputs();
+    safe(refreshMapsLang, 'lang-maps');
+    // A language switch is not an arrival: nothing should fade in again.
+    $$('[data-reveal]').forEach(function (el) { el.classList.add('is-in'); });
+    $$('.bar-track.is-new').forEach(function (t) { t.classList.remove('is-new'); });
+    var st = $('#spot-status');
+    if (st) st.textContent = '';   // a live region must not keep the other language's line
+    if (selectedSpot) safe(function () { selectSpot(selectedSpot, 'init'); }, 'lang-spot');
+  }
+  function refreshMapsLang() {
+    if (ovNoteKey) ovNote(T(ovNoteKey));
+    setCredit($('#ov-credit'), ov.leaflet ? ((ov.M && ov.M.creditText) || mapCredit('Satellite')) : sketchCredit());
+    var south = $('#ov-south');
+    if (south) south.textContent = T(ov.view === 'all' ? 'ov.backNorth' : 'ov.showSouth');
+    var mv = $('#ov-move');
+    if (mv) mv.textContent = T(mv.classList.contains('is-on') ? 'ov.doneMoving' : 'ov.moveMap');
+    var tb = $('[data-map-touch]');
+    if (tb) tb.textContent = T(tb.classList.contains('is-on') ? 'spots.doneMovingMap' : 'spots.moveMap');
+    var fb = $('#map-fallback');
+    if (fb && mod.fallbackKey) fb.textContent = T(mod.fallbackKey);
+    if (mod.fallback) setCredit($('#map-credit'), sketchCredit());
+    renderOverviewLists();
+    [ov.M, mod.M].forEach(function (M) {
+      if (!M || !M.ready) return;
+      var air = airportPlace();
+      Object.keys(M.markers).forEach(function (k) {
+        var mk = M.markers[k], s = spotById(k), el = mk.getElement && mk.getElement();
+        if (el && s) el.setAttribute('aria-label', spotAria(s));
+        if (s && mk.getTooltip && mk.getTooltip() && mk.setTooltipContent) mk.setTooltipContent(tx(s, 'name'));
+      });
+      if (M.airport && air) {
+        var ael = M.airport.getElement && M.airport.getElement();
+        if (ael) ael.setAttribute('aria-label', Tv('map.airportAria', { name: tx(air, 'name'), boat: airportBoatText() }));
+      }
+      addLayerControl(M);
+      setMapStays(M);
+    });
+    if (ov.card) ovSelect(ov.card.type, ov.card.id);
+    if (!ov.leaflet) drawSchematic('ov');
+    if (mod.fallback) drawSchematic('mod');
+  }
+  function setLang(next) {
+    next = next === 'zh' ? 'zh' : 'en';
+    if (next === lang) { renderLangUI(); return true; }
+    if (!langReady(next)) { toast(T('lang.unavailable')); renderLangUI(); return false; }
+    var view = captureView();
+    lang = next;
+    store.set(LANG_KEY, lang);
+    applyI18nDom();
+    renderLangUI();
+    rerenderAll();
+    restoreView(view);
+    toast(T(lang === 'zh' ? 'lang.switchedZh' : 'lang.switchedEn'));
+    return true;
+  }
+  function initLang() {
+    var saved = store.get(LANG_KEY);
+    if (saved === 'zh' && langReady('zh')) lang = 'zh';
+    else if (saved && saved !== 'en') store.remove(LANG_KEY);
+    applyI18nDom();
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-lang-set]');
+      if (!b) return;
+      e.preventDefault();
+      setLang(b.getAttribute('data-lang-set'));
+    });
+  }
+
   /* ---------------------------------------------------------------- init */
   function safe(fn, name) {
     try { fn(); } catch (e) {
       reportError(name + ': ' + (e && e.message));
       var el = $('[data-render="' + name + '"]');
-      if (el && !el.innerHTML) el.innerHTML = '<p class="note">This part of the page could not be shown. Reload to try again.</p>';
+      if (el && !el.innerHTML) el.innerHTML = '<p class="note">' + Te('error.section') + '</p>';
     }
   }
   function init() {
     if (!TRIP) {
       var main = $('#main');
-      if (main) main.insertAdjacentHTML('afterbegin', '<p class="note">The trip data did not load. Reload the page.</p>');
+      if (main) main.insertAdjacentHTML('afterbegin', '<p class="note">' + Te('error.noData') + '</p>');
       return;
     }
     // First visit: the recommended plan. Returning visitor: the plan they last looked at, if it still exists.
     // A plan tapped in the placeholder switcher before this script arrived (slow connections) wins over both.
     var early = $$('input[data-plan-input]').filter(function (i) { return i.checked && !i.hasAttribute('checked') && planById(i.value); })[0];
     if (early) savePlan(early.value);
+    safe(initLang, 'lang');
     state = defaultState(early ? early.value : savedPlan() || recPlan().id);
     document.documentElement.classList.add('js');
     if (!reduceMotion) document.documentElement.classList.add('motion');
+    safe(renderLangUI, 'lang-ui');
     safe(initPhotoFallbacks, 'photo-fallbacks');
     safe(initJumps, 'jumps');
     safe(renderPlanPickers, 'plan-pickers');
@@ -3950,6 +5121,11 @@
     safe(initOverview, 'ov-lists');
     safe(initModuleMapWhenNear, 'map');
     safe(handleInitialHash, 'hash');
+    W.MSTLang = {
+      get: function () { return lang; },
+      set: function (l) { return setLang(l); },
+      available: function () { return { en: true, zh: langReady('zh') }; }
+    };
     W.MSTBudget = {
       compute: function () { var r = computeBudget(state); return { low: r.lo, high: r.hi, groupLow: r.groupLo, groupHigh: r.groupHi, crew: r.crew, plan: r.plan, choices: r.eff, lines: r.counted.map(function (c) { return c.line.id; }) }; },
       state: function () { return { plan: state.plan, flight: state.flight, coaching: state.coaching, food: state.food, addons: Array.from(state.addons), crew: state.crew }; },
