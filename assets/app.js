@@ -29,7 +29,6 @@
     "level.short.Int-Adv": "Int-Adv",
     "level.short.Beginner-Int": "Beginner-Int",
     "level.short.Int-Adv to Advanced/Expert": "Int-Adv to Advanced/Expert",
-    "plan.vhRole": ", {role}",
     "photo.captionDot": "{caption}.",
     /* --- language switcher --- */
     "lang.label": "Language",
@@ -46,9 +45,9 @@
 
     /* --- head, share card --- */
     "meta.title": "Maldives Surf Trip, 1-10 Nov 2026",
-    "meta.description": "Crew trip plan for 11 intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Tue 10 Nov 2026. Opens on a map of the surf spots and where we could stay, then the November surf outlook, the budget (Budget plan, Mid as the upgrade), flights, stays, surf spots, coaching, boats and more. Prices checked 16 Sep 2026.",
+    "meta.description": "Crew trip plan for 11 intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Tue 10 Nov 2026. Opens on a map of the surf spots and where we could stay, then the November surf outlook, the budget (one plan: Budget), flights, stays, surf spots, coaching, boats and more. Prices checked 16 Sep 2026.",
     "meta.ogTitle": "Maldives Surf Trip, 1-10 Nov 2026",
-    "meta.ogDescription": "Our crew plan for North Malé Atoll: a map of the breaks and the guesthouse options, the November surf outlook, what it costs each of us in HKD (Budget plan, Mid as the upgrade), flights, boats and coaching. Prices checked 16 Sep 2026, estimates to re-check before booking.",
+    "meta.ogDescription": "Our crew plan for North Malé Atoll: a map of the breaks and the guesthouse options, the November surf outlook, what it costs each of us in HKD (one plan: Budget), flights, boats and coaching. Prices checked 16 Sep 2026, estimates to re-check before booking.",
     "meta.ogImageAlt": "A surfer in a yellow rash guard crouched inside a hollow, glassy wave in the Maldives",
     "noscript.text": "This trip plan needs JavaScript to show its content. Turn JavaScript on and reload the page.",
     "skip.toOverview": "Skip the map, go to 1 Overview",
@@ -56,11 +55,7 @@
     /* --- top bar, rail, menu, nav --- */
     "bar.sections": "Sections",
     "bar.surfSpots": "Surf spots",
-    "bar.planLegend": "Plan",
     "bar.planBudget": "Budget",
-    "bar.planBudgetVh": ", the crew's plan",
-    "bar.planMid": "Mid",
-    "bar.planMidVh": ", optional upgrade",
     "rail.navAria": "Trip navigation",
     "rail.brandName": "Maldives surf trip",
     "rail.brandDates": "Sun 1 to Tue 10 Nov 2026",
@@ -291,19 +286,12 @@
 
     /* --- plans --- */
     "plan.roleCrew": "The crew's plan",
-    "plan.roleUpgrade": "Optional upgrade",
-    "plan.roleAlt": "Alternative",
     "plan.recRole": "The crew's plan (organiser's pick)",
     "plan.eachWithFlights": "each, with flights ",
     "plan.crewOf": "Crew of {n}: {price}",
     "plan.defaultPicks": "Default picks: {picks}.",
-    "plan.moreThan": "{delta} more each than {plan} (estimate).",
     "plan.changeInCalc": "Change the picks in the calculator",
     "plan.aboveLink": "An all-in surf resort: checked, above our budget",
-    "plan.show": "Show this plan",
-    "plan.showing": "Showing this plan",
-    "plan.tileShow": "Show this plan on the page",
-    "plan.tileShowing": "The page is showing this plan",
     "plan.planSuffix": "{plan} plan",
     "picks.noCoaching": "no coaching",
     "picks.coaching": "{name} coaching",
@@ -315,7 +303,6 @@
     "decisions.alts": "Alternatives",
 
     /* --- toasts --- */
-    "toast.planSwitched": "{plan} ({role}): about {price} each, estimate",
 
     /* --- 5 Surf spots --- */
     "spots.lede": "All {n} breaks our research found in North and South Malé, on one map. The crew picks are {picks}. Boat times are as the guides give them from {base}. Tap a pin or a card for the details.",
@@ -471,8 +458,7 @@
     "transport.perSession": "each, per session",
     "transport.forTrip": "each, for the trip",
     "transport.addsUp": "How this adds up",
-    "transport.bothPlans": "Both plans use this",
-    "transport.everyPlan": "Every plan uses this",
+    "transport.usedTag": "Used on this trip",
 
     /* --- 4 Accommodation --- */
     "stay.planShort": "{plan} plan",
@@ -485,9 +471,7 @@
     "stay.figureNote": "This figure: {status}. The package as a whole: ",
     "stay.placesTitle": "Places to stay",
     "stay.placesOnPlan": "Places to stay on the {plan} plan",
-    "stay.placesHint": "Room prices were found for a crew of {crew}: group totals cover all {crew} for {nights} nights, and the price each is that total divided by {crew}. Change the plan to see the {other} places.",
-    "stay.otherPlan": "other plan's",
-    "stay.otherPlans": "other plans'",
+    "stay.placesHint": "Room prices were found for a crew of {crew}: group totals cover all {crew} for {nights} nights, and the price each is that total divided by {crew}. We book one of them.",
     "stay.roomsFor": "Rooms for {n}",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
@@ -526,8 +510,7 @@
     /* --- 6 Surf coaching --- */
     "coach.realityCheck": "Reality check.",
     "coach.realityMore": "The rest of the reality check",
-    "coach.packagesBoth": "Coaching packages (both plans)",
-    "coach.packagesEvery": "Coaching packages (every plan)",
+    "coach.packagesTitle": "Coaching packages you can add",
     "coach.howPriced": "How it is priced",
     "coach.programmeTitle": "The 8-day coaching programme",
     "coach.focus": "Focus:",
@@ -542,7 +525,7 @@
     "coach.noStayTag": "No stay needed",
     "coach.offer": "What they offer",
     "coach.planCounts": "On the {plan} the budget calculator counts {pkg}{dflt}. Change it in the budget calculator.",
-    "coach.planDefault": " (this plan's default)",
+    "coach.planDefault": " (the default)",
     "coach.planNone": "On the {plan} these packages do not apply. What the budget counts instead:",
 
     /* --- Eat & drink --- */
@@ -573,9 +556,9 @@
     "food.island.Male": "Malé",
     "food.island.Hulhumale": "Hulhumalé",
     "food.short.budget": "Budget",
-    "food.short.mid": "Cafés plus two nicer dinners",
+    "food.short.mixed": "Cafés plus two nicer dinners",
     "food.short.nicer": "Nicer restaurants every day",
-    "food.short.resort-day-pass": "Resort day pass (one day; included once in the Mid plan)",
+    "food.short.resort-day-pass": "Resort day pass (one day, an optional extra)",
 
     /* --- 8 Other activities --- */
     "act.ideasTitle": "Ideas for the rest of the day",
@@ -594,8 +577,6 @@
     "act.countSome": "{n} of {total} ideas match",
 
     /* --- Day-by-day plan --- */
-    "itin.showBoth": "Show both plans' times for each day",
-    "itin.showEvery": "Show every plan's times for each day",
     "itin.openAll": "Open all days",
     "itin.closeAll": "Close all days",
     "itin.surf": "Surf:",
@@ -607,24 +588,21 @@
     "itin.kindSurfFly": "Surf, then fly",
     "itin.kindArrive": "Arrive",
     "itin.kindTravel": "Travel",
-    "itin.planTag": "{plans} plan",
-    "itin.planNote": "Showing the {plan} ({role}). Times marked with a plan name only apply to that plan; change the plan in the top bar (phones) or the side panel (desktop) to compare. Travel times follow our recommended {flights} flights, whichever flight you pick in the budget calculator.",
+    "itin.planNote": "The day plan follows the {plan}, the crew's plan. Travel times follow our recommended {flights} flights, whichever flight you pick in the budget calculator.",
     "itin.planNoteStrong": "{plan} plan",
 
     /* --- 2 Budget overall: the calculator --- */
-    "budget.lede": "Pick a plan, a flight, coaching, food style and extras. The totals are per person, and group totals are that times the crew size. It opens on {plan}, the crew's plan. Prices checked {date}; all are estimates to re-check before booking.",
-    "budget.legPlan": "Plan",
+    "budget.lede": "Pick a flight, coaching, food style and extras. The totals are per person, and group totals are that times the crew size. There is one plan, {plan}, the crew's plan. Prices checked {date}; all are estimates to re-check before booking.",
     "budget.legFlight": "Flight",
     "budget.legCoaching": "Coaching",
     "budget.legFood": "Food",
     "budget.legAddons": "Optional add-ons",
     "budget.legCrew": "Crew size",
-    "budget.planNote": "Changing the plan loads that plan's own flight, coaching and food picks. Add-ons and crew size stay.",
     "budget.stepDown": "One fewer person",
     "budget.stepUp": "One more person",
     "budget.numPeople": "Number of people",
     "budget.crewSlider": "Crew size slider",
-    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, the Mid crew boat, permits) are split across the crew. Room prices were found for {base}, so a different crew size needs new room quotes.",
+    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, a private crew boat, permits) are split across the crew. Room prices were found for {base}, so a different crew size needs new room quotes.",
     "budget.reset": "Reset to the crew's plan ({plan})",
     "budget.eachPerson": "Each person ",
     "budget.wholeCrew": "Whole crew of ",
@@ -647,8 +625,6 @@
     "budget.dockCrewOf": "Crew of {n}",
     "budget.statusLine": "{plan} plan. Each person {pp}, whole crew of {n} {group}. Estimates.",
     "budget.yourPicks": "Your picks in the calculator ({plan}): {price} each (estimate).",
-    "budget.optPlanTitle": "{plan}: {desc}",
-    "budget.optPlanSub": "{role}, about {price} each",
     "budget.optFlightSub": "{price} each, fare plus bag and board costs",
     "budget.optEach": "{price} each",
     "budget.optFoodSub": "{price} each, for the {nights}-night trip",
@@ -821,8 +797,6 @@
     var c = T('money.hkd') + ' ';
     return a === b ? c + fmt(a) : c + fmt(a) + '–' + fmt(b);
   }
-  // Difference between two rounded totals, so it matches the totals shown next to it.
-  function hkdDelta(a, b) { return hkd(Math.round(a.lo) - Math.round(b.lo), Math.round(a.hi) - Math.round(b.hi)); }
   function cap(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
@@ -1091,18 +1065,6 @@
       crew: crewBase()
     };
   }
-  // Switching plan loads that plan's own picks for flight, coaching and food; add-ons and crew size stay.
-  function applyPlanDefaults(st, planId) {
-    GROUPS.forEach(function (g) { st[g] = defaultChoice(g, planId); });
-  }
-  // What another plan would cost if you switched to it now.
-  function stateForPlan(st, planId) {
-    if (planId === st.plan) return st;
-    var s2 = defaultState(planId);
-    s2.addons = st.addons;
-    s2.crew = st.crew;
-    return s2;
-  }
   function isDefaultState(st) {
     var d = defaultState(recPlan().id);
     return st.plan === d.plan && st.crew === d.crew && st.addons.size === 0 &&
@@ -1136,13 +1098,6 @@
     res.groupLo = Math.round(res.lo * crew);
     res.groupHi = Math.round(res.hi * crew);
     return res;
-  }
-  // "The crew's plan" for the recommended plan; any dearer plan is an optional upgrade.
-  function planRole(id) {
-    var rec = recPlan();
-    if (id === rec.id) return T('plan.roleCrew');
-    var a = computeBudget(defaultState(id)), b = computeBudget(defaultState(rec.id));
-    return a.hi >= b.hi && a.lo >= b.lo ? T('plan.roleUpgrade') : T('plan.roleAlt');
   }
   // "Budget plan, Emirates, no coaching, budget food, no add-ons, crew of 11". Short form drops the plan and the crew.
   function picksText(state, short) {
@@ -1523,7 +1478,7 @@
   }
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { UI_EN: UI_EN, setLangForTest: function (l) { lang = l; }, computeBudget: computeBudget, defaultState: defaultState, defaultChoice: defaultChoice, applyPlanDefaults: applyPlanDefaults, stateForPlan: stateForPlan, choiceIds: choiceIds, effectiveChoice: effectiveChoice, planShort: planShort, planRole: planRole, sentences: sentences, richText: richText, stripStatusTail: stripStatusTail, picksText: picksText, boatTime: boatTime, staysForPlan: staysForPlan, spreadPoints: spreadPoints, placeLabels: placeLabels, projectBox: projectBox, geoBox: geoBox, viewPoints: viewPoints };
+    module.exports = { UI_EN: UI_EN, setLangForTest: function (l) { lang = l; }, computeBudget: computeBudget, defaultState: defaultState, defaultChoice: defaultChoice, choiceIds: choiceIds, effectiveChoice: effectiveChoice, planShort: planShort, sentences: sentences, richText: richText, stripStatusTail: stripStatusTail, picksText: picksText, boatTime: boatTime, staysForPlan: staysForPlan, spreadPoints: spreadPoints, placeLabels: placeLabels, projectBox: projectBox, geoBox: geoBox, viewPoints: viewPoints };
   }
   if (!IS_BROWSER) return;
 
@@ -1534,37 +1489,13 @@
   function emit(kind) { listeners.forEach(function (fn) { try { fn(kind); } catch (e) { reportError(e); } }); }
   function reportError(e) { if (W.console && console.warn) console.warn('[trip site]', e && e.message ? e.message : e); }
 
-  function setPlan(id, source) {
-    if (!planById(id) || state.plan === id) { syncPlanInputs(); return; }
-    state.plan = id;
-    applyPlanDefaults(state, id);
-    savePlan(id);
-    syncPlanInputs();
-    emit('plan');
-    if (source !== 'calc') {
-      var r = computeBudget(state);
-      toast(Tv('toast.planSwitched', { plan: planShort(id), role: planRole(id).toLowerCase(), price: hkd(r.lo, r.hi) }));
-    }
-  }
   function syncPlanInputs() {
-    $$('input[data-plan-input]').forEach(function (inp) { inp.checked = inp.value === state.plan; });
-    $$('[data-plan-choose]').forEach(function (b) {
-      var on = b.getAttribute('data-plan-choose') === state.plan;
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      b.textContent = T(on ? 'plan.showing' : 'plan.show');
-    });
-    $$('[data-plan-tile]').forEach(function (b) {
-      var on = b.getAttribute('data-plan-tile') === state.plan;
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      var st = $('[data-pick-state]', b);
-      if (st) st.textContent = T(on ? 'plan.tileShowing' : 'plan.tileShow');
-    });
     document.documentElement.setAttribute('data-plan', state.plan);
   }
 
-  // The plan you last looked at is remembered on this device. Old or unknown ids fall back to the crew's plan.
+  // A plan id saved on this device by an earlier version of the page (there used to be two) is dropped:
+  // there is one plan now, so an unknown id just lands on it.
   var PLAN_KEY = 'maldives-surf-2026:plan';
-  function savePlan(id) { store.set(PLAN_KEY, id); }
   function savedPlan() {
     var v = store.get(PLAN_KEY);
     if (v && planById(v)) return v;
@@ -1605,33 +1536,15 @@
   // (#vibe still exists as the gallery heading in 1 Overview, and #plan now lands on "The plan in 30 seconds".)
   var LEGACY_IDS = { surf: 'spots', plan: 'plan-title', 'heads-title': 'read-first', 'spots-title': 'spots' };
 
-  function renderPlanPickers() {
-    $$('[data-plan-group]').forEach(function (fs) {
-      var g = fs.getAttribute('data-plan-group');
-      var legend = fs.querySelector('legend');
-      var html = TRIP.plans.map(function (p) {
-        var inner = '<span class="seg-name">' + (p.recommended && g === 'top' ? '<span class="seg-pick" aria-hidden="true"></span>' : '') +
-          esc(planShort(p.id)) + '<span class="vh">' + Tve('plan.vhRole', { role: planRole(p.id).toLowerCase() }) + '</span></span>';
-        if (g === 'rail') inner += '<span class="seg-role" aria-hidden="true">' + esc(planRole(p.id)) + '</span><span class="seg-est" data-plan-est="' + esc(p.id) + '"></span>';
-        return '<label class="seg-opt"><input type="radio" name="plan-' + g + '" value="' + esc(p.id) + '" data-plan-input>' + inner + '</label>';
-      }).join('');
-      fs.innerHTML = '';
-      if (legend) fs.appendChild(legend);
-      fs.insertAdjacentHTML('beforeend', html);
-      bindOnce(fs, 'plan-group', 'change', function (e) {
-        if (e.target && e.target.name === 'plan-' + g) setPlan(e.target.value, g);
-      });
-    });
-  }
   function updatePlanEstimates() {
-    // The desktop rail compares the plans as 2 Budget overall does: each at its own default picks (crew of 11, no
-    // add-ons), labelled so. Only the calculator, its dock and the "Your picks" line follow the reader's changes.
+    // The desktop rail label and the stay card show the plan at its own default picks (crew of 11, no add-ons),
+    // labelled so. Only the calculator, its dock and the "Your picks" line follow the reader's changes.
     $$('[data-plan-est]').forEach(function (el) {
-      var r = computeBudget(defaultState(el.getAttribute('data-plan-est')));
+      var r = computeBudget(defaultState(el.getAttribute('data-plan-est') || recPlan().id));
       el.textContent = Tv('rail.planEst', { price: hkd(r.lo, r.hi) });
     });
     $$('[data-plan-total]').forEach(function (el) {
-      var r = computeBudget(stateForPlan(state, el.getAttribute('data-plan-total')));
+      var r = computeBudget(defaultState(el.getAttribute('data-plan-total')));
       el.textContent = hkd(r.lo, r.hi);
     });
   }
@@ -1668,7 +1581,7 @@
     var supports = typeof dlg.showModal === 'function';
     function show() {
       var r = computeBudget(state);
-      bind('menu-estimate', Tv('menu.estimate', { plan: planShort(state.plan), role: planRole(state.plan).toLowerCase(), price: hkd(r.lo, r.hi) }));
+      bind('menu-estimate', Tv('menu.estimate', { plan: planShort(state.plan), role: T('plan.roleCrew').toLowerCase(), price: hkd(r.lo, r.hi) }));
       if (supports) dlg.showModal(); else dlg.setAttribute('open', '');
       document.body.classList.add('menu-open');
       open.setAttribute('aria-expanded', 'true');
@@ -2229,7 +2142,7 @@
   function unit(k, label) {
     return '<span class="cd-unit"><span class="cd-num" data-cd="' + k + '"></span><span class="cd-lbl" data-cd-lbl="' + k + '">' + label + '</span></span>';
   }
-  // Under the Budget and Mid tiles: a line with the calculator's own picks, shown only when they differ from the crew's plan.
+  // Under the plan tile: a line with the calculator's own picks, shown only when they differ from the crew's plan.
   function updateEstimateMine() {
     var mine = $$('[data-bind="estimate-mine"]');
     var custom = !isDefaultState(state);
@@ -2302,33 +2215,27 @@
     }).join(''));
   }
 
-  // 2 Budget overall: the crew's plan next to the upgrade, both at their own default picks, with the crew total.
-  // Tapping a tile shows that plan everywhere (map stays, stay cards, day plan, calculator).
+  // 2 Budget overall: the one plan at its default picks, with the crew total. There is nothing to switch to,
+  // so the tile is a panel, not a button.
   function renderPlanPick() {
-    var rec = recPlan(), rs = computeBudget(defaultState(rec.id));
+    var rec = recPlan();
     var html = '<p class="lede">' + esc(tx(TRIP.headline, 'one_liner')) + '</p>' +
       '<div class="pick-tiles">' + TRIP.plans.map(function (p) {
-        var ds = defaultState(p.id), r = computeBudget(ds), isRec = p.id === rec.id;
-        var more = !isRec && r.lo >= rs.lo && r.hi >= rs.hi;
-        return '<button type="button" class="pick-tile' + (isRec ? ' is-rec' : '') + '" data-plan-tile="' + esc(p.id) + '" aria-pressed="false">' +
-          '<span class="pick-role">' + esc(isRec ? T('plan.recRole') : planRole(p.id)) + '</span>' +
+        var ds = defaultState(p.id), r = computeBudget(ds);
+        return '<div class="pick-tile' + (p.id === rec.id ? ' is-rec' : '') + '">' +
+          '<span class="pick-role">' + Te('plan.recRole') + '</span>' +
           '<span class="pick-name">' + esc(planShort(p.id)) + '</span>' +
           '<span class="pick-desc">' + esc(planDesc(p.id)) + '</span>' +
           '<span class="pick-price">' + esc(hkd(r.lo, r.hi)) + '</span>' +
           '<span class="pick-each">' + Te('plan.eachWithFlights') + chip(T('status.legend.estimate'), 'estimate') + '</span>' +
           '<span class="pick-group">' + Tve('plan.crewOf', { n: r.crew, price: hkd(r.groupLo, r.groupHi) }) + '</span>' +
           '<span class="pick-picks">' + Tve('plan.defaultPicks', { picks: picksText(ds, true) }) + '</span>' +
-          (more ? '<span class="pick-delta">' + Tve('plan.moreThan', { delta: hkdDelta(r, rs), plan: planShort(rec.id) }) + '</span>' : '') +
-          '<span class="pick-state" data-pick-state></span></button>';
+          '</div>';
       }).join('') + '</div>' +
       '<p class="estimate-mine" data-bind="estimate-mine" hidden></p>' +
       '<p class="pick-links"><a class="more" href="#calc-title">' + Te('plan.changeInCalc') + '</a>' +
       ((TRIP.above_budget || []).length ? '<a class="more" href="#above-budget">' + Te('plan.aboveLink') + '</a>' : '') + '</p>';
-    var root = renderInto('plan-pick', html);
-    if (root) bindOnce(root, 'plan-pick', 'click', function (e) {
-      var b = e.target.closest('[data-plan-tile]');
-      if (b) setPlan(b.getAttribute('data-plan-tile'), 'pick');
-    });
+    renderInto('plan-pick', html);
   }
 
   function renderDecisions() {
@@ -2595,12 +2502,12 @@
   // screen, under the top bar and clear of the open sheet (bottom) or side panel (landscape). With the sheet open the
   // map box is taken to be where alignSpotMap() puts it, so a scroll still under way does not throw the centre off.
   function spotTarget(M, from) {
-    var map = M.map, size = map.getSize(), mid = { x: size.x / 2, y: size.y / 2 };
+    var map = M.map, size = map.getSize(), centre = { x: size.x / 2, y: size.y / 2 };
     var sh = $('#spot-sheet'), el = map.getContainer();
-    if (!isSheetMode() || !el || !el.getBoundingClientRect) return mid;
+    if (!isSheetMode() || !el || !el.getBoundingClientRect) return centre;
     var open = sh && sh.classList.contains('is-open');
     var r = el.getBoundingClientRect(), vw = W.innerWidth || 0, vh = W.innerHeight || 0;
-    if (!vw || !vh || !r.height) return mid;
+    if (!vw || !vh || !r.height) return centre;
     var top = r.top;
     if (open && from !== 'list') { var y = spotMapScrollY(); if (y !== null) top = r.top + scrollTopNow() - y; }
     var bar = $('#topbar'), barH = bar ? bar.offsetHeight || 0 : 0;
@@ -2609,7 +2516,7 @@
       if (sheetSide()) visR = Math.min(visR, vw - (sh.offsetWidth || 0));
       else visB = Math.min(visB, vh - (sh.offsetHeight || 0));
     }
-    if (visB - visT < 90 || visR - visL < 90) return mid;
+    if (visB - visT < 90 || visR - visL < 90) return centre;
     return {
       x: Math.max(30, Math.min(size.x - 30, (visL + visR) / 2 - r.left)),
       y: Math.max(30, Math.min(size.y - 30, (visT + visB) / 2 - top))
@@ -2979,7 +2886,7 @@
     var b = L.latLngBounds(viewPoints(view).map(function (p) { return [p.lat, p.lon]; }));
     M.map.fitBounds(b, { paddingTopLeft: pad.tl, paddingBottomRight: pad.br, animate: !!animate && !reduceMotion });
   }
-  // The stay pins follow the plan: Budget's options are on Thulusdhoo and Himmafushi, Mid's on Thulusdhoo.
+  // The stay pins are the plan's own stay options: Thulusdhoo and Himmafushi.
   function setMapStays(M) {
     if (!M || !M.ready) return;
     var L = W.L;
@@ -3726,7 +3633,7 @@
       if (again) { try { again.focus({ preventScroll: true }); } catch (e) { /* older browsers */ } }
     }
   }
-  // Budget or Mid: both maps and the lists under the overview follow the plan on screen.
+  // Both maps and the lists under the overview follow the plan on screen.
   function updateMapsPlan() {
     renderOverviewLists();
     if (ov.card && ov.card.type === 'stay') closeOvCard(false);
@@ -3809,7 +3716,6 @@
   }
 
   /* --------------------------------------------------------------- itinerary */
-  var showAllPlans = false;
   function dayKind(d) {
     var t = d.title;
     if (/flex/i.test(t)) return [T('itin.kindFlex'), 'flex'];
@@ -3822,7 +3728,6 @@
   function renderItinerary() {
     var html = '<div class="itin-tools">' +
       '<p class="itin-plan" data-itin-plan></p>' +
-      '<label class="check"><input type="checkbox" data-itin-all' + (showAllPlans ? ' checked' : '') + '><span>' + Te(TRIP.plans.length === 2 ? 'itin.showBoth' : 'itin.showEvery') + '</span></label>' +
       '<div class="itin-btns"><button type="button" class="btn btn-quiet" data-itin-expand="1">' + Te('itin.openAll') + '</button>' +
       '<button type="button" class="btn btn-quiet" data-itin-expand="0">' + Te('itin.closeAll') + '</button></div></div>' +
       '<div class="days-wrap"><span class="days-progress" aria-hidden="true"></span><ol class="days">' + TRIP.itinerary.map(function (d, i) {
@@ -3859,9 +3764,6 @@
         });
       }
       timelineNudge();
-    });
-    bindOnce(root, 'itin-change', 'change', function (e) {
-      if (e.target.hasAttribute('data-itin-all')) { showAllPlans = e.target.checked; updateItineraryBlocks(); }
     });
     updateItineraryBlocks();
     initTimeline();
@@ -3905,17 +3807,13 @@
   function updateItineraryBlocks() {
     var p = state.plan;
     var planP = $('[data-itin-plan]');
-    if (planP) planP.innerHTML = Th('itin.planNote', { role: planRole(p).toLowerCase(), flights: recFlightName() },
+    if (planP) planP.innerHTML = Th('itin.planNote', { flights: recFlightName() },
       { plan: '<strong>' + Tve('itin.planNoteStrong', { plan: planShort(p) }) + '</strong>' });
     TRIP.itinerary.forEach(function (d, i) {
       var ol = $('[data-day-blocks="' + i + '"]');
       if (!ol) return;
-      ol.innerHTML = d.blocks.filter(function (b) { return showAllPlans || appliesTo(b.plans, p); }).map(function (b) {
-        var specific = b.plans && b.plans.indexOf('all') === -1;
-        var tag = specific ? '<span class="plan-tag plan-tag--' + esc(b.plans[0]) + '">' +
-          Tve('itin.planTag', { plans: b.plans.map(function (x) { return planShort(x); }).join(T('words.listAnd')) }) + '</span>' : '';
-        var dim = specific && !appliesTo(b.plans, p) ? ' is-other' : '';
-        return '<li class="block' + (specific ? ' is-specific' : '') + dim + '"><span class="block-time">' + esc(tx(b, 'time')) + '</span><div class="block-what">' + tag + '<p>' + esc(tx(b, 'what')) + '</p></div></li>';
+      ol.innerHTML = d.blocks.filter(function (b) { return appliesTo(b.plans, p); }).map(function (b) {
+        return '<li class="block"><span class="block-time">' + esc(tx(b, 'time')) + '</span><div class="block-what"><p>' + esc(tx(b, 'what')) + '</p></div></li>';
       }).join('');
     });
   }
@@ -3995,7 +3893,7 @@
       '<p><span class="num">' + esc(hkd(TR.daily_boats.cost_pp_stay_hkd.low, TR.daily_boats.cost_pp_stay_hkd.high)) + '</span> ' + Te('transport.forTrip') + '</p>' + chip(T('status.legend.estimate'), 'estimate') + '</div>' +
       '<details class="more-d"><summary>' + Te('transport.addsUp') + '</summary><p>' + esc(tx(TR.daily_boats, 'basis')) + '</p>' + srcLink(TR.daily_boats.source) + '</details></div>' +
       '<div class="legs">' + TR.legs.map(function (leg) {
-        return '<article class="leg" data-leg="' + esc(leg.id) + '">' + photoFigure(photoById(LEG_PHOTOS[leg.id]), 'card-ph', '(min-width: 1000px) 45vw, 92vw') + '<header class="leg-head"><h3>' + esc(tx(leg, 'title')) + '</h3><span class="tag tag-plan" data-leg-tag hidden>' + Te(TRIP.plans.length === 2 ? 'transport.bothPlans' : 'transport.everyPlan') + '</span></header>' +
+        return '<article class="leg" data-leg="' + esc(leg.id) + '">' + photoFigure(photoById(LEG_PHOTOS[leg.id]), 'card-ph', '(min-width: 1000px) 45vw, 92vw') + '<header class="leg-head"><h3>' + esc(tx(leg, 'title')) + '</h3><span class="tag tag-plan" data-leg-tag hidden>' + Te('transport.usedTag') + '</span></header>' +
           '<ul class="leg-opts">' + leg.options.map(function (o) {
             return '<li class="leg-opt"><div class="leg-main"><h4>' + esc(tx(o, 'mode')) + '</h4><p class="leg-dur">' + esc(tx(o, 'duration')) + '</p></div>' +
               '<div class="leg-price"><p class="num">' + (o.cost_hkd.high === 0 ? Te('money.zero') : esc(hkd(o.cost_hkd.low, o.cost_hkd.high))) + '</p><p class="per">' + esc(perLabel(o.per)) + '</p>' + chipT(o, 'status') + '</div>' +
@@ -4040,12 +3938,11 @@
     // "Book it" sits above the plan cards and follows the chosen plan (see updateStayPlan).
     var html = '<div data-book-stay></div><div class="plans">' + TRIP.plans.map(function (p, i) {
       return '<article class="plan-card" data-plan-card="' + esc(p.id) + '">' + photoFigure(photoById(STAY_PHOTOS[i]), 'card-ph', '(min-width: 1100px) 40vw, (min-width: 900px) 45vw, 92vw') +
-        '<header><p class="plan-short">' + Tve('stay.planShort', { plan: planShort(p.id) }) + '</p>' + (p.recommended ? '<span class="stamp">' + Te('stay.stampCrew') + '</span>' : '<span class="stamp stamp-quiet">' + esc(planRole(p.id)) + '</span>') +
+        '<header><p class="plan-short">' + Tve('stay.planShort', { plan: planShort(p.id) }) + '</p><span class="stamp">' + Te('stay.stampCrew') + '</span>' +
         '<h3>' + esc(tx(p, 'name')) + '</h3><p class="plan-tag-line">' + esc(tx(p, 'tagline')) + '</p></header>' +
         '<p class="plan-base">' + esc(tx(p, 'base')) + '</p>' +
         '<div class="plan-price"><p class="stub-lbl">' + Tve('stay.stayEach', { nights: tripNights() }) + '</p><p class="num">' + esc(hkd(p.stay_pp_hkd.low, p.stay_pp_hkd.high)) + '</p>' + stayChips(p) +
         '<p class="stub-lbl">' + Te('stay.wholeTrip') + '</p><p class="num num-sm" data-plan-total="' + esc(p.id) + '"></p>' + chip(T('status.legend.estimate'), 'estimate') + '</div>' +
-        '<button type="button" class="btn btn-choose" data-plan-choose="' + esc(p.id) + '" aria-pressed="false">' + Te('plan.show') + '</button>' +
         '<p class="plan-who">' + esc(tx(p, 'who_for')) + '</p>' +
         '<details class="more-d"><summary>' + Te('stay.covers') + '</summary><p class="pc-h">' + Te('stay.included') + '</p>' + listOf(p.includes) + '<p class="pc-h">' + Te('stay.notIncluded') + '</p>' + listOf(p.excludes) + '<p class="fine">' + esc(tx(p, 'stay_basis')) + '</p></details>' +
         '<details class="more-d"><summary>' + Te('common.goodBad') + '</summary><p class="pc-h">' + Te('common.good') + '</p>' + listOf(p.pros) + '<p class="pc-h">' + Te('common.watchOut') + '</p>' + listOf(p.cons) + '</details>' +
@@ -4060,8 +3957,6 @@
       }).join('') + '</ul>';
     var root = renderInto('stay', html);
     bindOnce(root, 'stay-click', 'click', function (e) {
-      var b = e.target.closest('[data-plan-choose]');
-      if (b) setPlan(b.getAttribute('data-plan-choose'), 'stay');
       var m = e.target.closest('[data-ov-stay]');
       if (m) {
         e.preventDefault();
@@ -4099,7 +3994,7 @@
     if (t) t.textContent = Tv('stay.placesOnPlan', { plan: planShort(p.id) });
     var hint = $('[data-stay-hint]');
     var crewN = crewBase(), nights = tripNights();
-    if (hint) hint.textContent = Tv('stay.placesHint', { crew: crewN, nights: nights, other: T(TRIP.plans.length === 2 ? 'stay.otherPlan' : 'stay.otherPlans') });
+    if (hint) hint.textContent = Tv('stay.placesHint', { crew: crewN, nights: nights });
     var box = $('[data-props]');
     if (!box) return;
     box.innerHTML = p.options.map(function (o) {
@@ -4126,7 +4021,7 @@
       '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>' + Te('coach.realityCheck') + '</strong> ' + esc(firstSentences(reality, 2)) + '</p>' +
       '<details class="more-d"><summary>' + Te('coach.realityMore') + '</summary><p>' + esc(restSentences(reality, 2)) + '</p></details></div></div>' +
       '<div class="coach-plan" data-coach-plan></div>' +
-      '<h3 class="h-sub">' + Te(TRIP.plans.length === 2 ? 'coach.packagesBoth' : 'coach.packagesEvery') + '</h3>' +
+      '<h3 class="h-sub">' + Te('coach.packagesTitle') + '</h3>' +
       '<ol class="packages">' + C.packages.map(function (k) {
         return '<li class="package" data-package="' + esc(k.id) + '"><header><h4>' + esc(tx(k, 'name')) + '</h4>' + defaultTags('coaching', k.id) + '</header>' +
           '<p class="num">' + (k.pp_hkd.high === 0 ? Te('money.zero') : esc(hkd(k.pp_hkd.low, k.pp_hkd.high))) + '</p><p class="per">' + Te('transport.forTrip') + '</p>' + chipT(k, 'status') +
@@ -4171,7 +4066,7 @@
         lines.map(function (l) { return '<li>' + esc(tx(l, 'label')) + ': ' + (l.high_hkd === 0 ? Te('money.zero') : esc(hkd(l.low_hkd, l.high_hkd))) + Te(l.basis === 'per_group' ? 'budget.forGroup' : 'budget.each') + ' ' + chipT(l, 'status') + '</li>'; }).join('') + '</ul>';
     }
   }
-  // "Budget default" / "Mid default" tags, from budget.defaults.
+  // "Budget default" tags, from budget.defaults.
   function defaultTags(group, id) {
     return TRIP.plans.filter(function (p) { return defaultChoice(group, p.id) === id; }).map(function (p) {
       return '<span class="stamp stamp-sm">' + Tve('budget.planDefault', { plan: planShort(p.id) }) + '</span>';
@@ -4307,7 +4202,6 @@
     var html = '<p class="lede">' + Tve('budget.lede', { plan: planShort(rec.id), date: fmtDate(TRIP.meta.prices_checked) }) + '</p>' +
       '<div class="calc">' +
       '<form class="calc-controls" data-calc-form onsubmit="return false">' +
-      '<fieldset class="cf"><legend>' + Te('budget.legPlan') + '</legend><p class="calc-note">' + Te('budget.planNote') + '</p><div class="opts" data-calc-plan></div></fieldset>' +
       '<fieldset class="cf"><legend>' + Te('budget.legFlight') + '</legend><div class="opts" data-calc-flight></div></fieldset>' +
       '<fieldset class="cf"><legend>' + Te('budget.legCoaching') + '</legend><div class="opts" data-calc-coaching></div></fieldset>' +
       '<fieldset class="cf"><legend>' + Te('budget.legFood') + '</legend><div class="opts" data-calc-food></div></fieldset>' +
@@ -4349,7 +4243,6 @@
     var form = $('[data-calc-form]', root);
     form.addEventListener('change', function (e) {
       var t = e.target;
-      if (t.name === 'calc-plan') { setPlan(t.value, 'calc'); return; }
       if (t.name === 'calc-flight') state.flight = t.value;
       else if (t.name === 'calc-coaching') state.coaching = t.value;
       else if (t.name === 'calc-food') state.food = t.value;
@@ -4378,11 +4271,10 @@
       }
       if (e.target.closest('[data-calc-reset]')) {
         var d = defaultState();
-        var planChanged = state.plan !== d.plan;
         state.plan = d.plan; state.flight = d.flight; state.coaching = d.coaching; state.food = d.food; state.addons = new Set(); state.crew = d.crew;
         store.remove(PLAN_KEY);
         syncPlanInputs();
-        emit(planChanged ? 'plan' : 'reset');
+        emit('reset');
         toast(Tv('toast.reset', { plan: planShort(d.plan) }));
       }
     });
@@ -4490,12 +4382,6 @@
     var crew = state.crew, plan = state.plan;
     var r = computeBudget(state);
     if (all) {
-      $('[data-calc-plan]').innerHTML = TRIP.plans.map(function (p) {
-        var est = computeBudget(stateForPlan(state, p.id));
-        return radio('calc-plan', p.id, p.id === plan, Tv('budget.optPlanTitle', { plan: planShort(p.id), desc: planDesc(p.id) }),
-          Th('budget.optPlanSub', { role: planRole(p.id) }, { price: '<span data-plan-est-calc="' + esc(p.id) + '">' + esc(hkd(est.lo, est.hi)) + '</span>' }), chip(T('status.legend.estimate'), 'estimate'));
-      }).join('');
-      $$('[data-calc-plan] input').forEach(function (i) { i.setAttribute('data-plan-input', ''); });
       var fl = $('[data-calc-flight]');
       fl.innerHTML = TRIP.flights.options.map(function (o) {
         var s = sumLines(choiceLines('flight', o.id, plan), crew);
@@ -4503,10 +4389,6 @@
       }).join('');
     } else {
       $$('[data-calc-flight] input').forEach(function (i) { i.checked = i.value === r.eff.flight; });
-      $$('[data-plan-est-calc]').forEach(function (el) {
-        var est = computeBudget(stateForPlan(state, el.getAttribute('data-plan-est-calc')));
-        el.textContent = hkd(est.lo, est.hi);
-      });
     }
     var coachIds = choiceIds('coaching', plan), foodIds = choiceIds('food', plan);
     var addons = TRIP.budget.lines.filter(function (l) { return l.optional && appliesTo(l.plans, plan); });
@@ -4549,7 +4431,6 @@
     if (inp && document.activeElement !== inp) inp.value = crew;
     if (rng) rng.value = crew;
     syncCrewSteps(crew);
-    $$('[data-calc-plan] input').forEach(function (i) { i.checked = i.value === plan; });
     clipList('addons', $('[data-calc-addons]'), 'addons', 0, function (el) {
       var box = el.querySelector && el.querySelector('input');
       return !box || box.checked;
@@ -4846,7 +4727,7 @@
     els.forEach(function (el) { io.observe(el); });
     W.addEventListener('beforeprint', function () { els.forEach(function (el) { el.classList.add('is-in'); }); });
   }
-  // If the phone's reduce-motion setting is switched on mid-visit, stop everything straight away.
+  // If the phone's reduce-motion setting is switched on part-way through a visit, stop everything straight away.
   function watchReducedMotion() {
     if (!W.matchMedia) return;
     var mq = W.matchMedia('(prefers-reduced-motion: reduce)');
@@ -4950,7 +4831,7 @@
   // Everything the language touches, rebuilt in place. State (plan, calculator picks,
   // filters, checklist ticks, the chosen spot) lives outside the DOM, so it survives.
   function rerenderAll() {
-    [renderPlanPickers, renderNav, renderShare, renderTop, renderPlates, renderSeason, renderHeads, renderKeypoints,
+    [renderNav, renderShare, renderTop, renderPlates, renderSeason, renderHeads, renderKeypoints,
       renderDecisions, renderCrew, renderVibe, renderPlanPick, renderBudget, renderFlights, renderStay, renderMapViews,
       renderSpotFilters, renderSpotList, applySpotFilter, renderBoatTimes, renderAccessRules, renderTides, renderRhythm,
       renderCoaching, renderTransport, renderActivities, renderFood, renderItinerary, renderPrep, renderSources
@@ -5038,18 +4919,15 @@
       if (main) main.insertAdjacentHTML('afterbegin', '<p class="note">' + Te('error.noData') + '</p>');
       return;
     }
-    // First visit: the recommended plan. Returning visitor: the plan they last looked at, if it still exists.
-    // A plan tapped in the placeholder switcher before this script arrived (slow connections) wins over both.
-    var early = $$('input[data-plan-input]').filter(function (i) { return i.checked && !i.hasAttribute('checked') && planById(i.value); })[0];
-    if (early) savePlan(early.value);
+    // One plan. A plan id saved on this device by an earlier version of the page is dropped by savedPlan(),
+    // so an unknown saved id simply lands on the plan that exists.
     safe(initLang, 'lang');
-    state = defaultState(early ? early.value : savedPlan() || recPlan().id);
+    state = defaultState(savedPlan() || recPlan().id);
     document.documentElement.classList.add('js');
     if (!reduceMotion) document.documentElement.classList.add('motion');
     safe(renderLangUI, 'lang-ui');
     safe(initPhotoFallbacks, 'photo-fallbacks');
     safe(initJumps, 'jumps');
-    safe(renderPlanPickers, 'plan-pickers');
     safe(renderNav, 'nav');
     safe(initMenu, 'menu');
     safe(renderShare, 'share');

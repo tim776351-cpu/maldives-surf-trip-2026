@@ -83,7 +83,7 @@ h2 {
   -webkit-hyphens: auto;
   hyphens: auto;
 }
-/* Phones: long single-word headings ("Accommodation") must fit on one line instead of breaking mid-word */
+/* Phones: long single-word headings ("Accommodation") must fit on one line instead of breaking part-way through */
 @media (max-width: 480px) {
   h2 { font-size: clamp(1.6rem, 7.6vw, 2.2rem); font-stretch: 100%; }
 }
@@ -138,27 +138,14 @@ section[id], footer[id], .day, [id^="stay-"], [id^="flight-"], h2[id], h3[id], [
 }
 .menu-btn-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; font-weight: 700; }
 .menu-btn:hover { background: var(--channel-2); }
-.seg { flex: 1; min-width: 0; display: flex; margin: 0; padding: 3px; border: 0; border-radius: 13px; background: rgba(255, 255, 255, .1); }
-.seg-opt { flex: 1; min-width: 0; position: relative; display: flex; }
-.seg-opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.seg-opt .seg-name {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  gap: 6px; min-height: 44px; padding: 0 8px; border-radius: 10px;
-  font-size: 1rem; font-weight: 700; color: #d7efea; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.seg-opt input:checked + .seg-name { background: var(--sun); color: var(--channel); }
-.seg-opt input:focus-visible + .seg-name { outline: 3px solid var(--focus); outline-offset: 1px; box-shadow: 0 0 0 1px var(--focus-halo), 0 0 0 6px var(--focus-halo); }
-.seg-pick { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 2px rgba(255, 194, 71, .35); }
-.seg-opt input:checked + .seg-name .seg-pick { background: var(--channel); box-shadow: none; }
 @media (min-width: 480px) { .menu-btn-text { position: static; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none; } }
-@media (min-width: 720px) { .seg { flex: 0 1 460px; margin-left: auto; } }
 
 /* ------------------------------------------------- language switcher (EN / 中文)
    Phones and tablets: a compact always-visible button in the sticky bar, plus the
    full two-state control pinned at the top of the Sections panel.
    Desktop (>=1100px, where the bar is hidden): the full control at the top of the rail. */
 .lang-btn {
-  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  flex: none; margin-left: auto; display: inline-flex; align-items: center; justify-content: center;
   min-width: 44px; height: 44px; padding: 0 8px;
   border: 1.5px solid rgba(191, 238, 230, .45); border-radius: 12px;
   background: transparent; color: #fff; font: inherit; font-weight: 700; font-size: .95rem;
@@ -204,18 +191,13 @@ section[id], footer[id], .day, [id^="stay-"], [id^="flight-"], h2[id], h3[id], [
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
 .brand-text strong { font-family: var(--f-display); font-stretch: 112%; font-weight: 800; font-size: 1.05rem; }
 .brand-text span { font-size: .9rem; color: var(--reef-soft); }
-.rail-plans { margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
-.rail-plans legend { font-size: .9rem; color: var(--reef-soft); margin-bottom: 6px; padding: 0; }
-.rail-plans .seg-opt { display: block; }
-.rail-plans .seg-opt .seg-name, .rail-plans .seg-est { display: block; text-align: left; }
-.rail-plans .seg-opt .seg-name { min-height: 0; padding: 9px 12px 0; font-size: 1rem; color: #fff; border-radius: 10px 10px 0 0; justify-content: flex-start; }
-.rail-plans .seg-est { padding: 0 12px 9px; font-size: .9rem; color: var(--reef-soft); border-radius: 0 0 10px 10px; font-variant-numeric: tabular-nums; }
-.rail-plans .seg-role { display: block; padding: 2px 12px 0; font-size: .875rem; font-weight: 700; color: var(--sun); }
-.rail-plans .seg-opt input:checked ~ .seg-role { color: var(--channel); }
-.rail-plans .seg-opt { border: 1.5px solid rgba(191, 238, 230, .25); border-radius: 12px; }
-.rail-plans .seg-opt:has(input:checked) { background: var(--sun); border-color: var(--sun); }
-.rail-plans .seg-opt input:checked + .seg-name { background: transparent; color: var(--channel); }
-.rail-plans .seg-opt input:checked ~ .seg-est { color: var(--channel); }
+/* One plan: a label, not a switcher. */
+.rail-plan { margin: 0; }
+.rail-plan-h { margin: 0 0 6px; font-size: .9rem; color: var(--reef-soft); }
+.rail-plan-box { padding: 9px 12px; border: 1.5px solid var(--sun); border-radius: 12px; background: var(--sun); }
+.rail-plan-name { margin: 0; font-size: 1rem; font-weight: 700; color: var(--channel); }
+.rail-plan-role { margin: 2px 0 0; font-size: .875rem; font-weight: 700; color: var(--channel); }
+.rail-plan-est { margin: 2px 0 0; font-size: .9rem; color: var(--channel); font-variant-numeric: tabular-nums; }
 .nav-list { list-style: none; display: grid; gap: 2px; }
 .nav-list a {
   display: flex; align-items: center; min-height: 44px; padding: 6px 12px; border-radius: 10px;
@@ -246,7 +228,7 @@ body.menu-open { overflow: hidden; }
   /* Anchored under the sticky top bar (16 Sep 2026). It used to sit at the bottom of the
      viewport, where it covered 5-6 of the 7 map-key rows on portrait phones right after a
      language switch. Below the bar it only ever passes over the page heading, never the map
-     key, the plan switcher, the calculator dock or the spot sheet. */
+     key, the calculator dock or the spot sheet. */
   position: fixed; left: 50%; top: calc(var(--topbar-h) + 12px); bottom: auto; z-index: 80;
   transform: translate(-50%, -16px); opacity: 0; pointer-events: none;
   width: max-content; max-width: calc(100vw - 32px);
@@ -570,9 +552,6 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .block.is-specific { background: linear-gradient(90deg, rgba(255, 194, 71, .16), transparent 70%); border-radius: 6px; padding-left: 6px; margin-left: -6px; }
 .block.is-other { background: none; border-left: 3px dashed var(--line-2); padding-left: 8px; margin-left: 0; }
 .block.is-other .block-time, .block.is-other .block-what p { color: var(--ink-2); }
-.block.is-other .plan-tag { background: var(--white); border: 1px solid var(--line-2); color: var(--ink-2); }
-.plan-tag { display: inline-flex; margin-bottom: 4px; padding: 1px 8px; border-radius: 6px; font-size: .875rem; font-weight: 700; background: var(--sun); color: var(--channel); }
-.plan-tag--mid { background: var(--reef-soft); }
 .day-extra { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--radius-s); background: var(--white); border: 1.5px solid var(--line); }
 .day-extra p { margin: 0; }
 @media (min-width: 900px) {
@@ -673,7 +652,6 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .plan-who { margin: 0; }
 .plan-card.is-selected { border: 3px solid var(--channel); box-shadow: 8px 8px 0 var(--sun); }
 .btn-choose[aria-pressed="true"] { background: var(--channel); color: #fff; }
-@media (min-width: 900px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
 .props { display: grid; gap: 14px; }
 .prop { padding: 14px 16px 6px; border-radius: var(--radius-m); background: var(--white); border: 1.5px solid var(--line); }
 .prop-head { display: grid; gap: 8px 16px; }
@@ -964,10 +942,9 @@ img.is-retrying { visibility: hidden; }
 .dish-ph .ph { aspect-ratio: 4 / 3; border-radius: var(--radius-l); }
 @media (min-width: 800px) { .dishes-wrap { grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); } .dish-ph { grid-column: 2; grid-row: 1; } }
 
-/* The plan in 30 seconds: crew's pick against the upgrade */
+/* The plan in 30 seconds: the crew's plan, its price and its default picks */
 .pick-tiles { display: grid; gap: 12px; margin: 4px 0 18px; max-width: 900px; }
-.pick-tile { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; padding: 16px 18px; border-radius: var(--radius-l); border: 2px solid var(--line-2); background: var(--white); color: var(--channel); text-align: left; cursor: pointer; }
-.pick-tile:hover { border-color: var(--channel); }
+.pick-tile { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; padding: 16px 18px; border-radius: var(--radius-l); border: 2px solid var(--line-2); background: var(--white); color: var(--channel); text-align: left; }
 .pick-tile.is-rec { border-color: var(--channel); background: var(--channel); color: #e3f3f0; }
 .pick-role { font-weight: 700; font-size: .95rem; color: var(--coral-ink); }
 .pick-tile.is-rec .pick-role { color: var(--sun); }
@@ -975,11 +952,6 @@ img.is-retrying { visibility: hidden; }
 .pick-desc { font-size: 1rem; }
 .pick-price { font-family: var(--f-display); font-weight: 860; font-stretch: 86%; font-size: 1.6rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .pick-tile.is-rec .pick-price { color: var(--sun); }
-.pick-delta { font-size: .92rem; color: var(--ink-2); }
-.pick-tile.is-rec .pick-delta { color: #bcd9d4; }
-.pick-state { margin-top: 4px; font-size: .92rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.pick-tile[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--sun); }
-@media (min-width: 700px) { .pick-tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 
 /* Considered, above our budget */
 .above { margin: 30px 0 8px; padding: 16px 18px 8px; border-radius: var(--radius-l); border: 2px dashed var(--line-2); background: var(--white); }
@@ -1031,7 +1003,6 @@ img.is-retrying { visibility: hidden; }
 .package header .stamp-sm { margin-left: 0; }
 .package header { flex-wrap: wrap; }
 .act.has-ph { padding-top: 14px; }
-@media (max-width: 380px) { .seg-opt .seg-name { font-size: .95rem; padding: 0 6px; } }
 @media print { .hero-waves, .edge, .edge-top, .calc-dock, .toast, .map-touch { display: none !important; } }
 
 /* Phones held sideways: keep photos and plates inside the short screen */
@@ -1104,8 +1075,6 @@ a.more { display: inline-flex; align-items: center; justify-content: flex-start;
 @media (max-width: 399px) {
   .topbar { gap: 6px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
   .tab-spots { padding: 0 9px; gap: 5px; }
-  .seg-pick { display: none; }
-  .seg-opt .seg-name { padding: 0 4px; font-size: .95rem; }
   .lang-btn { font-size: .9rem; }
 }
 
