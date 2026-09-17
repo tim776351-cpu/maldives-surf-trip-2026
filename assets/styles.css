@@ -52,6 +52,13 @@ body {
   overflow-wrap: break-word;
 }
 img, svg { max-width: 100%; }
+/* Long unbreakable tokens in the data (booking URLs, emails, phone numbers, handles).
+   `break-word` breaks such a word onto the next line but still reports the WHOLE word as the
+   element's min-content width, so inside a flex or grid item left at min-width:auto that width
+   becomes a floor the page cannot go below. `anywhere` wraps identically AND lowers min-content,
+   which is what stops the page scrolling sideways. Headings keep their own `overflow-wrap: normal`
+   + hyphens rule. Sweep of every token the page can render: qa/long-token-sweep.py. */
+#main p, #main li, #main dd, #main dt, #main figcaption, #main summary, #main .fine { overflow-wrap: anywhere; }
 p { margin: 0 0 .75em; }
 ul, ol { margin: 0; padding: 0; }
 a { color: var(--lagoon); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
@@ -92,6 +99,8 @@ h4 { font-size: 1.12rem; font-weight: 720; font-stretch: 100%; line-height: 1.2;
 h5 { font-size: 1.02rem; font-weight: 700; line-height: 1.25; }
 .h-sub { font-size: clamp(1.35rem, 4.4vw, 1.75rem); font-weight: 780; font-stretch: 112%; margin: 2.2em 0 .7em; }
 .lede { font-size: 1.1rem; max-width: 68ch; }
+/* A lede that has been moved below the cards it introduces (3 Flights): same voice, its own spacing. */
+.lede--after { margin: 1.4em 0 .2em; }
 .fine { font-size: .9rem; color: var(--ink-2); }
 .num { font-family: var(--f-display); font-weight: 800; font-stretch: 88%; font-size: 1.45rem; line-height: 1.1; margin: 0; font-variant-numeric: tabular-nums; color: var(--channel); }
 .num-sm { font-size: 1.1rem; }
@@ -108,7 +117,7 @@ section[id], footer[id], .day, [id^="stay-"], [id^="flight-"], h2[id], h3[id], [
 /* One flexible column by default on every grid, so a long word or URL can never widen the track past the screen. */
 .two-col, .ov-lists, .ov-rows, .bt-list, .access-list, .crew-card, .filters, .legend, .legend > div, .checked-strip, .heads, .keypoints, .decisions, .alts,
 .expect, .facts, .spots-layout, .spot-list, .rhythm, .itin-tools, .days, .blocks, .day-extra, .passes, .pass, .procon, .procon ul,
-.notes-grid, .legs, .plans, .props, .prop-head, .na-list, .packages, .programme, .providers, .food-budget, .eats, .eat, .dishes,
+.notes-grid, .legs, .plans, .props, .prop-head, .na-list, .packages, .programme, .contacts, .food-budget, .eats, .eat, .dishes,
 .acts, .calc, .calc-controls, .opts, .bars, .cl-list, .cl-group > ul, .prep-grid, .timeline, .pack, .accordions, .confirm,
 .ticks, .kv, .src-list, .credits, .pick-tiles, .dishes-wrap, .above-list { grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 900px) {
@@ -688,10 +697,34 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .programme p { margin: 0 0 .4em; }
 @media (min-width: 900px) { .programme { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 .group-h { margin: .4em 0 .6em; }
-.providers { list-style: none; display: grid; gap: 10px; }
-.provider { padding: 12px 14px 4px; border-radius: var(--radius-m); background: var(--white); border: 1.5px solid var(--line); }
-.provider .fine { margin: 2px 0 6px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Who to contact (17 Sep 2026): the message order from the data, one card each, every
+   channel a 44 px tap target. The honesty lines sit above the buttons, never below. */
+.checked-line { margin: -.4em 0 1em; }
+.ask { padding: 14px 16px 16px; border-radius: var(--radius-l); background: var(--shallows); border: 1.5px solid var(--line); margin: 0 0 16px; }
+.ask h4 { margin-bottom: .4em; }
+.ask p { margin: 0 0 .6em; }
+.ask-btns { margin: 10px 0 2px; }
+.ask-msg {
+  margin: 8px 0 0; padding: 12px 14px; border-radius: var(--radius-m);
+  background: var(--white); border: 1.5px solid var(--line);
+  font: inherit; font-size: .95rem; line-height: 1.5; color: var(--ink);
+  white-space: pre-wrap; overflow-wrap: anywhere; max-height: 48vh; overflow-y: auto;
+}
+.contacts { list-style: none; display: grid; gap: 12px; }
+.contact { padding: 14px 16px 6px; border-radius: var(--radius-l); background: var(--white); border: 1.5px solid var(--line); }
+.contact h4 { margin: 0 0 2px; }
+.contact > p { margin: 0 0 .5em; }
+.contact-step { font-family: var(--f-display); font-weight: 800; font-size: .84rem; letter-spacing: .04em; text-transform: uppercase; color: var(--lagoon); }
+.contact-where { margin-bottom: .6em !important; }
+.contact-why { color: var(--ink-2); }
+.warn-line { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: var(--radius-m); background: #fff4ef; border: 1.5px solid #f3b3a8; color: var(--ink); }
+.warn-line .hz { width: 22px; height: 22px; margin-top: 1px; }
+.contact-acts { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 8px; padding: 0; }
+.contact-acts .btn-act { min-height: 44px; justify-content: flex-start; text-align: left; font-size: .95rem; padding: 8px 14px; overflow-wrap: anywhere; }
+@media (max-width: 599px) { .contact-acts { display: grid; grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 900px) { .contacts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
 
 /* ---------------------------------------------------------------- food */
 .food-budget { display: grid; gap: 12px; }
@@ -840,6 +873,10 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .disclaimer .fine { color: #4f4630; margin: 0; }
 .confirm { list-style: none; display: grid; gap: 10px; }
 .confirm-item { display: flex; gap: 12px; padding: 12px 16px; border-radius: var(--radius-m); background: var(--white); border: 1.5px solid var(--line); }
+/* 17 Sep 2026: `cokessurfcampmaldives.com/booking/),` measured 302 px (EN) / 317 px (ZH) against a
+   254 px column and pushed a 360 px phone 16-30 px sideways (qa/QA-V4.md F5). min-width:0 only ever
+   removes a floor, so it cannot change a layout that already fits. */
+.confirm-body, .expect-item > div { min-width: 0; }
 .confirm-item .hz { width: 28px; height: 28px; }
 .confirm-what { margin: 0 0 4px; font-weight: 700; }
 .confirm-meta { display: flex; flex-wrap: wrap; gap: 2px 18px; margin: 0 0 4px; font-size: .95rem; }
@@ -1446,5 +1483,57 @@ a.more { display: inline-flex; align-items: center; justify-content: flex-start;
 .bookit-sum-h { font-size: 1.15rem; font-weight: 780; font-stretch: 112%; margin: 0; color: var(--channel); }
 .bookit-sum p { margin: 0; overflow-wrap: anywhere; }
 .bookit-sum-line { font-weight: 700; color: var(--ink); }
-.pass-more .bookit { margin-bottom: 8px; }
 .prop .bookit { margin-top: 14px; }
+/* The booking button rides with the airline's name at the top of the pass, and directly
+   under the "Book it" heading, so neither one is below the fold on a phone. */
+.pass-main .bookit { margin: 12px 0 4px; }
+.bookit--lead { margin: 10px 0 12px; }
+.bookit-sum-pick { font-weight: 700; }
+
+/* ------------------------------------------------- Price watch (data: price_watch)
+   Added 17 Sep 2026. The first thing in 3 Flights: the best fare found across the
+   whole date range, what it belongs to, and how it moved since the check before.
+   Hidden entirely when price_watch is off or carries no price (see pwPanel). */
+.pw {
+  margin: 4px 0 22px; padding: 16px 18px; border-radius: var(--radius-l);
+  background: var(--channel); color: var(--shallows); display: grid; gap: 10px;
+}
+.pw-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.pw-h { margin: 0; color: #fff; font-size: 1.15rem; font-weight: 780; font-stretch: 112%; }
+.pw-checked { margin: 0; font-size: .9rem; color: var(--reef-soft); }
+.pw-grid { display: grid; gap: 12px 24px; align-items: start; }
+.pw-best { display: grid; gap: 2px; justify-items: start; }
+.pw-lbl { margin: 0; font-size: .9rem; font-weight: 700; color: var(--reef-soft); }
+.pw-num {
+  margin: 0; color: var(--sun); font-family: var(--f-display); font-weight: 860; font-stretch: 86%;
+  font-size: clamp(1.8rem, 9vw, 2.3rem); line-height: 1.05; font-variant-numeric: tabular-nums;
+}
+.pw-delta { margin: 2px 0 0; font-size: .92rem; font-weight: 700; }
+.pw-delta::before { content: "\2192\00a0"; }
+.pw-delta--down { color: #8ff0c4; }
+.pw-delta--down::before { content: "\2193\00a0"; }
+.pw-delta--up { color: #ffb0a4; }
+.pw-delta--up::before { content: "\2191\00a0"; }
+.pw-delta--same, .pw-delta--first { color: var(--reef-soft); font-weight: 400; }
+.pw-what { display: grid; gap: 4px; min-width: 0; }
+.pw-what p { margin: 0; overflow-wrap: anywhere; }
+.pw-route { font-weight: 700; color: #fff; }
+.pw-leg { font-size: .94rem; }
+.pw-dir { display: inline-block; min-width: 3.4em; font-weight: 700; color: var(--reef); }
+.pw-note { font-size: .92rem; color: var(--reef-soft); }
+.bookit--pw { margin-top: 10px; width: 100%; }
+.bookit--pw .btn-book { max-width: 100%; }
+.pw-hist { display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid rgba(191, 238, 230, .28); }
+.pw-hist-h { margin: 0; font-size: .9rem; font-weight: 700; color: var(--reef-soft); }
+.pw-spark { width: 100%; max-width: 280px; height: 30px; color: var(--reef); display: block; }
+.pw-hist-list { margin: 0; font-size: .88rem; color: var(--reef-soft); font-variant-numeric: tabular-nums; }
+.pw-win, .pw .fine { margin: 0; color: var(--reef-soft); }
+.pw-win-lbl { font-weight: 700; color: #fff; }
+.pw .btn-book { color: var(--channel); }
+.pw-more { margin: 0; border-top: 1px solid rgba(191, 238, 230, .28); padding-top: 4px; }
+.pw-more > summary { color: var(--sun); }
+.pw-more .pw-hist { border-top: 0; padding-top: 0; }
+@media (min-width: 700px) {
+  .pw-grid { grid-template-columns: minmax(0, 210px) minmax(0, 1fr); }
+  .pw-spark { max-width: 360px; }
+}

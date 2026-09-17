@@ -450,6 +450,28 @@
     "flights.recName": "{airline} ({out} out, {home} home)",
     "flights.recFallback": "recommended",
 
+    /* --- 3 Flights: the price watch panel (data: price_watch) --- */
+    "pw.title": "Price watch",
+    "pw.bestLbl": "Best fare found, each",
+    "pw.route": "{airline}, {routing}",
+    "pw.outLbl": "Out",
+    "pw.backLbl": "Home",
+    "pw.legLine": "{date}, {flights}, leaves {dep} and lands {arr}",
+    "pw.book": "Book this one on {provider}",
+    "pw.deltaDown": "Down {diff} since the check before",
+    "pw.deltaUp": "Up {diff} since the check before",
+    "pw.deltaSame": "No change since the check before",
+    "pw.deltaFirst": "First check, so there is nothing to compare yet",
+    "pw.checked": "Last checked {stamp}",
+    "pw.next": "Next check {stamp}.",
+    "pw.seen": "Fare seen {stamp}",
+    "pw.stamp": "{date} at {time} HKT",
+    "pw.moreLbl": "Why this fare, and what we found cheaper",
+    "pw.windowLbl": "Dates we watch",
+    "pw.histTitle": "The last {n} checks",
+    "pw.histPoint": "{date}, {price}",
+    "pw.histOnly": "Only one check so far, so there is no trend to draw yet.",
+
     /* --- 7 Local transport --- */
     "per.boat": "per boat",
     "per.person": "per person",
@@ -491,6 +513,7 @@
     "book.sumDeadline": "Earliest free cancellation deadline: {date}, on {name}.",
     "book.sumNoneFlights": "No free-cancellation date is recorded for these fares, so read the airline's own conditions before you pay.",
     "book.sumChecked": "{n} booking links below, all checked on {date}. Prices change, so open a link to see today's price.",
+    "book.sumPickFlight": "Our pick is {name}. This button opens that exact pairing:",
     "book.stayBtn": "Book on {provider}",
     "book.flightBtn": "Open this flight on {provider}",
     "book.enquireBtn": "Enquire with {provider}",
@@ -516,10 +539,32 @@
     "coach.focus": "Focus:",
     "coach.where": "Where:",
     "coach.drills": "Drills",
-    "coach.whoTitle": "Who could coach us",
-    "coach.openGroup": "Open to a guesthouse crew",
-    "coach.guestsGroup": "Only for their own guests or package buyers",
-    "coach.groupCount": "{label} ({n})",
+    "coach.contactsTitle": "Who to contact",
+    "coach.contactsLede": "The people to message, in the order to message them. Every one of these is an enquiry, not a booking: nobody has quoted for 11 of us yet.",
+    "coach.contactsChecked": "Every contact below was checked on {date}. Where a channel is dead or could not be confirmed, the card says so instead of showing a link.",
+    "coach.contactStep": "Message {n}",
+    "coach.contactWhy": "Why here.",
+    "coach.contactActions": "How to reach {name}",
+    "coach.contactNote": "What we checked, and what is missing",
+    "coach.actEmail": "Email {v}",
+    "coach.actPhone": "Call {v}",
+    "coach.actWhatsapp": "WhatsApp {v}",
+    "coach.actInstagram": "Instagram {v}",
+    "coach.actWebsite": "Website {v}",
+    "coach.actForm": "Enquiry form",
+    "coach.warnGuests": "Guests only. They coach the people who buy their rooms or their package, so ask first what they will sell to a crew sleeping somewhere else.",
+    "coach.warnSeason": "Out of season. Their Maldives season does not cover early November, so ask whether our dates are possible at all before anything else.",
+    "coach.warnUnverified": "Not confirmed. Their site would not answer us, so these details are unverified: open it yourself before you rely on them.",
+    "coach.warnFormOnly": "Form only. No email and no phone is published, so their booking form is the only way in.",
+    "coach.warnNoChannel": "No working channel. Nothing we found answers, so there is nothing to tap here: ask for them on the island instead.",
+    "coach.askCopy": "Copy message",
+    "coach.askRead": "Read the message",
+    "coach.askSay": "What to tell them",
+    "coach.askTips": "Three more things worth doing",
+    "coach.askEnglish": "Send it in English: that is what the coaches read, and the button copies exactly that.",
+    "coach.askAria": "The enquiry message",
+    "coach.askCopied": "Message copied. Paste it into your email.",
+    "coach.askCopyFailed": "Copy did not work here. The message is open and selected: press and hold, then copy it by hand.",
     "coach.filmsTag": "Films sessions",
     "coach.guestsTag": "Guests only",
     "coach.noStayTag": "No stay needed",
@@ -964,6 +1009,14 @@
     return { text: text, iso: p[3] + '-' + pad(mon + 1) + '-' + pad(Number(p[1])),
       sort: Number(p[3]) * 10000 + (mon + 1) * 100 + Number(p[1]) };
   }
+  // The anchor on its own: one 44 px target, always a new tab, always rel="noopener noreferrer".
+  // Used by bookingAction below and, on its own, by the "Book it" summary and the price watch panel.
+  function bookLink(url, key, provider, cls) {
+    var u = safeUrl(url);
+    if (!u) return '';
+    return '<a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' +
+      '<span>' + Tve(key, { provider: provider }) + '</span><span class="vh"> (' + Te('book.newTab') + ')</span></a>';
+  }
   // One booking action. kind: 'stay' (button), 'flight' (button) or 'inline' (small link).
   function bookingAction(item, kind) {
     var b = bookingOf(item);
@@ -972,8 +1025,7 @@
     var key = enquiry ? (inline ? 'book.inlineEnquire' : 'book.enquireBtn')
       : kind === 'flight' ? 'book.flightBtn' : inline ? 'book.inlineBook' : 'book.stayBtn';
     var out = '<div class="bookit' + (inline ? ' bookit--inline' : '') + '">' +
-      '<a class="' + (inline ? 'src book-link' : 'btn btn-book') + '" href="' + esc(b.url) + '" target="_blank" rel="noopener noreferrer">' +
-      '<span>' + Tve(key, { provider: provider }) + '</span><span class="vh"> (' + Te('book.newTab') + ')</span></a>';
+      bookLink(b.url, key, provider, inline ? 'src book-link' : 'btn btn-book');
     if (b.price_seen) out += '<p class="bookit-price">' + Tve('book.priceSeen', { price: tx(b, 'price_seen') }) + '</p>';
     var c = cancelDate(b);
     if (c) out += '<p class="bookit-cancel">' + Tve('book.cancelBy', { date: fmtDate(c.iso) }) + '</p>';
@@ -989,8 +1041,13 @@
       .sort(function (a, b) { return cancelDate(bookingOf(a)).sort - cancelDate(bookingOf(b)).sort; });
     var first = dated[0] ? cancelDate(bookingOf(dated[0])) : null;
     var checked = bs.map(function (b) { return b.checked; }).filter(Boolean).sort()[0];
-    return '<aside class="bookit-sum" aria-labelledby="' + esc(o.id) + '">' +
-      '<h3 class="bookit-sum-h" id="' + esc(o.id) + '" data-i18n="book.sumTitle">' + Te('book.sumTitle') + '</h3>' +
+    // The id names the BOX (a link check scoped to it used to find zero links because the
+    // id was on the heading); the heading keeps its own id for aria-labelledby.
+    return '<aside class="bookit-sum" id="' + esc(o.id) + '" aria-labelledby="' + esc(o.id) + '-h">' +
+      '<h3 class="bookit-sum-h" id="' + esc(o.id) + '-h" data-i18n="book.sumTitle">' + Te('book.sumTitle') + '</h3>' +
+      // o.lead: the one link the reader most likely wants, right under the "Book it" heading
+      // rather than a screen and a half further down the page (see qa/FIXES.md, 17 Sep 2026).
+      (o.lead || '') +
       '<p class="bookit-sum-line">' + (first ? Tve('book.sumDeadline', { date: fmtDate(first.iso), name: tx(dated[0], o.nameField) }) : Te(o.noneKey)) + '</p>' +
       (checked ? '<p class="fine">' + Tve('book.sumChecked', { n: bs.length, date: fmtDate(checked) }) + '</p>' : '') +
       '</aside>';
@@ -1872,6 +1929,11 @@
         toast(T(ok ? 'toast.copied' : 'toast.copyFailed'));
       });
     });
+    // 6 Surf coaching: the ready-made enquiry. Delegated here, like the share button, so a
+    // re-render (or a language switch) never leaves a dead button behind.
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-copy-ask]')) copyAsk();
+    });
   }
   function copyText(t) {
     try {
@@ -2201,7 +2263,9 @@
         airline: tx(rec, 'airline'),
         price: hkd(rec.fare_pp_hkd.low, rec.fare_pp_hkd.high),
         status: tx(rec, 'fare_status'),
-        date: fmtDate(TRIP.meta.prices_checked).replace(/ \d{4}$/, '')
+        // The recommended fare's OWN check date, not the sweep-wide one: after the 17 Sep
+        // re-price the two differed and the sentence contradicted the chip beside it.
+        date: fmtDate((bookingOf(rec) || {}).checked || TRIP.meta.prices_checked).replace(/ \d{4}$/, '')
       });
     }
     var ds = pickSentences(TRIP.meta, 'disclaimer', function (x) { return /^confirm every price/i.test(x); });
@@ -3841,11 +3905,132 @@
     var l = TRIP.budget.lines.filter(function (x) { return x.choice === 'flight' && x.choice_id === o.id && /board/i.test(x.id); })[0];
     return l ? chipT(l, 'status') : '<span class="status status--quote">' + Te('flights.confirmWriting') + '</span>';
   }
+  /* ---------------------------------------------------- 3 Flights: price watch
+     Everything here comes from TRIP.price_watch, which the re-check job rewrites.
+     Nothing renders unless the panel is switched on AND a best price is really there,
+     so a half-written or emptied block leaves the section exactly as it was. */
+  function pwData() {
+    var p = TRIP.price_watch;
+    if (!p || p.enabled === false) return null;
+    var n = p.best ? Number(p.best.price_pp_hkd) : NaN;
+    return isFinite(n) && n > 0 ? p : null;
+  }
+  // "2026-09-16 18:40 HKT", "2026-09-16 18:40" or "2026-09-16": the date in the reader's
+  // language, and the clock time only when the data actually carries one.
+  function pwStamp(s) {
+    var m = /^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?/.exec(String(s || ''));
+    if (!m) return String(s || '');
+    return m[2] ? Tv('pw.stamp', { date: fmtDate(m[1]), time: m[2] }) : fmtDate(m[1]);
+  }
+  function pwHistory(p) {
+    return (p.history || []).filter(function (h) { return h && isFinite(Number(h.best_pp_hkd)) && Number(h.best_pp_hkd) > 0; });
+  }
+  // What this check is measured against: previous_best when the data names one, else the
+  // second-newest history point. Either a number or {price_pp_hkd: n} is accepted.
+  function pwPrev(p) {
+    var pb = p.previous_best;
+    var n = pb && typeof pb === 'object' ? Number(pb.price_pp_hkd) : Number(pb);
+    if (isFinite(n) && n > 0) return n;
+    var h = pwHistory(p);
+    if (h.length < 2) return null;
+    n = Number(h[h.length - 2].best_pp_hkd);
+    return isFinite(n) && n > 0 ? n : null;
+  }
+  function pwDelta(p) {
+    var now = Number(p.best.price_pp_hkd), was = pwPrev(p);
+    if (was == null) return { kind: 'first', text: T('pw.deltaFirst') };
+    var d = Math.round(now - was);
+    if (d === 0) return { kind: 'same', text: T('pw.deltaSame') };
+    return { kind: d < 0 ? 'down' : 'up',
+      text: Tv(d < 0 ? 'pw.deltaDown' : 'pw.deltaUp', { diff: hkd(Math.abs(d), Math.abs(d)) }) };
+  }
+  function pwPoint(h) {
+    var v = Number(h.best_pp_hkd);
+    return Tve('pw.histPoint', { date: fmtDate(String(h.date).slice(0, 10)), price: hkd(v, v) });
+  }
+  // The last 7 checks: a plain SVG polyline, no library. One point is not a trend, so a
+  // single check prints itself instead of drawing a flat line.
+  function pwHistoryHtml(p) {
+    var h = pwHistory(p).slice(-7);
+    if (!h.length) return '';
+    if (h.length < 2) {
+      return '<div class="pw-hist"><p class="pw-hist-list">' + pwPoint(h[0]) + '</p>' +
+        '<p class="fine">' + Te('pw.histOnly') + '</p></div>';
+    }
+    var vals = h.map(function (x) { return Number(x.best_pp_hkd); });
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), span = hi - lo || 1;
+    var w = 100, ht = 26, pad = 2;
+    var xy = vals.map(function (v, i) {
+      return ((i / (h.length - 1)) * w).toFixed(1) + ',' + (pad + (ht - 2 * pad) * (1 - (v - lo) / span)).toFixed(1);
+    });
+    var last = xy[xy.length - 1].split(',');
+    return '<div class="pw-hist"><p class="pw-hist-h">' + Tve('pw.histTitle', { n: h.length }) + '</p>' +
+      '<svg class="pw-spark" viewBox="0 0 ' + w + ' ' + ht + '" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+      '<polyline points="' + xy.join(' ') + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="2.6" fill="currentColor"/></svg>' +
+      '<p class="pw-hist-list">' + h.map(pwPoint).join(T('words.listSep')) + '</p></div>';
+  }
+  // The provider name for the button: the matching flight option's booking label where the
+  // watch points at one of our four fares, otherwise just the host.
+  function pwProvider(b) {
+    var url = safeUrl(b.url);
+    if (!url) return '';
+    var hit = (TRIP.flights.options || []).filter(function (o) {
+      var ob = bookingOf(o);
+      return ob && ob.url === url;
+    })[0];
+    return hit ? bookProvider(bookingOf(hit)) : shortHost(url);
+  }
+  function pwLeg(labelKey, j) {
+    if (!j || !j.flights) return '';
+    return '<p class="pw-leg"><span class="pw-dir">' + Te(labelKey) + '</span> ' +
+      Tve('pw.legLine', { date: tx(j, 'date'), flights: j.flights, dep: j.dep, arr: j.arr }) + '</p>';
+  }
+  function pwPanel() {
+    var p = pwData();
+    if (!p) return '';
+    var b = p.best, d = pwDelta(p), win = p.window || {};
+    var price = Number(b.price_pp_hkd);
+    var seen = b.seen && b.seen !== p.checked ? '<p class="fine">' + Tve('pw.seen', { stamp: pwStamp(b.seen) }) + '</p>' : '';
+    // The sentence end lives in the string, not the code: Chinese wants 。, not a Latin dot.
+    var next = p.next_check ? ' ' + Tv('pw.next', { stamp: pwStamp(tx(p, 'next_check')) }) : '';
+    return '<aside class="pw" aria-labelledby="pw-title">' +
+      '<div class="pw-top"><h3 class="pw-h" id="pw-title" data-i18n="pw.title">' + Te('pw.title') + '</h3>' +
+      (p.checked ? '<p class="pw-checked">' + Tve('pw.checked', { stamp: pwStamp(p.checked) }) + '</p>' : '') + '</div>' +
+      '<div class="pw-grid">' +
+      '<div class="pw-best"><p class="pw-lbl">' + Te('pw.bestLbl') + '</p>' +
+      '<p class="pw-num">' + esc(hkd(price, price)) + '</p>' +
+      '<p class="pw-delta pw-delta--' + d.kind + '">' + esc(d.text) + '</p>' +
+      // The button rides with the price, above the leg details: on a 360 px phone that
+      // keeps it inside the first screen of the section instead of 90 px off the bottom.
+      (safeUrl(b.url) ? '<div class="bookit bookit--pw">' + bookLink(b.url, 'pw.book', pwProvider(b), 'btn btn-book') + '</div>' : '') +
+      '</div>' +
+      '<div class="pw-what">' +
+      (b.airline || b.routing ? '<p class="pw-route">' + Tve('pw.route', { airline: tx(b, 'airline'), routing: tx(b, 'routing') }) + '</p>' : '') +
+      pwLeg('pw.outLbl', b.out) + pwLeg('pw.backLbl', b.back) +
+      '</div></div>' +
+      // Everything below the legs is reference, not the headline. On a phone the note alone
+      // ran ~1,150 px and pushed the "Book it" box 2.6 screens down the section, so it rides
+      // in a fold: one tap, still in the DOM, still translated, still read by the checks.
+      '<details class="more-d pw-more"><summary>' + Te('pw.moreLbl') + '</summary>' +
+      (b.note ? '<p class="pw-note">' + esc(tx(b, 'note')) + '</p>' : '') +
+      pwHistoryHtml(p) +
+      (win.note ? '<p class="pw-win fine"><span class="pw-win-lbl">' + Te('pw.windowLbl') + '</span> ' + esc(tx(win, 'note')) + '</p>' : '') +
+      (p.how ? '<p class="fine">' + esc(tx(p, 'how')) + esc(next) + '</p>' : '') + seen +
+      '</details></aside>';
+  }
+
   function renderFlights() {
     var F = TRIP.flights;
     var opts = F.options.slice().sort(function (a, b) { return (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0); });
-    var html = '<p class="lede">' + esc(tx(F, 'summary')) + '</p>' +
-      bookSummary(opts, { id: 'bookit-flights', nameField: 'airline', noneKey: 'book.sumNoneFlights' }) +
+    // The one link the organiser asked for, right under the "Book it" heading: the
+    // recommended fare's own button, not a screen and a half down the page.
+    var rec = opts.filter(function (o) { return o.recommended; })[0];
+    var recB = rec ? bookingOf(rec) : null;
+    var lead = recB ? '<p class="bookit-sum-pick">' + Tve('book.sumPickFlight', { name: recFlightName() }) + '</p>' +
+      '<div class="bookit bookit--lead">' + bookLink(recB.url, 'book.flightBtn', bookProvider(recB), 'btn btn-book') + '</div>' : '';
+    var html = pwPanel() +
+      bookSummary(opts, { id: 'bookit-flights', nameField: 'airline', noneKey: 'book.sumNoneFlights', lead: lead }) +
       '<div class="passes">' + opts.map(function (o) {
         var fee = o.board.fee_pp_hkd;
         return '<article class="pass' + (o.recommended ? ' is-rec' : '') + '" id="flight-' + esc(o.id) + '">' +
@@ -3853,6 +4038,9 @@
           '<header class="pass-head"><p class="pass-airline">' + esc(tx(o, 'airline')) + '</p>' +
           (o.recommended ? '<span class="stamp">' + Te('flights.ourPick') + '</span>' : '') +
           '<h3 class="pass-title">' + esc(tx(o, 'label')) + '</h3></header>' +
+          // The booking button sits with the airline's name, not at the foot of the card:
+          // at the foot it was ~1,700 px below the section heading on a phone.
+          bookingAction(o, 'flight') +
           routeHtml(T('flights.dirOut'), o.outbound) + routeHtml(T('flights.dirHome'), o.return) +
           '</div>' +
           '<div class="pass-stub">' +
@@ -3860,13 +4048,13 @@
           '<p class="stub-lbl">' + Te('flights.boardLbl') + '</p><p class="stub-board">' + (fee.high === 0 ? Te('flights.boardFree') : esc(hkd(fee.low, fee.high))) + '</p>' + boardChip(o) +
           '</div>' +
           '<div class="pass-more">' +
-          bookingAction(o, 'flight') +
           '<details class="more-d"><summary>' + Te('flights.boardRules') + '</summary><p>' + esc(tx(o.board, 'policy')) + '</p><p>' + esc(tx(o.board, 'limits')) + '</p></details>' +
           '<details class="more-d"><summary>' + Te('common.goodBad') + '</summary><div class="procon"><div><p class="pc-h">' + Te('common.good') + '</p><ul>' + txs(o.pros).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
           '<div><p class="pc-h">' + Te('common.watchOut') + '</p><ul>' + txs(o.cons).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div></div></details>' +
           srcLink(o.source, T('flights.fareSearch')) +
           '</div></article>';
       }).join('') + '</div>' +
+      '<p class="lede lede--after">' + esc(tx(F, 'summary')) + '</p>' +
       '<div class="two-col"><div><h3 class="h-sub">' + Te('flights.bookingTips') + '</h3><ul class="ticks">' + txs(F.booking_tips).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' +
       '<div><h3 class="h-sub">' + Te('flights.taxes') + '</h3><p>' + esc(tx(F, 'taxes_note')) + '</p>' +
       '<details class="more-d"><summary>' + Tve('flights.sources', { n: F.sources.length }) + '</summary><ul class="src-list">' + F.sources.map(function (u) { return '<li>' + srcLink(u, hostOf(u)) + '</li>'; }).join('') + '</ul></details></div></div>';
@@ -4014,12 +4202,145 @@
   }
 
   /* ---------------------------------------------------------------- coaching */
+  /* Contact channels. Every href is built from a value in the data and nothing else: a value
+     that does not look like an address, a number or an https URL renders no link at all, so a
+     channel the research could not find can never appear as a link that goes nowhere. */
+  function mailUrl(v) { return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(String(v || '')) ? 'mailto:' + String(v).trim() : ''; }
+  function telUrl(v) { var d = String(v || '').replace(/[^\d+]/g, ''); return /^\+?\d{6,15}$/.test(d) ? 'tel:' + d : ''; }
+  function waUrl(v) { var d = String(v || '').replace(/\D/g, ''); return /^\d{8,15}$/.test(d) ? 'https://wa.me/' + d : ''; }
+  function igHandle(u) { var m = /instagram\.com\/([A-Za-z0-9._]+)/.exec(String(u || '')); return m ? '@' + m[1] : ''; }
+  // One tap target per channel. The label and the destination sit in ONE text run, so the
+  // reader always sees where the tap goes, and the whole run goes through the lookup.
+  function contactAct(href, key, value, cls, external) {
+    if (!href) return '';
+    return '<li><a class="btn btn-act' + (cls ? ' ' + cls : '') + '" href="' + esc(href) + '"' +
+      (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + Tve(key, { v: value }) +
+      (external ? '<span class="vh"> (' + Te('book.newTab') + ')</span>' : '') + '</a></li>';
+  }
+  function contactActs(p) {
+    var c = p.contact || {}, b = bookingOf(p), site = safeUrl(c.website), form = safeUrl(c.enquiry_url);
+    var ig = safeUrl(c.instagram), handle = igHandle(c.instagram);
+    return [
+      contactAct(mailUrl(c.email), 'coach.actEmail', c.email, 'btn-solid', false),
+      contactAct(telUrl(c.phone), 'coach.actPhone', c.phone, '', false),
+      contactAct(waUrl(c.whatsapp), 'coach.actWhatsapp', c.whatsapp, 'btn-wa', true),
+      contactAct(handle ? ig : '', 'coach.actInstagram', handle, '', true),
+      contactAct(site, 'coach.actWebsite', shortHost(site), '', true),
+      // The enquiry form only earns its own button when it is not already one of the links above.
+      contactAct(form && form !== site && !(b && b.url === form) ? form : '', 'coach.actForm', '', '', true)
+    ].filter(Boolean);
+  }
+  /* "Out of season" is read out of the English text, the way every other classifier on this page
+     works (statuses, levels, access): a sentence that states a season naming two or more months,
+     none of them November. Nothing is hard-coded to an operator. */
+  var MONTH_WORDS = /\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/g;
+  function outOfSeason(p, whyEn) {
+    return sentences([whyEn, p.offer, (p.contact || {}).note].join(' ')).some(function (s) {
+      if (!/\bseason\b/i.test(s)) return false;
+      var m = s.match(MONTH_WORDS);
+      return !!m && m.length > 1 && m.indexOf('November') === -1;
+    });
+  }
+  // Everything that must be said before the buttons, in the order it matters.
+  function contactWarnings(p, whyEn) {
+    var c = p.contact || {}, b = bookingOf(p), w = [];
+    var direct = !!(mailUrl(c.email) || telUrl(c.phone) || waUrl(c.whatsapp) || safeUrl(c.instagram));
+    var indirect = !!(safeUrl(c.enquiry_url) || safeUrl(c.website) || b);
+    if (p.guests_only) w.push('coach.warnGuests');
+    if (outOfSeason(p, whyEn)) w.push('coach.warnSeason');
+    // "Unconfirmed" is about a channel we are still showing; with nothing to show, the
+    // "no working channel" line below says it better, so the two never stack.
+    if (c.verified === false && (direct || indirect)) w.push('coach.warnUnverified');
+    if (!direct && indirect) w.push('coach.warnFormOnly');
+    if (!direct && !indirect) w.push('coach.warnNoChannel');
+    return w;
+  }
+  /* The copy-ready enquiry. The words on the page follow the reader's language; the button copies
+     the ENGLISH original, because that is what the coaches read (coach.askEnglish says so). */
+  function coachAsk() {
+    var A = TRIP.coaching.how_to_ask;
+    if (!A || !A.message) return '';
+    return '<div class="ask" role="group" aria-labelledby="coach-ask-h">' +
+      '<h4 id="coach-ask-h">' + esc(tx(A, 'title')) + '</h4>' +
+      '<p>' + esc(tx(A, 'lede')) + '</p>' +
+      '<p class="fine">' + Te('coach.askEnglish') + '</p>' +
+      '<p class="ask-btns"><button type="button" class="btn btn-solid" data-copy-ask>' + Te('coach.askCopy') + '</button></p>' +
+      '<details class="more-d" data-ask-d><summary>' + Te('coach.askRead') + '</summary>' +
+      '<pre class="ask-msg" data-ask-msg tabindex="0" aria-label="' + esc(T('coach.askAria')) + '">' + esc(tx(A, 'message')) + '</pre></details>' +
+      '<details class="more-d"><summary>' + Te('coach.askSay') + '</summary><ul class="ticks">' +
+      txs(A.state).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></details>' +
+      '<details class="more-d"><summary>' + Te('coach.askTips') + '</summary><ul class="ticks">' +
+      txs(A.tips).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></details>' +
+      '</div>';
+  }
+  function selectNode(el) {
+    try {
+      var r = document.createRange(), s = W.getSelection && W.getSelection();
+      if (!s) return;
+      r.selectNodeContents(el);
+      s.removeAllRanges();
+      s.addRange(r);
+    } catch (e) { /* the fallback is the reader's own selection */ }
+  }
+  function copyAsk() {
+    var A = TRIP.coaching.how_to_ask;
+    if (!A || !A.message) return;
+    copyText(A.message).then(function (ok) {
+      if (ok) { toast(T('coach.askCopied')); return; }
+      // Clipboard blocked: open the message and select it so a press-and-hold copy works.
+      var d = $('[data-ask-d]'), pre = $('[data-ask-msg]');
+      if (d) d.open = true;
+      if (pre) { try { pre.focus(); } catch (e) { /* not focusable here */ } selectNode(pre); }
+      toast(T('coach.askCopyFailed'));
+    });
+  }
+  // "Who to contact": coaching.message_order, in that order, with the channels we verified.
+  function coachContacts() {
+    var C = TRIP.coaching, byName = {};
+    (C.providers || []).forEach(function (p) { byName[p.name] = p; });
+    var rows = (C.message_order || []).map(function (m) { return { p: byName[m.name], m: m }; })
+      .filter(function (r) { return !!r.p; });
+    // Anything the order forgets still gets a card, so no provider can quietly vanish.
+    (C.providers || []).forEach(function (p) {
+      if (!rows.some(function (r) { return r.p === p; })) rows.push({ p: p, m: null });
+    });
+    if (!rows.length) return '';
+    var checked = rows.map(function (r) { return (r.p.contact || {}).checked; })
+      .filter(function (d) { return /^\d{4}-\d{2}-\d{2}$/.test(d || ''); }).sort().pop();
+    var cards = rows.map(function (r, i) {
+      var p = r.p, c = p.contact || {}, whyEn = r.m ? r.m.why : '';
+      var acts = contactActs(p);
+      return '<li class="contact" id="coach-' + esc(slug(p.name)) + '">' +
+        '<p class="contact-step">' + Tve('coach.contactStep', { n: i + 1 }) + '</p>' +
+        '<h4>' + esc(tx(p, 'name')) + '</h4>' +
+        '<p class="fine contact-where">' + esc(tx(p, 'where')) + '</p>' +
+        '<p class="tags">' + (p.video ? '<span class="tag">' + Te('coach.filmsTag') + '</span>' : '') +
+        '<span class="tag">' + Te(p.guests_only ? 'coach.guestsTag' : 'coach.noStayTag') + '</span>' + chipT(p, 'status') + '</p>' +
+        '<p>' + esc(firstSentences(tx(p, 'offer'), 1)) + '</p>' +
+        (r.m ? '<p class="contact-why"><strong>' + Te('coach.contactWhy') + '</strong> ' + esc(tx(r.m, 'why')) + '</p>' : '') +
+        contactWarnings(p, whyEn).map(function (k) {
+          return '<p class="warn-line">' + ICON.hazard + '<span>' + Te(k) + '</span></p>';
+        }).join('') +
+        (acts.length ? '<ul class="contact-acts" ' + 'aria-label="' + esc(Tv('coach.contactActions', { name: tx(p, 'name') })) + '">' + acts.join('') + '</ul>' : '') +
+        bookingAction(p, 'inline') +
+        '<details class="more-d"><summary>' + Te('coach.offer') + '</summary><p>' + esc(tx(p, 'offer')) + '</p>' +
+        '<p class="fine">' + esc(tx(p, 'price_note')) + '</p></details>' +
+        (c.note ? '<details class="more-d"><summary>' + Te('coach.contactNote') + '</summary><p>' + esc(tx(c, 'note')) + '</p></details>' : '') +
+        srcLink(p.source) + '</li>';
+    }).join('');
+    return '<h3 class="h-sub" id="coach-contacts">' + Te('coach.contactsTitle') + '</h3>' +
+      '<p class="lede">' + Te('coach.contactsLede') + '</p>' +
+      (checked ? '<p class="fine checked-line">' + Tve('coach.contactsChecked', { date: fmtDate(checked) }) + '</p>' : '') +
+      coachAsk() +
+      '<ol class="contacts">' + cards + '</ol>';
+  }
   function renderCoaching() {
     var C = TRIP.coaching;
     var reality = tx(C, 'reality_check');
     var html = '<p class="lede">' + esc(tx(C, 'summary')) + '</p>' +
       '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>' + Te('coach.realityCheck') + '</strong> ' + esc(firstSentences(reality, 2)) + '</p>' +
       '<details class="more-d"><summary>' + Te('coach.realityMore') + '</summary><p>' + esc(restSentences(reality, 2)) + '</p></details></div></div>' +
+      coachContacts() +
       '<div class="coach-plan" data-coach-plan></div>' +
       '<h3 class="h-sub">' + Te('coach.packagesTitle') + '</h3>' +
       '<ol class="packages">' + C.packages.map(function (k) {
@@ -4032,20 +4353,11 @@
       '<ol class="programme">' + C.programme.map(function (d) {
         return '<li><h4>' + esc(tx(d, 'day')) + '</h4><p><strong>' + Te('coach.focus') + '</strong> ' + esc(tx(d, 'focus')) + '</p><p><strong>' + Te('coach.where') + '</strong> ' + esc(tx(d, 'spot_idea')) + '</p>' +
           '<details class="more-d"><summary>' + Te('coach.drills') + '</summary><p>' + esc(tx(d, 'drills')) + '</p></details></li>';
-      }).join('') + '</ol>' +
-      '<h3 class="h-sub">' + Te('coach.whoTitle') + '</h3>' +
-      '<div class="two-col">' + [[false, T('coach.openGroup')], [true, T('coach.guestsGroup')]].map(function (g) {
-        var ps = C.providers.filter(function (p) { return !!p.guests_only === g[0]; });
-        return '<div><h4 class="group-h">' + Tve('coach.groupCount', { label: g[1], n: ps.length }) + '</h4><ul class="providers">' + ps.map(function (p) {
-          return '<li class="provider"><h5>' + esc(tx(p, 'name')) + '</h5><p class="fine">' + esc(tx(p, 'where')) + '</p>' +
-            '<p class="tags">' + (p.video ? '<span class="tag">' + Te('coach.filmsTag') + '</span>' : '') + '<span class="tag">' + Te(p.guests_only ? 'coach.guestsTag' : 'coach.noStayTag') + '</span>' + chipT(p, 'status') + '</p>' +
-            '<p>' + esc(tx(p, 'price_note')) + '</p><details class="more-d"><summary>' + Te('coach.offer') + '</summary><p>' + esc(tx(p, 'offer')) + '</p></details>' + srcLink(p.source) +
-            bookingAction(p, 'inline') + '</li>';
-        }).join('') + '</ul></div>';
-      }).join('') + '</div>';
+      }).join('') + '</ol>';
     var root = renderInto('coaching', html);
     clipList('programme', $('.programme', root), 'days', 0, null, { text: function (open, n) { return open ? T('clip.programmeHide') : Tv('clip.programmeShow', { n: n }); } });
-    $$('.providers', root).forEach(function (ul, i) { clipList('providers-' + i, ul, 'coaches', 1); });
+    // The four we would message first stay open; the long tail folds away on phones.
+    clipList('coachContacts', $('.contacts', root), 'coaches', 4);
     updateCoachingPlan();
   }
   function updateCoachingPlan() {
@@ -4664,7 +4976,7 @@
     var html = '<div class="disclaimer"><p><strong>' + Tve('top.pricesChecked', { date: fmtDate(m.prices_checked) }) + '</strong> ' + esc(tx(m, 'disclaimer')) + '</p><p class="fine">' + esc(tx(m.fx, 'note')) + '</p></div>' +
       '<h3 class="h-sub">' + Tve('sources.confirmTitle', { n: TRIP.to_confirm.length }) + '</h3>' +
       '<ul class="confirm">' + TRIP.to_confirm.map(function (c) {
-        return '<li class="confirm-item">' + ICON.hazard + '<div><p class="confirm-what">' + esc(tx(c, 'item')) + '</p>' +
+        return '<li class="confirm-item">' + ICON.hazard + '<div class="confirm-body"><p class="confirm-what">' + esc(tx(c, 'item')) + '</p>' +
           '<p class="confirm-meta"><span><strong>' + Te('sources.who') + '</strong> ' + esc(tx(c, 'who')) + '</span><span><strong>' + Te('sources.by') + '</strong> ' + esc(tx(c, 'by_when')) + '</span></p>' +
           '<p class="fine">' + esc(tx(c, 'why')) + '</p></div></li>';
       }).join('') + '</ul>' +
