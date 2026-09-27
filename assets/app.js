@@ -493,7 +493,10 @@
     "stay.figureNote": "This figure: {status}. The package as a whole: ",
     "stay.placesTitle": "Places to stay",
     "stay.placesOnPlan": "Places to stay on the {plan} plan",
-    "stay.placesHint": "Quotes opened on Booking.com on 27 Sep 2026 for 7 adults. Blue Haven Retreat is the first 6 nights (1-7 Nov). Noah Private Beach House, the beach house next to the ocean, is the last 2 nights (7-9 Nov). The high end of each price adds the GST and environmental fee that page says are excluded.",
+    "stay.placesHint": "Quotes opened on Booking.com on 27 Sep 2026 for 7 adults. Blue Haven Retreat is the first 6 nights (1-7 Nov). Noah Private Beach House is the beach guesthouse for the last 2 nights (7-9 Nov), not an overwater pool villa. The pool villas are the list above. The high end of each price adds the GST and environmental fee that page says are excluded.",
+    "stay.villaTitle": "Overwater villas with a private pool",
+    "stay.villaEach": "each, last 2 nights",
+    "stay.villaBoat": "Boat",
     "stay.roomsFor": "Rooms for 7",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
@@ -4124,7 +4127,7 @@
   }
   function renderStay() {
     // "Book it" sits above the plan cards and follows the chosen plan (see updateStayPlan).
-    var html = '<div data-book-stay></div><div class="plans">' + TRIP.plans.map(function (p, i) {
+    var html = '<div data-book-stay></div>' + overwaterHtml() + '<div class="plans">' + TRIP.plans.map(function (p, i) {
       return '<article class="plan-card" data-plan-card="' + esc(p.id) + '">' + photoFigure(photoById(STAY_PHOTOS[i]), 'card-ph', '(min-width: 1100px) 40vw, (min-width: 900px) 45vw, 92vw') +
         '<header><p class="plan-short">' + Tve('stay.planShort', { plan: planShort(p.id) }) + '</p><span class="stamp">' + Te('stay.stampCrew') + '</span>' +
         '<h3>' + esc(tx(p, 'name')) + '</h3><p class="plan-tag-line">' + esc(tx(p, 'tagline')) + '</p></header>' +
@@ -4156,6 +4159,27 @@
     });
     clipList('not-available', $('.na-list', root), 'notAvailable', 2);
     updateStayPlan();
+  }
+  // Overwater pool villas for the last 2 nights. Not part of the guesthouse total until one is picked.
+  function overwaterHtml() {
+    var O = TRIP.overwater;
+    if (!O || !O.options || !O.options.length) return '';
+    return '<h3 class="h-sub" id="overwater-title">' + Te('stay.villaTitle') + '</h3>' +
+      '<p class="fine">' + esc(tx(O, 'note')) + '</p>' +
+      '<div class="props" data-villas>' + O.options.map(function (o) {
+        var rows = [[T('stay.roomsFor'), tx(o, 'rooms_for_11')], [T('stay.meals'), tx(o, 'meals')],
+          [T('stay.taxes'), tx(o, 'taxes')], [T('stay.cancelling'), tx(o, 'cancellation')],
+          [T('stay.rating'), tx(o, 'rating')], [T('stay.availability'), tx(o, 'availability')]];
+        return '<article class="prop"><header class="prop-head"><div><p class="plan-short">' + esc(tx(o, 'rank')) + '</p><h4>' + esc(tx(o, 'name')) + '</h4><p class="prop-island">' + esc(tx(o, 'island')) + '</p><p class="prop-type">' + esc(tx(o, 'type')) + '</p></div>' +
+          '<div class="prop-price"><p class="num">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + '</p><p class="per">' + Te('stay.villaEach') + '</p>' +
+          '<p class="per">' + Tve('stay.forGroup', { price: hkd(o.total_group_hkd.low, o.total_group_hkd.high) }) + '</p>' + chipT(o, 'status') + '</div></header>' +
+          '<p>' + esc(tx(o, 'match')) + '</p>' +
+          '<p class="prop-cancel"><strong>' + Te('stay.villaBoat') + ':</strong> ' + esc(tx(o, 'boat')) + '</p>' +
+          '<details class="more-d"><summary>' + Te('stay.roomsSummary') + '</summary><dl class="kv">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl></details>' +
+          bookingAction(o, 'stay') +
+          '<p class="src-row">' + srcLink(o.url, T('stay.seeListing')) + '</p></article>';
+      }).join('') + '</div>' +
+      '<p class="fine">' + esc(tx(O, 'also')) + '</p>';
   }
   function stayPlaceId(o) {
     var g = staysForPlan(state.plan).filter(function (x) { return x.options.indexOf(o) !== -1; })[0];
