@@ -44,9 +44,9 @@
     "lang.switchedEn": "Page switched to English.",
 
     /* --- head, share card --- */
-    "meta.title": "Maldives Surf Trip, 1-10 Nov 2026",
-    "meta.description": "Crew trip plan for 7 confirmed intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Tue 10 Nov 2026. Opens on a map of the surf spots and where we could stay, then the November surf outlook, the budget (one plan: Budget), flights, stays, surf spots, coaching, boats and more. Prices checked 16 Sep 2026.",
-    "meta.ogTitle": "Maldives Surf Trip, 1-10 Nov 2026",
+    "meta.title": "Maldives Surf Trip, 1-9 Nov 2026",
+    "meta.description": "Crew trip plan for 7 confirmed intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Mon 9 Nov 2026. Fly home Mon 9 Nov, land Hong Kong Tue 10 Nov, work Wed 11 Nov. Opens on a map of the surf spots and where we stay, then the November surf outlook, the budget (one plan: Budget), flights, stays, surf spots, coaching, boats and more. Emirates fare and the two stays re-checked 27 Sep 2026.",
+    "meta.ogTitle": "Maldives Surf Trip, 1-9 Nov 2026",
     "meta.ogDescription": "Our crew plan for North Malé Atoll: a map of the breaks and the guesthouse options, the November surf outlook, what it costs each of us in HKD (one plan: Budget), flights, boats and coaching. Prices checked 16 Sep 2026, estimates to re-check before booking.",
     "meta.ogImageAlt": "A surfer in a yellow rash guard crouched inside a hollow, glassy wave in the Maldives",
     "noscript.text": "This trip plan needs JavaScript to show its content. Turn JavaScript on and reload the page.",
@@ -58,7 +58,7 @@
     "bar.planBudget": "Budget",
     "rail.navAria": "Trip navigation",
     "rail.brandName": "Maldives surf trip",
-    "rail.brandDates": "Sun 1 to Tue 10 Nov 2026",
+    "rail.brandDates": "Sun 1 to Mon 9 Nov 2026",
     "rail.spotsTitle": "Surf spots",
     "rail.spotsTaglineFallback": "Map, breaks and boat times",
     "rail.spotsTagline": "{n} breaks on a map, boat times",
@@ -72,7 +72,7 @@
     /* --- section names (nav and headings) --- */
     "sec.top": "Map overview",
     "sec.overview": "Overview",
-    "sec.overviewH": "Overview: Maldives surfing in 1-10 Nov",
+    "sec.overviewH": "Overview: Maldives surfing in 1-9 Nov",
     "sec.budget": "Budget overall",
     "sec.flights": "Flights",
     "sec.stay": "Accommodation",
@@ -135,7 +135,7 @@
 
     /* --- map overview (first screen) --- */
     "ov.title": "Maldives surf trip",
-    "ov.dates": "Sun 1 to Tue 10 Nov 2026",
+    "ov.dates": "Sun 1 to Mon 9 Nov 2026",
     "ov.countdownFallback": "Fly out Sat 31 Oct",
     "ov.flag": "November surf is a gamble. No charter boat or coaching quote yet. Re-check flights and prices.",
     "ov.flagLink": "Read this first",
@@ -247,7 +247,7 @@
 
     /* --- 1 Overview: season --- */
     "season.title": "Surfing here in early November",
-    "season.kicker": "Season call for 1-10 Nov",
+    "season.kicker": "Season call for 1-9 Nov",
     "season.factWind": "Wind",
     "season.factSwell": "Swell",
     "season.factWater": "Water",
@@ -262,11 +262,11 @@
 
     /* --- crew and countdown --- */
     "crew.inMaldives": "In the Maldives",
-    "crew.datesNights": "Sun 1 to Tue 10 Nov 2026, {n} nights",
+    "crew.datesNights": "Sun 1 to Mon 9 Nov 2026, {n} nights",
     "crew.flyOut": "Fly out",
     "crew.flyOutVal": "{date}, {flight} leaves Hong Kong at {time}",
     "crew.flyHome": "Fly home",
-    "crew.flyHomeVal": "{date}, {flight} leaves Malé at {dep}; lands in Hong Kong Wed 11 Nov at {arr}",
+    "crew.flyHomeVal": "{date}, {flight} leaves Malé at {dep}; lands in Hong Kong Tue 10 Nov at {arr}",
     "crew.flightNote": "Flight times follow our recommended {flights} flights; see 3 Flights.",
     "crew.countdownLabel": "Until the flight leaves Hong Kong",
     "crew.countdownFlight": "{flight} leaves Hong Kong {date} at {time} (HK time)",
@@ -412,7 +412,7 @@
     /* --- share --- */
     "share.title": "Share the plan with the crew",
     "share.blurb": "One link for everyone. No login, no ads, no analytics.",
-    "share.text": "Maldives surf trip plan, 1-10 Nov 2026: {url}",
+    "share.text": "Maldives surf trip plan, 1-9 Nov 2026: {url}",
     "share.copy": "Copy link",
     "share.whatsapp": "Share on WhatsApp",
 
@@ -493,8 +493,8 @@
     "stay.figureNote": "This figure: {status}. The package as a whole: ",
     "stay.placesTitle": "Places to stay",
     "stay.placesOnPlan": "Places to stay on the {plan} plan",
-    "stay.placesHint": "7 people are confirmed. The room prices below were found for 11 adults for all {nights} nights at one place: the group total covers those 11, and the price each is that total divided by 11. The crew wants Noah Private Beach House, the beach house next to the ocean, for the last 2 nights. That split, for 7 people, still needs a new quote.",
-    "stay.roomsFor": "Rooms in the 11-adult quote",
+    "stay.placesHint": "Quotes opened on Booking.com on 27 Sep 2026 for 7 adults. Blue Haven Retreat is the first 6 nights (1-7 Nov). Noah Private Beach House, the beach house next to the ocean, is the last 2 nights (7-9 Nov). The high end of each price adds the GST and environmental fee that page says are excluded.",
+    "stay.roomsFor": "Rooms for 7",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
     "stay.cancelling": "Cancelling",
@@ -647,7 +647,7 @@
     "budget.stepUp": "One more person",
     "budget.numPeople": "Number of people",
     "budget.crewSlider": "Crew size slider",
-    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, a private crew boat, permits) are split across the crew. Room prices were found for 11 adults for 9 nights at one guesthouse, so the confirmed crew of 7, and any other size, needs new room quotes. The last 2 nights at Noah are not in those room prices.",
+    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, a private crew boat, permits) are split across the crew. The stay prices are the 27 Sep 2026 Booking.com quotes for 7 adults. A different crew size needs a new quote.",
     "budget.reset": "Reset to the crew's plan ({plan})",
     "budget.eachPerson": "Each person ",
     "budget.wholeCrew": "Whole crew of ",
