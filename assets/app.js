@@ -45,7 +45,7 @@
 
     /* --- head, share card --- */
     "meta.title": "Maldives Surf Trip, 1-10 Nov 2026",
-    "meta.description": "Crew trip plan for 11 intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Tue 10 Nov 2026. Opens on a map of the surf spots and where we could stay, then the November surf outlook, the budget (one plan: Budget), flights, stays, surf spots, coaching, boats and more. Prices checked 16 Sep 2026.",
+    "meta.description": "Crew trip plan for 7 confirmed intermediate shortboarders from Hong Kong: North Malé Atoll, Sun 1 - Tue 10 Nov 2026. Opens on a map of the surf spots and where we could stay, then the November surf outlook, the budget (one plan: Budget), flights, stays, surf spots, coaching, boats and more. Prices checked 16 Sep 2026.",
     "meta.ogTitle": "Maldives Surf Trip, 1-10 Nov 2026",
     "meta.ogDescription": "Our crew plan for North Malé Atoll: a map of the breaks and the guesthouse options, the November surf outlook, what it costs each of us in HKD (one plan: Budget), flights, boats and coaching. Prices checked 16 Sep 2026, estimates to re-check before booking.",
     "meta.ogImageAlt": "A surfer in a yellow rash guard crouched inside a hollow, glassy wave in the Maldives",
@@ -146,7 +146,7 @@
     "ov.showSouth": "Show South Malé too",
     "ov.backNorth": "Back to North Malé",
     "ov.legendAria": "Map key",
-    "ov.legendStay": "Stay options (we book one)",
+    "ov.legendStay": "Where we stay",
     "ov.legendPick": "Crew pick",
     "ov.legendOther": "Other break",
     "ov.legendAdv": "Advanced",
@@ -163,8 +163,8 @@
     "ov.kmLine": "in a straight line",
     "ov.fromBase": "From {base}:",
     "ov.openSpots": "Open in Surf spots",
-    "ov.stayKickerOne": "Stay option on the {plan} plan (we book one)",
-    "ov.stayKickerMany": "Stay options on the {plan} plan (we book one)",
+    "ov.stayKickerOne": "Stay on the {plan} plan",
+    "ov.stayKickerMany": "Stay options on the {plan} plan",
     "ov.stayPinNote": "The pin is the approx. island location, not the guesthouse address.",
     "ov.stayBoatNote": " The boat times on this map are from {base}, not from {place}.",
     "ov.eachNights": "{price} each, {nights} nights",
@@ -172,7 +172,7 @@
     "ov.airportKicker": "Where we land",
     "ov.airportFallbackName": "Malé airport",
     "ov.openTransport": "Open in Local transport",
-    "ov.listStayH": "Where we could stay on the {plan} plan (we book one)",
+    "ov.listStayH": "Where we stay on the {plan} plan",
     "ov.approxIsland": "{place} (approx. island location)",
     "ov.listPicksH": "Where we surf: the crew picks",
     "ov.fromBaseShort": "From {base}: {boat}",
@@ -194,8 +194,8 @@
     "map.modNoStart": "The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
     "map.modNoTiles": "Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
     "map.approxIsland": "approx. island location",
-    "map.stayAriaOne": "Stay option on the {plan} plan (we book one): {names}, on {place} (approx. island location)",
-    "map.stayAriaMany": "Stay options on the {plan} plan (we book one): {names}, on {place} (approx. island location)",
+    "map.stayAriaOne": "Stay on the {plan} plan: {names}, on {place} (approx. island location)",
+    "map.stayAriaMany": "Stay options on the {plan} plan: {names}, on {place} (approx. island location)",
     "map.airportBoat": "{duration} to {base}",
     "map.airportBoatFallback": "boat to {base}",
     "map.airportAria": "{name}. {boat}.",
@@ -493,8 +493,8 @@
     "stay.figureNote": "This figure: {status}. The package as a whole: ",
     "stay.placesTitle": "Places to stay",
     "stay.placesOnPlan": "Places to stay on the {plan} plan",
-    "stay.placesHint": "Room prices were found for a crew of {crew}: group totals cover all {crew} for {nights} nights, and the price each is that total divided by {crew}. We book one of them.",
-    "stay.roomsFor": "Rooms for {n}",
+    "stay.placesHint": "7 people are confirmed. The room prices below were found for 11 adults for all {nights} nights at one place: the group total covers those 11, and the price each is that total divided by 11. The crew wants Noah Private Beach House, the beach house next to the ocean, for the last 2 nights. That split, for 7 people, still needs a new quote.",
+    "stay.roomsFor": "Rooms in the 11-adult quote",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
     "stay.cancelling": "Cancelling",
@@ -540,7 +540,7 @@
     "coach.where": "Where:",
     "coach.drills": "Drills",
     "coach.contactsTitle": "Who to contact",
-    "coach.contactsLede": "The people to message, in the order to message them. Every one of these is an enquiry, not a booking: nobody has quoted for 11 of us yet.",
+    "coach.contactsLede": "The people to message, in the order to message them. Every one of these is an enquiry, not a booking: nobody has quoted for the 7 confirmed people yet.",
     "coach.contactsChecked": "Every contact below was checked on {date}. Where a channel is dead or could not be confirmed, the card says so instead of showing a link.",
     "coach.contactStep": "Message {n}",
     "coach.contactWhy": "Why here.",
@@ -647,7 +647,7 @@
     "budget.stepUp": "One more person",
     "budget.numPeople": "Number of people",
     "budget.crewSlider": "Crew size slider",
-    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, a private crew boat, permits) are split across the crew. Room prices were found for {base}, so a different crew size needs new room quotes.",
+    "budget.crewFine": "From {min} to {max} people. Shared costs (the airport boat, a private crew boat, permits) are split across the crew. Room prices were found for 11 adults for 9 nights at one guesthouse, so the confirmed crew of 7, and any other size, needs new room quotes. The last 2 nights at Noah are not in those room prices.",
     "budget.reset": "Reset to the crew's plan ({plan})",
     "budget.eachPerson": "Each person ",
     "budget.wholeCrew": "Whole crew of ",
@@ -3404,7 +3404,7 @@
       if (M.markers[k].setZIndexOffset) M.markers[k].setZIndexOffset(k === sel ? Z_SEL : spotById(k).crew_pick ? Z_PICK : 0);
     });
   }
-  // Under the map: where we could stay (for the plan on screen; we book one) and where we surf, each linking into its section.
+  // Under the map: where we stay (for the plan on screen) and where we surf, each linking into its section.
   function renderOverviewLists() {
     var el = $('[data-render="ov-lists"]');
     if (!el) return;
