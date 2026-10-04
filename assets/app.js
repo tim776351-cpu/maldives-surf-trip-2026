@@ -538,7 +538,11 @@
     "coach.realityMore": "The rest of the reality check",
     "coach.packagesTitle": "Coaching packages you can add",
     "coach.howPriced": "How it is priced",
-    "coach.programmeTitle": "The 8-day coaching programme",
+    "coach.selfTitle": "If we cannot find a local surf guide",
+    "coach.selfSteps": "How the week runs",
+    "coach.selfWaves": "Which wave",
+    "coach.programmeTitle": "The 8 surf days",
+    "coach.programmeNote": "Same week if nobody is coaching. Book the boat the night before, from the list above.",
     "coach.focus": "Focus:",
     "coach.where": "Where:",
     "coach.drills": "Drills",
@@ -4358,10 +4362,28 @@
       coachAsk() +
       '<ol class="contacts">' + cards + '</ol>';
   }
+  function selfGuideHtml(C) {
+    var g = C.self_guide;
+    if (!g) return '';
+    return '<h3 class="h-sub" id="no-guide">' + Te('coach.selfTitle') + '</h3>' +
+      '<p>' + esc(tx(g, 'lead')) + '</p>' +
+      '<h3 class="h-sub">' + Te('coach.selfSteps') + '</h3>' +
+      '<ol class="self-steps">' + (g.steps || []).map(function (step, i) {
+        return '<li>' + esc(txi(g.steps, i)) + '</li>';
+      }).join('') + '</ol>' +
+      '<h3 class="h-sub">' + Te('coach.selfWaves') + '</h3>' +
+      '<ul class="guide-waves">' + (g.waves || []).map(function (w) {
+        return '<li class="guide-wave"><h4>' + esc(tx(w, 'name')) + ' <span class="tag">' + esc(tx(w, 'role')) + '</span></h4><p>' + esc(tx(w, 'detail')) + '</p></li>';
+      }).join('') + '</ul>' +
+      '<p class="guide-links">' + (g.links || []).map(function (l) {
+        return srcLink(l.url, tx(l, 'label'));
+      }).join('') + '</p>';
+  }
   function renderCoaching() {
     var C = TRIP.coaching;
     var reality = tx(C, 'reality_check');
-    var html = '<p class="lede">' + esc(tx(C, 'summary')) + '</p>' +
+    var html = selfGuideHtml(C) +
+      '<p class="lede">' + esc(tx(C, 'summary')) + '</p>' +
       '<div class="note note-warn">' + ICON.hazard + '<div><p><strong>' + Te('coach.realityCheck') + '</strong> ' + esc(firstSentences(reality, 2)) + '</p>' +
       '<details class="more-d"><summary>' + Te('coach.realityMore') + '</summary><p>' + esc(restSentences(reality, 2)) + '</p></details></div></div>' +
       coachContacts() +
@@ -4374,6 +4396,7 @@
           '<details class="more-d"><summary>' + Te('coach.howPriced') + '</summary><p>' + esc(tx(k, 'basis')) + '</p></details></li>';
       }).join('') + '</ol>' +
       '<h3 class="h-sub">' + Te('coach.programmeTitle') + '</h3>' +
+      '<p class="fine">' + Te('coach.programmeNote') + '</p>' +
       '<ol class="programme">' + C.programme.map(function (d) {
         return '<li><h4>' + esc(tx(d, 'day')) + '</h4><p><strong>' + Te('coach.focus') + '</strong> ' + esc(tx(d, 'focus')) + '</p><p><strong>' + Te('coach.where') + '</strong> ' + esc(tx(d, 'spot_idea')) + '</p>' +
           '<details class="more-d"><summary>' + Te('coach.drills') + '</summary><p>' + esc(tx(d, 'drills')) + '</p></details></li>';
