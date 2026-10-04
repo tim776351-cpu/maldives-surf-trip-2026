@@ -255,6 +255,7 @@
     "season.factRain": "Rain",
     "season.moreOn": "More on {label}",
     "season.goSpots": "Where to surf: 5 Surf spots",
+    "season.goForecast": "Open the morning wave forecast",
     "fold.season": "season details",
     "fold.tides": "sunrise, sunset and tides",
     "fold.show": "Show {label}",
@@ -373,6 +374,10 @@
     "access.resortBody": "Only guests on that resort's surf package can surf them, so they are not an option from our base.",
 
     /* --- 5 Surf spots --- */
+    "spots.forecastTitle": "Wave forecast near the stays",
+    "forecast.howTitle": "How to use it each morning",
+    "forecast.open": "Open the 16-day forecast",
+    "forecast.checked": "Links checked {date}.",
     "spots.tidesTitle": "Light and tides, 1 to 10 Nov",
     "tides.below": " Below: sunrise, sunset and a tide outlook worked out from moon phases.",
     "tides.moreSummary": "What we know about the tides",
@@ -2336,7 +2341,8 @@
         return '<div class="fact"><h4>' + esc(f[0]) + '</h4><p>' + esc(firstSentences(f[1], 1)) + '</p>' +
           (rest ? '<details class="more-d"><summary>' + Tve('season.moreOn', { label: f[0].toLowerCase() }) + '</summary><p>' + esc(rest) + '</p></details>' : '') + '</div>';
       }).join('') + '</div>' +
-      '<p class="season-go"><a class="more" href="#spots">' + Te('season.goSpots') + '</a></p>';
+      '<p class="season-go"><a class="more" href="#forecast">' + Te('season.goForecast') + '</a>' +
+      '<a class="more" href="#spots">' + Te('season.goSpots') + '</a></p>';
     var root = renderInto('season', html);
     if (root) foldBlock('season', [$('.expect', root), $('.facts', root)], 'season');
   }
@@ -3758,6 +3764,41 @@
         }).join(', ') + '</p></li>';
     }).join('') + '</ul>' + (rule ? '<p class="fine">' + richHtml(rule, false, culture[ruleIdx]) + '</p>' : '');
     renderInto('access-rules', html);
+  }
+
+  function renderForecast() {
+    var f = TRIP.forecast;
+    if (!f || !f.stays) { renderInto('forecast', ''); return; }
+    var stays = f.stays.map(function (stay) {
+      var place = placeById(stay.place_id);
+      var cards = (stay.spots || []).map(function (row) {
+        var spot = spotById(row.id);
+        var title = spot ? spotShort(spot) : row.id;
+        var level = spot ? levelWords(spot.level) : '';
+        var where = stay.boat_from === 'thulusdhoo' && spot ? boatTime(spot).short : tx(row, 'near');
+        var url = safeUrl(row.url);
+        return '<li class="guide-wave">' +
+          '<h4>' + esc(title) +
+          (row.role ? ' <span class="tag' + (row.highlight ? ' tag-pick' : '') + '">' + esc(tx(row, 'role')) + '</span>' : '') +
+          (level ? ' <span class="tag">' + esc(level) + '</span>' : '') +
+          '</h4>' +
+          (where ? '<p>' + esc(where) + '</p>' : '') +
+          (url ? '<p class="src-row"><a class="src" href="' + esc(url) + '" target="_blank" rel="noopener">' + Te('forecast.open') + '</a></p>' : '') +
+          '</li>';
+      }).join('');
+      return '<section class="forecast-stay"><h4 class="forecast-place">' + esc(place ? placeName(place) : stay.id) + '</h4>' +
+        '<p class="forecast-when">' + esc(tx(stay, 'when')) + '</p>' +
+        '<ul class="guide-waves">' + cards + '</ul></section>';
+    }).join('');
+    var region = safeUrl(f.region_url);
+    renderInto('forecast',
+      '<div class="note note-warn">' + ICON.hazard + '<p>' + esc(tx(f, 'note')) + '</p></div>' +
+      '<h4 class="h-sub">' + Te('forecast.howTitle') + '</h4>' +
+      '<ol class="self-steps">' + (f.how || []).map(function (step, i) { return '<li>' + esc(txi(f.how, i)) + '</li>'; }).join('') + '</ol>' +
+      '<div class="forecast-stays">' + stays + '</div>' +
+      '<p class="fine">' +
+      (region ? '<a class="src" href="' + esc(region) + '" target="_blank" rel="noopener">' + esc(tx(f, 'region_label')) + '</a> ' : '') +
+      Tve('forecast.checked', { date: tx(f, 'checked_label') }) + '</p>');
   }
 
   function renderTides() {
@@ -5192,7 +5233,7 @@
   function rerenderAll() {
     [renderNav, renderShare, renderTop, renderPlates, renderSeason, renderHeads, renderKeypoints,
       renderDecisions, renderCrew, renderVibe, renderPlanPick, renderBudget, renderFlights, renderStay, renderMapViews,
-      renderSpotFilters, renderSpotList, applySpotFilter, renderBoatTimes, renderAccessRules, renderTides, renderRhythm,
+      renderSpotFilters, renderSpotList, applySpotFilter, renderBoatTimes, renderAccessRules, renderForecast, renderTides, renderRhythm,
       renderCoaching, renderTransport, renderActivities, renderFood, renderItinerary, renderPrep, renderSources
     ].forEach(function (fn, i) { safe(fn, 'lang-' + i); });
     emit('init');
@@ -5314,6 +5355,7 @@
     safe(initSheet, 'sheet');
     safe(renderBoatTimes, 'boat-times');
     safe(renderAccessRules, 'access-rules');
+    safe(renderForecast, 'forecast');
     safe(renderTides, 'tides');
     safe(renderRhythm, 'rhythm');
     // 6-8, then the extras

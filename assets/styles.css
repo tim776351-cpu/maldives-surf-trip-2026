@@ -690,6 +690,13 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .guide-wave p { margin: 0; }
 .guide-links { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 1.2em; }
 @media (min-width: 700px) { .guide-waves { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.forecast-stays { display: grid; gap: 16px; margin: 0 0 1em; }
+.forecast-stay { padding: 14px 16px 4px; border-radius: var(--radius-l); background: var(--white); border: 1.5px solid var(--line); }
+.forecast-place { margin: 0 0 4px; }
+.forecast-when { margin: 0 0 12px; color: var(--ink-2); }
+.forecast-stay .guide-waves { grid-template-columns: minmax(0, 1fr); }
+.season-go { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+@media (min-width: 800px) { .forecast-stays { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
 .packages { list-style: none; display: grid; gap: 12px; counter-reset: pk; }
 .package { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: var(--radius-l); background: var(--white); border: 1.5px solid var(--line); }
 .package header { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
