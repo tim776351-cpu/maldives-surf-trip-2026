@@ -147,6 +147,7 @@
     "ov.backNorth": "Back to North Malé",
     "ov.legendAria": "Map key",
     "ov.legendStay": "Where we stay",
+    "ov.legendVilla": "7-9 Nov villa",
     "ov.legendPick": "Crew pick",
     "ov.legendOther": "Other break",
     "ov.legendAdv": "Advanced",
@@ -166,6 +167,11 @@
     "ov.stayKickerOne": "Stay on the {plan} plan",
     "ov.stayKickerMany": "Stay options on the {plan} plan",
     "ov.stayPinNote": "The pin is the approx. island location, not the guesthouse address.",
+    "ov.villaKicker": "7-9 Nov, step from the room into the sea",
+    "ov.villaPinNote": "The pin is the approx. island location, not the villa. These do not replace Noah until you pick one.",
+    "ov.villaRowPrice": "{price} each, last 2 nights",
+    "ov.listVillaH": "7-9 Nov villa options",
+    "ov.openVillas": "Open the villa list",
     "ov.stayBoatNote": " The boat times on this map are from {base}, not from {place}.",
     "ov.eachNights": "{price} each, {nights} nights",
     "ov.openStay": "Open in Accommodation",
@@ -194,6 +200,8 @@
     "map.modNoStart": "The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
     "map.modNoTiles": "Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
     "map.approxIsland": "approx. island location",
+    "map.villaNights": "last 2 nights, 7-9 Nov",
+    "map.villaAria": "{place}, {names}. Overwater villa for 7-9 Nov. The pin is the approx. island location.",
     "map.stayAriaOne": "Stay on the {plan} plan: {names}, on {place} (approx. island location)",
     "map.stayAriaMany": "Stay options on the {plan} plan: {names}, on {place} (approx. island location)",
     "map.airportBoat": "{duration} to {base}",
@@ -1238,6 +1246,19 @@
       if (!place) return;
       var g = out.filter(function (x) { return x.place === place; })[0];
       if (!g) { g = { place: place, options: [] }; out.push(g); }
+      g.options.push(o);
+    });
+    return out;
+  }
+  // The 7-9 Nov sea-entry villas. Separate from the plan stays: they do not replace Noah until the crew picks one.
+  function villaStays() {
+    var O = TRIP.overwater, out = [];
+    if (!O || !O.options) return out;
+    O.options.forEach(function (o) {
+      var place = placeById(o.place_id);
+      if (!place) return;
+      var g = out.filter(function (x) { return x.place === place; })[0];
+      if (!g) { g = { place: place, options: [], villa: true }; out.push(g); }
       g.options.push(o);
     });
     return out;
@@ -2725,6 +2746,7 @@
   var Z_AIR = 3000, Z_STAY = 6000, Z_PICK = 9000, Z_SEL = 12000;
   function nudgeCap(pxPerKm) { return Math.max(0, Math.min(MAX_NUDGE, NUDGE_KM * (pxPerKm || 0))); }
   var STAY_SVG = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="15" height="15" rx="4" fill="#ffc247" stroke="#fff" stroke-width="1.6"/><path d="M6 10.8 10 7.2l4 3.6v3.6H6z" fill="#0b3a45"/></svg>';
+  var VILLA_SVG = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="15" height="15" rx="4" fill="#56d4c4" stroke="#fff" stroke-width="1.6"/><path d="M6 10.8 10 7.2l4 3.6v3.6H6z" fill="#0b3a45"/></svg>';
   var PLANE_PATH = 'M5.5 10.8l3.4-.6 2.3-3.6h.9l-1 3.4 2.3.1.9-1.1h.8l-.6 1.9.6 1.9h-.8l-.9-1.1-2.3.1 1 3.4h-.9l-2.3-3.6z';
   var PLANE_SVG = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="#0b3a45" stroke="#ffc247" stroke-width="1.6"/><path d="' + PLANE_PATH + '" fill="#ffc247"/></svg>';
   var PICK_SVG = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="#ef5a47" stroke="#fff" stroke-width="2"/></svg>';
@@ -2745,6 +2767,10 @@
   function stayAria(g) {
     var names = g.options.map(function (o) { return tx(o, 'name'); }).join(T('words.listSep'));
     return Tv(g.options.length > 1 ? 'map.stayAriaMany' : 'map.stayAriaOne', { plan: planShort(state.plan), names: names, place: placeName(g.place) });
+  }
+  function villaAria(g) {
+    var names = g.options.map(function (o) { return tx(o, 'map_name') || tx(o, 'name'); }).join(T('words.listSep'));
+    return Tv('map.villaAria', { place: placeName(g.place), names: names });
   }
   function airportLeg() { return (TRIP.transport.legs || []).filter(function (l) { return /^airport-to/.test(l.id); })[0] || null; }
   function airportBoatText() {
@@ -2957,30 +2983,33 @@
     var b = L.latLngBounds(viewPoints(view).map(function (p) { return [p.lat, p.lon]; }));
     M.map.fitBounds(b, { paddingTopLeft: pad.tl, paddingBottomRight: pad.br, animate: !!animate && !reduceMotion });
   }
-  // The stay pins are the plan's own stay options: Thulusdhoo and Himmafushi.
+  // Yellow houses are the plan's guesthouses. Teal houses are the 7-9 Nov sea-entry villas.
   function setMapStays(M) {
     if (!M || !M.ready) return;
     var L = W.L;
     M.stayLayer.clearLayers();
     M.stays = staysForPlan(state.plan);
-    M.stays.forEach(function (g) {
+    M.villas = villaStays();
+    function addPlacePin(g, villa) {
       var mk = L.marker([g.place.lat, g.place.lon], {
-        icon: L.divIcon({ className: 'place-marker', html: '<span class="place-ic place-ic--stay">' + STAY_SVG + '</span>', iconSize: [44, 44], iconAnchor: [22, 22] }),
+        icon: L.divIcon({ className: 'place-marker', html: '<span class="place-ic place-ic--' + (villa ? 'villa' : 'stay') + '">' + (villa ? VILLA_SVG : STAY_SVG) + '</span>', iconSize: [44, 44], iconAnchor: [22, 22] }),
         interactive: !!M.cfg.onStay, keyboard: !!M.cfg.onStay, zIndexOffset: Z_STAY
       });
       mk.on('add', function () {
         var me = mk.getElement();
         if (!me) return;
-        me.setAttribute('aria-label', stayAria(g));
-        me.setAttribute('data-stay-marker', g.place.id);
+        me.setAttribute('aria-label', villa ? villaAria(g) : stayAria(g));
+        me.setAttribute('data-stay-marker', (villa ? 'villa-' : '') + g.place.id);
         me.setAttribute('role', M.cfg.onStay ? 'button' : 'img');
       });
       if (M.cfg.onStay) {
-        mk._tap = function () { M.cfg.onStay(g.place.id); };
+        mk._tap = function () { M.cfg.onStay((villa ? 'villa-' : '') + g.place.id); };
         mk.on('click', function (e) { tapNearest(M, e, mk); });
       }
       mk.addTo(M.stayLayer);
-    });
+    }
+    M.stays.forEach(function (g) { addPlacePin(g, false); });
+    M.villas.forEach(function (g) { addPlacePin(g, true); });
     buildMapLabels(M);
   }
   function layoutMap(M) {
@@ -2989,9 +3018,9 @@
     [declutterMap, drawMapRoutes, placeMapLabels, syncMarkerFocus].forEach(function (step) { try { step(M); } catch (e) { reportError(e); } });
   }
   function fixedPoints(M) {
-    var map = M.map, pts = M.stays.map(function (g) {
+    var map = M.map, pts = (M.stays || []).concat(M.villas || []).map(function (g) {
       var p = map.latLngToContainerPoint([g.place.lat, g.place.lon]);
-      return { id: 'stay-' + g.place.id, x: p.x, y: p.y };
+      return { id: (g.villa ? 'villa-' : 'stay-') + g.place.id, x: p.x, y: p.y };
     });
     if (M.airportLL) { var a = map.latLngToContainerPoint(M.airportLL); pts.push({ id: 'airport', x: a.x, y: a.y }); }
     return pts;
@@ -3060,11 +3089,15 @@
       [[name, 'lbl-b', 'c'], [bt.kind === 'unknown' ? T('boat.unknownCompact') : bt.short, 'lbl-s', 'c']];
     return full.concat(compact);
   }
-  function mapLabelSpecs(stays, spots, hasAirport, narrow) {
+  function mapLabelSpecs(stays, spots, hasAirport, narrow, villas) {
     var out = [];
     stays.forEach(function (g) {
       out.push({ id: 'stay-' + g.place.id, kind: 'stay', lat: g.place.lat, lon: g.place.lon, prio: 3, g: 20, must: true, key: true,
         lines: (narrow ? [] : [[placeName(g.place), 'lbl-k']]).concat(g.options.map(function (o) { return [tx(o, 'name'), 'lbl-b']; })).concat([[T('map.approxIsland'), 'lbl-s']]) });
+    });
+    (villas || []).forEach(function (g) {
+      out.push({ id: 'villa-' + g.place.id, kind: 'villa', lat: g.place.lat, lon: g.place.lon, prio: 3, g: 20, must: true, key: true,
+        lines: (narrow ? [] : [[placeName(g.place), 'lbl-k']]).concat(g.options.map(function (o) { return [tx(o, 'map_name') || tx(o, 'name'), 'lbl-b']; })).concat([[T('map.villaNights'), 'lbl-s']]) });
     });
     spots.forEach(function (s) {
       if (!s.crew_pick) return;
@@ -3101,7 +3134,7 @@
     var L = W.L, map = M.map;
     M.labelLayer.clearLayers();
     var shown = TRIP.spots.filter(function (s) { return M.markers[s.id] && map.hasLayer(M.markers[s.id]); });
-    M.labels = mapLabelSpecs(M.stays, shown, !!M.airportLL, map.getSize().x < 420).map(function (sp) {
+    M.labels = mapLabelSpecs(M.stays, shown, !!M.airportLL, map.getSize().x < 420, M.villas).map(function (sp) {
       sp.marker = L.marker([sp.lat, sp.lon], {
         pane: 'labels', interactive: false, keyboard: false,
         icon: L.divIcon({ className: 'lbl-anchor', html: labelHtml(sp), iconSize: [0, 0], iconAnchor: [0, 0] })
@@ -3333,6 +3366,16 @@
       }).join('') + '</ul>' +
       '<a class="btn btn-solid ov-card-go" href="#stay">' + Te('ov.openStay') + '</a>';
   }
+  function ovCardVilla(g) {
+    return ovCardTop(Te('ov.villaKicker')) +
+      '<p class="ov-card-name">' + esc(placeName(g.place)) + '</p><p class="ov-card-meta">' + Te('ov.villaPinNote') + '</p>' +
+      '<ul class="ov-card-list">' + g.options.map(function (o) {
+        return '<li><span class="ov-card-li-name">' + esc(tx(o, 'name')) + '</span> <span class="ov-card-li-price">' +
+          Tve('ov.villaRowPrice', { price: hkd(o.pp_hkd.low, o.pp_hkd.high) }) + '. ' +
+          Tve('stay.forGroup', { price: hkd(o.total_group_hkd.low, o.total_group_hkd.high) }) + '</span> ' + chipT(o, 'status') + '</li>';
+      }).join('') + '</ul>' +
+      '<a class="btn btn-solid ov-card-go" href="#overwater-title">' + Te('ov.openVillas') + '</a>';
+  }
   function ovCardAirport() {
     var air = airportPlace(), leg = airportLeg();
     return ovCardTop(Te('ov.airportKicker')) + '<p class="ov-card-name">' + esc(air ? tx(air, 'name') : T('ov.airportFallbackName')) + '</p>' +
@@ -3347,7 +3390,12 @@
     if (!card) return;
     var html = '', ll = null;
     if (type === 'spot') { var s = spotById(id); if (!s) return; html = ovCardSpot(s); ll = [s.lat, s.lon]; }
-    else if (type === 'stay') {
+    else if (type === 'stay' && String(id).indexOf('villa-') === 0) {
+      var vg = villaStays().filter(function (x) { return x.place.id === String(id).slice(6); })[0];
+      if (!vg) return;
+      html = ovCardVilla(vg); ll = [vg.place.lat, vg.place.lon];
+      type = 'villa'; id = vg.place.id;
+    } else if (type === 'stay') {
       var g = staysForPlan(state.plan).filter(function (x) { return x.place.id === id; })[0];
       if (!g) return;
       html = ovCardStay(g); ll = [g.place.lat, g.place.lon];
@@ -3371,7 +3419,7 @@
         else placeMapLabels(ov.M);
       } catch (e) { reportError(e); }
     } else {
-      placeSketchCard(type === 'spot' ? id : type === 'stay' ? 'stay-' + id : 'airport');
+      placeSketchCard(type === 'spot' ? id : type === 'villa' ? 'villa-' + id : type === 'stay' ? 'stay-' + id : 'airport');
       drawSchematic('ov');
     }
   }
@@ -3424,6 +3472,13 @@
           return '<li><a class="ov-row" href="#stay"><span class="ov-row-ic" aria-hidden="true">' + STAY_SVG + '</span>' +
             '<span class="ov-row-main"><span class="ov-row-name">' + esc(tx(o, 'name')) + '</span><span class="ov-row-sub">' + Tve('ov.approxIsland', { place: placeName(g.place) }) + '</span></span>' +
             '<span class="ov-row-side"><span class="ov-row-price">' + Tve('ov.eachNights', { price: hkd(o.pp_hkd.low, o.pp_hkd.high), nights: nights }) + '</span>' + chipT(o, 'status') + '</span></a></li>';
+        }).join('');
+      }).join('') + '</ul></div>' +
+      '<div class="ov-list"><p class="ov-list-h">' + Te('ov.listVillaH') + '</p><ul class="ov-rows">' + villaStays().map(function (g) {
+        return g.options.map(function (o) {
+          return '<li><a class="ov-row" href="#overwater-title"><span class="ov-row-ic" aria-hidden="true">' + VILLA_SVG + '</span>' +
+            '<span class="ov-row-main"><span class="ov-row-name">' + esc(tx(o, 'map_name') || tx(o, 'name')) + '</span><span class="ov-row-sub">' + Tve('ov.approxIsland', { place: placeName(g.place) }) + '</span></span>' +
+            '<span class="ov-row-side"><span class="ov-row-price">' + Tve('ov.villaRowPrice', { price: hkd(o.pp_hkd.low, o.pp_hkd.high) }) + '</span>' + chipT(o, 'status') + '</span></a></li>';
         }).join('');
       }).join('') + '</ul></div>' +
       '<div class="ov-list"><p class="ov-list-h">' + Te('ov.listPicksH') + '</p><ul class="ov-rows">' + picks.map(function (s) {
@@ -3610,18 +3665,20 @@
     var inView = function (s) { return view === 'all' || (view === 'south' ? isSouth(s) : !isSouth(s)); };
     var spots = TRIP.spots.filter(function (s) { return inView(s) && (isOv || spotMatches(s)); });
     var stays = view === 'south' ? [] : staysForPlan(state.plan);
+    var villas = view === 'south' ? [] : villaStays();
     var air = view === 'south' ? null : airportPlace();
     var base = basePlace();
     var sel = isOv ? (ov.card && ov.card.type === 'spot' ? ov.card.id : null) : selectedSpot;
     var active = document.activeElement, focusKey = active && host.contains(active) ? active.getAttribute('data-sk-key') : null;
 
     var fixed = stays.map(function (g) { var p = prj.xy(g.place.lat, g.place.lon); return { id: 'stay-' + g.place.id, x: p.x, y: p.y, g: g }; });
+    var villaPts = villas.map(function (g) { var p = prj.xy(g.place.lat, g.place.lon); return { id: 'villa-' + g.place.id, x: p.x, y: p.y, g: g }; });
     var airPt = air ? prj.xy(air.lat, air.lon) : null;
     if (airPt) airPt.id = 'airport';
     var pins = spots.map(function (s) { var p = prj.xy(s.lat, s.lon); return { k: s.id, s: s, x0: p.x, y0: p.y }; });
-    spreadPoints(pins, fixed.concat(airPt ? [airPt] : []), PIN_GAP, PLACE_GAP, nudgeCap(prj.sc));
+    spreadPoints(pins, fixed.concat(villaPts, airPt ? [airPt] : []), PIN_GAP, PLACE_GAP, nudgeCap(prj.sc));
     var pts = skPts[key] = {};
-    pins.concat(fixed).forEach(function (p) { pts[p.k || p.id] = { x: p.x, y: p.y }; });
+    pins.concat(fixed, villaPts).forEach(function (p) { pts[p.k || p.id] = { x: p.x, y: p.y }; });
     if (airPt) pts.airport = { x: airPt.x, y: airPt.y };
 
     var parts = ['<rect class="sk-water" x="0" y="0" width="' + Wd + '" height="' + Ht + '"/>'];
@@ -3659,6 +3716,11 @@
         ' aria-label="' + esc(stayAria(p.g)) + '">' +
         '<circle class="sk-hit" r="22"/><circle class="sk-ring" r="17"/><rect class="sk-stay-box" x="-10" y="-10" width="20" height="20" rx="5"/><path class="sk-stay-roof" d="M-5.5 1.2 0-3.6l5.5 4.8V6h-11z"/></g>');
     });
+    villaPts.forEach(function (p) {
+      pinParts.push('<g class="sk-place sk-villa" transform="translate(' + r1(p.x) + ' ' + r1(p.y) + ')"' + (isOv ? ' data-sk-stay="' + esc(p.id) + '" data-sk-key="' + esc(p.id) + '" role="button" tabindex="0"' : ' role="img"') +
+        ' aria-label="' + esc(villaAria(p.g)) + '">' +
+        '<circle class="sk-hit" r="22"/><circle class="sk-ring" r="17"/><rect class="sk-villa-box" x="-10" y="-10" width="20" height="20" rx="5"/><path class="sk-stay-roof" d="M-5.5 1.2 0-3.6l5.5 4.8V6h-11z"/></g>');
+    });
     if (airPt) {
       pinParts.push('<g class="sk-place sk-air" transform="translate(' + r1(airPt.x) + ' ' + r1(airPt.y) + ')"' + (isOv ? ' data-sk-air="1" data-sk-key="airport" role="button" tabindex="0"' : ' role="img"') +
         ' aria-label="' + Tve('map.airportAria', { name: tx(air, 'name'), boat: airportBoatText() }) + '"><circle class="sk-hit" r="22"/><circle class="sk-ring" r="17"/><circle class="sk-air-disc" r="11"/>' +
@@ -3673,13 +3735,13 @@
     if (cover && cover.r) blocks.push([Wd - cover.r, 0, Wd, Ht]);
 
     var shown = pins.map(function (p) { return p.s; });
-    var labels = mapLabelSpecs(stays, shown, !!airPt, Wd < 420).map(function (l) {
-      var pt = l.kind === 'stay' ? fixed.filter(function (f) { return f.id === l.id; })[0] : l.kind === 'air' ? airPt : pins.filter(function (p) { return p.k === l.id; })[0];
+    var labels = mapLabelSpecs(stays, shown, !!airPt, Wd < 420, villas).map(function (l) {
+      var pt = l.kind === 'stay' ? fixed.filter(function (f) { return f.id === l.id; })[0] : l.kind === 'villa' ? villaPts.filter(function (f) { return f.id === l.id; })[0] : l.kind === 'air' ? airPt : pins.filter(function (p) { return p.k === l.id; })[0];
       var e = estimateLabel(l.lines, false), c = estimateLabel(l.lines, true);
       l.x = pt.x; l.y = pt.y; l.w = e.w; l.h = e.h; l.cw = hasCompact(l.lines) ? c.w : 0; l.ch = c.h; l.pinR = l.kind === 'pick' ? 12 : 15;
       return l;
     });
-    var obstacles = labelObstacles(pins, fixed.concat(airPt ? [airPt] : []));
+    var obstacles = labelObstacles(pins, fixed.concat(villaPts, airPt ? [airPt] : []));
     var res = placeLabels(labels, obstacles, blocks, Wd, Ht);
     // Leader lines first, then the label boxes, so no box is crossed by another label's line.
     labels.forEach(function (l) {

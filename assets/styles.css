@@ -1277,6 +1277,7 @@ a.more { display: inline-flex; align-items: center; justify-content: flex-start;
 .map-lbl .lbl-k { color: var(--sun); }
 .map-lbl .lbl-s { font-weight: 400; color: #cfe7e3; }
 .map-lbl--stay { box-shadow: inset 3px 0 0 var(--sun), 0 2px 8px rgba(0, 0, 0, .28); }
+.map-lbl--villa { box-shadow: inset 3px 0 0 var(--reef), 0 2px 8px rgba(0, 0, 0, .28); }
 .map-lbl.is-off { visibility: hidden; }
 .place-marker { background: none; border: 0; }
 .place-ic { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
@@ -1303,12 +1304,14 @@ a.more { display: inline-flex; align-items: center; justify-content: flex-start;
 .sk-pin.is-pick .sk-vis { fill: var(--coral); stroke: #fff; stroke-width: 2.5; }
 .sk-pin.is-resort .sk-vis { fill: var(--channel); stroke: #fff; stroke-width: 2.2; stroke-dasharray: 3.5 2.6; }
 .sk-stay-box { fill: var(--sun); stroke: #fff; stroke-width: 2; }
+.sk-villa-box { fill: var(--reef); stroke: #fff; stroke-width: 2; }
 .sk-stay-roof { fill: var(--channel); }
 .sk-air-disc { fill: var(--channel); stroke: var(--sun); stroke-width: 2; }
 .sk-air-plane { fill: var(--sun); }
 .sk-lbl { pointer-events: none; }
 .sk-lbl rect { fill: rgba(4, 30, 36, .9); }
 .sk-lbl--stay rect { stroke: var(--sun); stroke-width: 1.5; }
+.sk-lbl--villa rect { stroke: var(--reef); stroke-width: 1.5; }
 .sk-lbl text { font-size: 14px; font-weight: 700; fill: #fff; }
 .sk-lbl text.lbl-k { fill: var(--sun); }
 .sk-lbl text.lbl-s { font-weight: 400; fill: #cfe7e3; }
