@@ -509,6 +509,15 @@
     "stay.chongPp": "about {price} each",
     "stay.chongChecked": "Prices checked {date}.",
     "stay.chongOpen": "Open Booking.com",
+    "stay.gpChongTitle": "Grand Park: how Chong books",
+    "stay.gpChongPick": "Suggested pick",
+    "stay.gpChongTransfer": "Boat / transfer",
+    "stay.gpChongForTwoNights": "last 2 nights",
+    "stay.gpChongPp": "about {price} each",
+    "stay.gpChongHigh": "with GST / green tax about {price}",
+    "stay.gpChongChecked": "Prices checked {date}.",
+    "stay.gpChongOpen": "Open Booking.com",
+    "stay.gpChongPaths": "Booking paths",
     "stay.roomsFor": "Rooms for 7",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
@@ -4231,12 +4240,44 @@
     clipList('not-available', $('.na-list', root), 'notAvailable', 2);
     updateStayPlan();
   }
+  function gpChongPathCard(p) {
+    var price = p.total_high_hkd != null
+      ? hkd(p.total_hkd, p.total_high_hkd)
+      : hkd(p.total_hkd, p.total_hkd);
+    var pp = p.pp_high_hkd != null
+      ? Tve('stay.gpChongPp', { price: hkd(p.pp_hkd, p.pp_high_hkd) })
+      : Tve('stay.gpChongPp', { price: hkd(p.pp_hkd, p.pp_hkd) });
+    var high = p.total_high_hkd != null
+      ? '<p class="fine">' + Tve('stay.gpChongHigh', { price: hkd(p.total_high_hkd, p.total_high_hkd) }) + '</p>'
+      : '';
+    return '<article class="prop chong-opt"><header class="prop-head"><div><h4>' + esc(tx(p, 'name')) + '</h4></div>' +
+      '<div class="prop-price"><p class="num">' + esc(price) + '</p>' +
+      '<p class="per">' + Te('stay.gpChongForTwoNights') + '</p>' +
+      '<p class="per">' + esc(pp) + '</p></div></header>' +
+      '<p>' + esc(tx(p, 'note')) + '</p>' + high +
+      (p.url ? '<p class="src-row">' + srcLink(p.url, T('stay.gpChongOpen')) + '</p>' : '') +
+      '</article>';
+  }
+  function gpChongHtml(O) {
+    var C = O && O.chong;
+    if (!C) return '';
+    var paths = C.paths || [];
+    return '<section class="chong-stay gp-chong" id="grand-park-chong" aria-labelledby="gp-chong-title">' +
+      '<h3 class="h-sub" id="gp-chong-title">' + Te('stay.gpChongTitle') + '</h3>' +
+      '<div class="note note-warn">' + ICON.hazard + '<p>' + esc(tx(C, 'problem')) + '</p></div>' +
+      '<div class="coach-plan"><p class="verdict-kicker">' + Te('stay.gpChongPick') + '</p><p>' + esc(tx(C, 'pick')) + '</p></div>' +
+      '<p class="prop-cancel"><strong>' + Te('stay.gpChongTransfer') + ':</strong> ' + esc(tx(C, 'transfer')) + '</p>' +
+      '<h4 class="h-sub">' + Te('stay.gpChongPaths') + '</h4>' +
+      '<div class="props">' + paths.map(gpChongPathCard).join('') + '</div>' +
+      '<p class="fine">' + Tve('stay.gpChongChecked', { date: tx(C, 'checked_label') }) + '</p></section>';
+  }
   // Overwater pool villas for the last 2 nights. Not part of the guesthouse total until one is picked.
   function overwaterHtml() {
     var O = TRIP.overwater;
     if (!O || !O.options || !O.options.length) return '';
     return '<h3 class="h-sub" id="overwater-title">' + Te('stay.villaTitle') + '</h3>' +
       '<p class="fine">' + esc(tx(O, 'note')) + '</p>' +
+      gpChongHtml(O) +
       '<div class="props" data-villas>' + O.options.map(function (o) {
         var rows = [[T('stay.roomsFor'), tx(o, 'rooms_for_11')], [T('stay.meals'), tx(o, 'meals')],
           [T('stay.taxes'), tx(o, 'taxes')], [T('stay.cancelling'), tx(o, 'cancellation')],
