@@ -270,6 +270,8 @@
     "crew.flightNote": "Flight times follow our recommended {flights} flights; see 3 Flights.",
     "crew.countdownLabel": "Until the flight leaves Hong Kong",
     "crew.countdownFlight": "{flight} leaves Hong Kong {date} at {time} (HK time)",
+    "crew.listTitle": "Confirmed guest list",
+    "crew.groupNames": "{names}",
     "cd.daysToGo": "{n} days to go",
     "cd.today": "Flying out today",
     "cd.away": "The crew is away",
@@ -497,6 +499,15 @@
     "stay.villaTitle": "Jump from the room into the sea",
     "stay.villaEach": "each, last 2 nights",
     "stay.villaBoat": "Boat",
+    "stay.chongTitle": "Last 2 nights: cheaper stay for Chong",
+    "stay.chongPick": "Suggested pick",
+    "stay.chongNoahSolo": "Noah alone",
+    "stay.chongPairsOnly": "Noah for the 3 pairs only",
+    "stay.chongForTwoNights": "last 2 nights, 1 adult",
+    "stay.chongFlex": "Free-cancel rate: {price}",
+    "stay.chongPp": "about {price} each",
+    "stay.chongChecked": "Prices checked {date}.",
+    "stay.chongOpen": "Open Booking.com",
     "stay.roomsFor": "Rooms for 7",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
@@ -2153,7 +2164,19 @@
       rows.push([T('crew.flyOut'), Tv('crew.flyOutVal', { date: tx(rec.outbound, 'date').replace(/ 2026$/, ''), flight: o0.flight, time: o0.dep })]);
       rows.push([T('crew.flyHome'), Tv('crew.flyHomeVal', { date: tx(rec.return, 'date').replace(/ 2026$/, ''), flight: r0.flight, dep: r0.dep, arr: String(rz.arr).replace(/\s*\(\+1\)/, '') })]);
     }
+    var C = TRIP.crew;
+    var guestHtml = '';
+    if (C && C.groups && C.groups.length) {
+      guestHtml = '<div class="crew-guests"><h3 class="crew-guests-h">' + Te('crew.listTitle') + '</h3>' +
+        '<p class="crew-trip">' + esc(tx(C, 'title')) + ' ' + esc(tx(C, 'confirmed')) + '</p>' +
+        '<ul class="crew-groups">' + C.groups.map(function (g) {
+          return '<li><span class="crew-g-label">' + esc(tx(g, 'label')) + '</span>' +
+            '<span class="crew-g-names">' + esc(listWords(g.names || [])) + '</span></li>';
+        }).join('') + '</ul>' +
+        '<p class="fine">' + esc(tx(C, 'rooms_issue')) + ' <a class="more" href="#chong-stay">' + Te('stay.chongTitle') + '</a></p></div>';
+    }
     var html = '<div class="crew-facts"><p class="crew-who">' + esc(tx(TRIP.meta, 'subtitle')) + '</p>' +
+      guestHtml +
       '<dl class="crew-dl">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl>' +
       '<p class="fine">' + Tve('crew.flightNote', { flights: recFlightName() }) + '</p></div>' +
       '<div class="countdown" id="countdown" role="timer" data-live>' +
@@ -4129,9 +4152,52 @@
     if (line && statusKind(line.status) !== statusKind(p.status)) out += '<p class="fine plan-status-note">' + Tve('stay.figureNote', { status: tx(line, 'status') }) + chipT(p, 'status') + '</p>';
     return out;
   }
+  function chongOptionCard(o) {
+    var price = hkd(o.total_hkd, o.total_hkd);
+    var flex = o.total_flex_hkd != null ? Tve('stay.chongFlex', { price: hkd(o.total_flex_hkd, o.total_flex_hkd) }) : '';
+    return '<article class="prop chong-opt"><header class="prop-head"><div><h4>' + esc(tx(o, 'name')) + '</h4>' +
+      '<p class="prop-island">' + esc(tx(o, 'island')) + '</p><p class="prop-type">' + esc(tx(o, 'room')) + '</p></div>' +
+      '<div class="prop-price"><p class="num">' + esc(price) + '</p>' +
+      '<p class="per">' + Te('stay.chongForTwoNights') + '</p>' +
+      (flex ? '<p class="per">' + esc(flex) + '</p>' : '') +
+      chipT(o, 'status') + '</div></header>' +
+      '<p>' + esc(tx(o, 'why')) + '</p>' +
+      '<p class="prop-cancel"><strong>' + Te('stay.meals') + ':</strong> ' + esc(tx(o, 'meals')) + '</p>' +
+      '<p class="prop-cancel"><strong>' + Te('stay.cancellingLbl') + '</strong> ' + esc(tx(o, 'cancellation')) + '</p>' +
+      '<p class="fine">' + esc(tx(o, 'taxes')) + '</p>' +
+      bookingAction(o, 'stay') +
+      '<p class="src-row">' + srcLink(o.url, T('stay.chongOpen')) + '</p></article>';
+  }
+  function chongStayHtml() {
+    var C = TRIP.chong_last_nights;
+    if (!C) return '';
+    var near = (C.near_noah && C.near_noah.options) || [];
+    var thu = (C.stay_thulusdhoo && C.stay_thulusdhoo.options) || [];
+    var ideas = (C.other && C.other.ideas) || [];
+    var solo = C.noah_solo || {}, pairs = C.noah_pairs_only || {};
+    return '<section class="chong-stay" id="chong-stay" aria-labelledby="chong-stay-title">' +
+      '<h3 class="h-sub" id="chong-stay-title">' + Te('stay.chongTitle') + '</h3>' +
+      '<div class="note note-warn">' + ICON.hazard + '<p>' + esc(tx(C, 'problem')) + '</p></div>' +
+      '<div class="coach-plan"><p class="verdict-kicker">' + Te('stay.chongPick') + '</p><p>' + esc(tx(C, 'pick')) + '</p></div>' +
+      '<div class="chong-compare">' +
+      '<p><strong>' + Te('stay.chongNoahSolo') + ':</strong> ' + esc(hkd(solo.total_hkd, solo.total_hkd)) + ' · ' + esc(tx(solo, 'note')) +
+      (solo.url ? ' ' + srcLink(solo.url, T('stay.chongOpen')) : '') + '</p>' +
+      '<p><strong>' + Te('stay.chongPairsOnly') + ':</strong> ' + esc(hkd(pairs.total_hkd, pairs.total_hkd)) +
+      ' (' + Tve('stay.chongPp', { price: hkd(pairs.pp_hkd, pairs.pp_hkd) }) + '). ' + esc(tx(pairs, 'note')) +
+      (pairs.url ? ' ' + srcLink(pairs.url, T('stay.chongOpen')) : '') + '</p></div>' +
+      '<h4 class="h-sub">' + esc(tx(C.near_noah, 'title')) + '</h4>' +
+      '<p class="fine">' + esc(tx(C.near_noah, 'note')) + '</p>' +
+      '<div class="props">' + near.map(chongOptionCard).join('') + '</div>' +
+      '<h4 class="h-sub">' + esc(tx(C.stay_thulusdhoo, 'title')) + '</h4>' +
+      '<p class="fine">' + esc(tx(C.stay_thulusdhoo, 'note')) + '</p>' +
+      '<div class="props">' + thu.map(chongOptionCard).join('') + '</div>' +
+      '<h4 class="h-sub">' + esc(tx(C.other, 'title')) + '</h4>' +
+      '<ol class="self-steps">' + ideas.map(function (idea, i) { return '<li>' + esc(txi(C.other.ideas, i)) + '</li>'; }).join('') + '</ol>' +
+      '<p class="fine">' + Tve('stay.chongChecked', { date: tx(C, 'checked_label') }) + '</p></section>';
+  }
   function renderStay() {
     // "Book it" sits above the plan cards and follows the chosen plan (see updateStayPlan).
-    var html = '<div data-book-stay></div>' + overwaterHtml() + '<div class="plans">' + TRIP.plans.map(function (p, i) {
+    var html = '<div data-book-stay></div>' + chongStayHtml() + overwaterHtml() + '<div class="plans">' + TRIP.plans.map(function (p, i) {
       return '<article class="plan-card" data-plan-card="' + esc(p.id) + '">' + photoFigure(photoById(STAY_PHOTOS[i]), 'card-ph', '(min-width: 1100px) 40vw, (min-width: 900px) 45vw, 92vw') +
         '<header><p class="plan-short">' + Tve('stay.planShort', { plan: planShort(p.id) }) + '</p><span class="stamp">' + Te('stay.stampCrew') + '</span>' +
         '<h3>' + esc(tx(p, 'name')) + '</h3><p class="plan-tag-line">' + esc(tx(p, 'tagline')) + '</p></header>' +

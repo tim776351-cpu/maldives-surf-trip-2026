@@ -677,6 +677,22 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .na-lead { border: 2px solid var(--coral); background: #fff4ef; }
 @media (min-width: 900px) { .na-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .na-lead { grid-column: 1 / -1; } }
 
+/* ---------------------------------------------------------------- crew guests + Chong stay */
+.crew-guests { margin: 0 0 14px; padding: 12px 0 0; border-top: 1.5px solid var(--line); }
+.crew-guests-h { margin: 0 0 6px; font-size: 1rem; }
+.crew-trip { margin: 0 0 8px; font-weight: 700; }
+.crew-groups { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
+.crew-groups li { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.crew-g-label { font-weight: 700; color: var(--lagoon); min-width: 5.5em; }
+.crew-g-names { color: var(--ink); }
+.chong-stay { margin: 0 0 1.6em; }
+.chong-compare { display: grid; gap: 8px; margin: 0 0 1em; }
+.chong-compare p { margin: 0; }
+.chong-opt .num { font-size: 1.25rem; }
+@media (min-width: 900px) {
+  .chong-stay .props { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* ---------------------------------------------------------------- coaching */
 .coach-plan { padding: 12px 16px; border-radius: var(--radius-m); background: var(--sun); color: var(--channel); }
 .coach-plan p { margin: 0 0 .4em; }
