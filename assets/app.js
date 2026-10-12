@@ -496,9 +496,10 @@
     "stay.placesTitle": "Places to stay",
     "stay.placesOnPlan": "Places to stay on the {plan} plan",
     "stay.placesHint": "Quotes opened on Booking.com on 12 Oct 2026 for 7 adults. Blue Haven Retreat is the first 6 nights (1-7 Nov). Noah Private Beach House is the beach guesthouse for the last 2 nights (7-9 Nov). The overwater villas you can step into the sea are the list above. The high end of each price adds the GST and environmental fee that page says are excluded.",
-    "stay.villaTitle": "Jump from the room into the sea",
+    "stay.villaTitle": "Jump from the room into the sea (instead of Noah)",
     "stay.villaEach": "each, last 2 nights",
     "stay.villaBoat": "Boat",
+    "stay.noahNotVilla": "Not a sea-entry villa",
     "stay.chongTitle": "Last 2 nights: cheaper stay for Chong",
     "stay.chongPick": "Suggested pick",
     "stay.chongNoahSolo": "Noah alone",
@@ -4285,6 +4286,7 @@
       return '<article class="prop"><header class="prop-head"><div><h4>' + esc(tx(o, 'name')) + '</h4><p class="prop-island">' + esc(tx(o, 'island')) + '</p><p class="prop-type">' + esc(tx(o, 'type')) + '</p></div>' +
         '<div class="prop-price"><p class="num">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + '</p><p class="per">' + Tve('stay.eachNights', { nights: nights }) + '</p>' +
         '<p class="per">' + Tve('stay.forGroup', { price: hkd(o.total_group_hkd.low, o.total_group_hkd.high) }) + '</p>' + chipT(o, 'status') + '</div></header>' +
+        (o.what_it_is ? '<div class="note' + (/Noah/i.test(o.name) ? ' note-warn' : '') + '">' + (/Noah/i.test(o.name) ? ICON.hazard : '') + '<p>' + (/Noah/i.test(o.name) ? '<strong>' + Te('stay.noahNotVilla') + '.</strong> ' : '') + esc(tx(o, 'what_it_is')) + (/Noah/i.test(o.name) ? ' <a class="more" href="#overwater-title">' + Te('stay.villaTitle') + '</a>' : '') + '</p></div>' : '') +
         '<p class="prop-cancel"><strong>' + Te('stay.cancellingLbl') + '</strong> ' + esc(tx(o, 'cancellation')) + '</p>' +
         '<details class="more-d"><summary>' + Te('stay.roomsSummary') + '</summary><dl class="kv">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl></details>' +
         bookingAction(o, 'stay') +
