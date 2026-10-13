@@ -4250,11 +4250,14 @@
     var high = p.total_high_hkd != null
       ? '<p class="fine">' + Tve('stay.gpChongHigh', { price: hkd(p.total_high_hkd, p.total_high_hkd) }) + '</p>'
       : '';
+    var flex = p.total_flex_hkd != null
+      ? '<p class="fine">' + Tve('stay.chongFlex', { price: hkd(p.total_flex_hkd, p.total_flex_hkd) }) + '</p>'
+      : '';
     return '<article class="prop chong-opt"><header class="prop-head"><div><h4>' + esc(tx(p, 'name')) + '</h4></div>' +
       '<div class="prop-price"><p class="num">' + esc(price) + '</p>' +
       '<p class="per">' + Te('stay.gpChongForTwoNights') + '</p>' +
       '<p class="per">' + esc(pp) + '</p></div></header>' +
-      '<p>' + esc(tx(p, 'note')) + '</p>' + high +
+      '<p>' + esc(tx(p, 'note')) + '</p>' + flex + high +
       (p.url ? '<p class="src-row">' + srcLink(p.url, T('stay.gpChongOpen')) + '</p>' : '') +
       '</article>';
   }
