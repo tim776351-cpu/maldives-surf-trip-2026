@@ -194,8 +194,12 @@
     "map.modNoStart": "The map could not start in this browser, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
     "map.modNoTiles": "Map images could not load on this connection, so this is a to-scale sketch drawn from the pin coordinates. The spot list works as normal.",
     "map.approxIsland": "approx. island location",
-    "map.stayAriaOne": "Stay on the {plan} plan: {names}, on {place} (approx. island location)",
-    "map.stayAriaMany": "Stay options on the {plan} plan: {names}, on {place} (approx. island location)",
+    "map.stayAriaOne": "Stay option: {names}, on {place} (approx. island location)",
+    "map.stayAriaMany": "Stay options: {names}, on {place} (approx. island location)",
+    "ov.stayKickerGroup": "Group-chat stay options",
+    "ov.stayKickerMixed": "Plan + group-chat stays",
+    "ov.openGroupFinds": "Open group-chat options",
+    "map.roomNight": "{price} / room / night",
     "map.airportBoat": "{duration} to {base}",
     "map.airportBoatFallback": "boat to {base}",
     "map.airportAria": "{name}. {boat}.",
@@ -1272,10 +1276,47 @@
       var place = (TRIP.places || []).filter(function (x) { return x.kind === 'island' && String(x.name).toLowerCase() === name; })[0];
       if (!place) return;
       var g = out.filter(function (x) { return x.place === place; })[0];
-      if (!g) { g = { place: place, options: [] }; out.push(g); }
+      if (!g) { g = { place: place, options: [], fromPlan: true }; out.push(g); }
       g.options.push(o);
+      g.fromPlan = true;
     });
     return out;
+  }
+  // Map pins: Budget plan stays + Janice group-chat stays + Chong's Hulhumalé bed.
+  function mapStayGroups(view) {
+    var out = staysForPlan(state.plan).map(function (g) {
+      return { place: g.place, options: g.options.slice(), fromPlan: !!g.fromPlan, fromGroup: false };
+    });
+    function addOpt(placeId, opt, flag) {
+      var place = placeById(placeId);
+      if (!place || !opt || (place.kind && place.kind !== 'island')) return;
+      if (view && !placeInView(place, view)) return;
+      var g = out.filter(function (x) { return x.place.id === placeId; })[0];
+      if (!g) { g = { place: place, options: [], fromPlan: false, fromGroup: false }; out.push(g); }
+      if (g.options.some(function (o) { return o.name === opt.name || o.id === opt.id; })) return;
+      g.options.push(opt);
+      if (flag === 'group') g.fromGroup = true;
+    }
+    ((TRIP.group_finds && TRIP.group_finds.stays) || []).forEach(function (s) {
+      if (s.place_id) addOpt(s.place_id, s, 'group');
+    });
+    var chongPaths = (TRIP.overwater && TRIP.overwater.chong && TRIP.overwater.chong.paths) || [];
+    chongPaths.forEach(function (p) {
+      if (p.place_id) addOpt(p.place_id, p, 'group');
+    });
+    if (view) out = out.filter(function (g) { return placeInView(g.place, view); });
+    return out;
+  }
+  function placeInView(pl, view) {
+    if (!pl || view === 'all') return true;
+    var south = pl.lat < 3.7 || /meemu/i.test(pl.region || '') || /meemu/i.test(pl.id || '');
+    return view === 'south' ? south : !south;
+  }
+  function stayOptPriceHtml(o) {
+    if (o.pp_hkd) return Tve('ov.eachNights', { price: hkd(o.pp_hkd.low, o.pp_hkd.high), nights: o.pp_hkd_nights || tripNights() });
+    if (o.room_night_hkd != null) return Tve('map.roomNight', { price: hkd(o.room_night_hkd, o.room_night_hkd) });
+    if (o.total_hkd != null) return esc(hkd(o.total_hkd, o.total_high_hkd != null ? o.total_high_hkd : o.total_hkd));
+    return '';
   }
   function spotShort(s) { return String(tx(s, 'name')).split(' (')[0].split('\uff08')[0]; }
   function accessKind(s) { var a = String(s.access || '').toLowerCase(); return /resort/.test(a) ? 'resort' : /limited/.test(a) ? 'limited' : 'public'; }
@@ -1299,10 +1340,17 @@
     out.kind = 'unknown'; out.text = T('boat.unknownText'); out.short = T('boat.unknownShort');
     return out;
   }
-  // The points a map view has to show: North Malé (with the islands and the airport), South Malé, or everything.
+  // The points a map view has to show: North Malé (islands + airport), South Malé spots only, or everything (incl. Meemu / Muli).
   function viewPoints(view) {
-    var spots = (TRIP.spots || []).filter(function (s) { return view === 'all' || (view === 'south' ? isSouth(s) : !isSouth(s)); });
-    return view === 'south' ? spots : spots.concat(TRIP.places || []);
+    var spots = (TRIP.spots || []).filter(function (s) {
+      return view === 'all' || (view === 'south' ? isSouth(s) : !isSouth(s));
+    });
+    var places = (TRIP.places || []).filter(function (p) {
+      if (view === 'all') return true;
+      if (view === 'south') return placeInView(p, 'south');
+      return placeInView(p, 'north'); // overview default "north"
+    });
+    return spots.concat(places);
   }
   function geoBox(pts) {
     var b = { s: 90, n: -90, w: 180, e: -180 };
@@ -3004,12 +3052,12 @@
     var b = L.latLngBounds(viewPoints(view).map(function (p) { return [p.lat, p.lon]; }));
     M.map.fitBounds(b, { paddingTopLeft: pad.tl, paddingBottomRight: pad.br, animate: !!animate && !reduceMotion });
   }
-  // The stay pins are the plan's own stay options: Thulusdhoo and Himmafushi.
+  // Stay pins: plan stays + Janice group-chat stays (and Chong Hulhumalé), filtered by the map view.
   function setMapStays(M) {
     if (!M || !M.ready) return;
     var L = W.L;
     M.stayLayer.clearLayers();
-    M.stays = staysForPlan(state.plan);
+    M.stays = mapStayGroups(M.cfg && M.cfg.view != null ? M.cfg.view : (M === ov.M ? ov.view : mod.view));
     M.stays.forEach(function (g) {
       var mk = L.marker([g.place.lat, g.place.lon], {
         icon: L.divIcon({ className: 'place-marker', html: '<span class="place-ic place-ic--stay">' + STAY_SVG + '</span>', iconSize: [44, 44], iconAnchor: [22, 22] }),
@@ -3353,8 +3401,13 @@
       b.classList.toggle('is-on', v === 'all');
       b.textContent = T(v === 'all' ? 'ov.backNorth' : 'ov.showSouth');
     }
-    if (ov.leaflet && ov.M) fitView(ov.M, v, true);
-    else drawSchematic('ov');
+    if (ov.leaflet && ov.M) {
+      if (ov.M.cfg) ov.M.cfg.view = v;
+      setMapStays(ov.M);
+      fitView(ov.M, v, true);
+      layoutMap(ov.M);
+    } else drawSchematic('ov');
+    renderOverviewLists();
   }
   function ovCardTop(kickerHtml) {
     return '<div class="ov-card-top"><p class="ov-card-kicker">' + kickerHtml + '</p>' +
@@ -3371,14 +3424,20 @@
   }
   function ovCardStay(g) {
     var base = basePlace();
-    return ovCardTop(Tve(g.options.length > 1 ? 'ov.stayKickerMany' : 'ov.stayKickerOne', { plan: planShort(state.plan) })) +
+    var kicker = g.fromPlan && g.fromGroup ? Te('ov.stayKickerMixed')
+      : g.fromGroup && !g.fromPlan ? Te('ov.stayKickerGroup')
+      : Tve(g.options.length > 1 ? 'ov.stayKickerMany' : 'ov.stayKickerOne', { plan: planShort(state.plan) });
+    var goHref = g.fromGroup && !g.fromPlan ? '#group-finds' : '#stay';
+    var goLabel = g.fromGroup && !g.fromPlan ? T('ov.openGroupFinds') : T('ov.openStay');
+    return ovCardTop(kicker) +
       '<p class="ov-card-name">' + esc(placeName(g.place)) + '</p><p class="ov-card-meta">' + Te('ov.stayPinNote') +
       (g.place.id !== base.id ? Tve('ov.stayBoatNote', { base: placeName(base), place: placeName(g.place) }) : '') + '</p>' +
       '<ul class="ov-card-list">' + g.options.map(function (o) {
-        return '<li><span class="ov-card-li-name">' + esc(tx(o, 'name')) + '</span> <span class="ov-card-li-price">' +
-          Tve('ov.eachNights', { price: hkd(o.pp_hkd.low, o.pp_hkd.high), nights: tripNights() }) + '</span> ' + chipT(o, 'status') + '</li>';
+        var price = stayOptPriceHtml(o);
+        return '<li><span class="ov-card-li-name">' + esc(tx(o, 'name')) + '</span> ' +
+          (price ? '<span class="ov-card-li-price">' + price + '</span> ' : '') + chipT(o, 'status') + '</li>';
       }).join('') + '</ul>' +
-      '<a class="btn btn-solid ov-card-go" href="#stay">' + Te('ov.openStay') + '</a>';
+      '<a class="btn btn-solid ov-card-go" href="' + goHref + '">' + esc(goLabel) + '</a>';
   }
   function ovCardAirport() {
     var air = airportPlace(), leg = airportLeg();
@@ -3395,7 +3454,7 @@
     var html = '', ll = null;
     if (type === 'spot') { var s = spotById(id); if (!s) return; html = ovCardSpot(s); ll = [s.lat, s.lon]; }
     else if (type === 'stay') {
-      var g = staysForPlan(state.plan).filter(function (x) { return x.place.id === id; })[0];
+      var g = mapStayGroups(ov.view).filter(function (x) { return x.place.id === id; })[0];
       if (!g) return;
       html = ovCardStay(g); ll = [g.place.lat, g.place.lon];
     } else if (type === 'airport') { var a = airportPlace(); html = ovCardAirport(); ll = a ? [a.lat, a.lon] : null; }
@@ -3462,15 +3521,17 @@
   function renderOverviewLists() {
     var el = $('[data-render="ov-lists"]');
     if (!el) return;
-    var stays = staysForPlan(state.plan), nights = tripNights(), base = basePlace();
+    var stays = mapStayGroups(ov.view), nights = tripNights(), base = basePlace();
     var picks = TRIP.spots.filter(function (s) { return s.crew_pick; });
     var southN = TRIP.spots.filter(isSouth).length;
     el.innerHTML = '<div class="ov-list"><p class="ov-list-h">' + Tve('ov.listStayH', { plan: planShort(state.plan) }) + '</p><ul class="ov-rows">' +
       stays.map(function (g) {
         return g.options.map(function (o) {
-          return '<li><a class="ov-row" href="#stay"><span class="ov-row-ic" aria-hidden="true">' + STAY_SVG + '</span>' +
+          var href = (o.place_id || g.fromGroup) && !g.fromPlan ? '#group-finds' : '#stay';
+          var price = stayOptPriceHtml(o);
+          return '<li><a class="ov-row" href="' + href + '"><span class="ov-row-ic" aria-hidden="true">' + STAY_SVG + '</span>' +
             '<span class="ov-row-main"><span class="ov-row-name">' + esc(tx(o, 'name')) + '</span><span class="ov-row-sub">' + Tve('ov.approxIsland', { place: placeName(g.place) }) + '</span></span>' +
-            '<span class="ov-row-side"><span class="ov-row-price">' + Tve('ov.eachNights', { price: hkd(o.pp_hkd.low, o.pp_hkd.high), nights: nights }) + '</span>' + chipT(o, 'status') + '</span></a></li>';
+            '<span class="ov-row-side">' + (price ? '<span class="ov-row-price">' + price + '</span>' : '') + chipT(o, 'status') + '</span></a></li>';
         }).join('');
       }).join('') + '</ul></div>' +
       '<div class="ov-list"><p class="ov-list-h">' + Te('ov.listPicksH') + '</p><ul class="ov-rows">' + picks.map(function (s) {
@@ -3656,7 +3717,7 @@
     var prj = projectBox(geoBox(viewPoints(view)), Wd, Ht, pad);
     var inView = function (s) { return view === 'all' || (view === 'south' ? isSouth(s) : !isSouth(s)); };
     var spots = TRIP.spots.filter(function (s) { return inView(s) && (isOv || spotMatches(s)); });
-    var stays = view === 'south' ? [] : staysForPlan(state.plan);
+    var stays = mapStayGroups(view === 'south' ? 'south' : view);
     var air = view === 'south' ? null : airportPlace();
     var base = basePlace();
     var sel = isOv ? (ov.card && ov.card.type === 'spot' ? ov.card.id : null) : selectedSpot;
