@@ -687,6 +687,9 @@ html:has(body.dock-on) { scroll-padding-bottom: 96px; }
 .crew-g-names { color: var(--ink); }
 .chong-stay { margin: 0 0 1.6em; }
 .gp-chong { margin: 1em 0 1.8em; }
+.group-finds { margin: 0 0 1.8em; }
+.group-find-coach { margin: 1em 0; }
+.group-finds .props { margin-top: 0.8em; }
 .chong-compare { display: grid; gap: 8px; margin: 0 0 1em; }
 .chong-compare p { margin: 0; }
 .chong-opt .num { font-size: 1.25rem; }

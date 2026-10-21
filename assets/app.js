@@ -518,6 +518,20 @@
     "stay.gpChongChecked": "Prices checked {date}.",
     "stay.gpChongOpen": "Open Booking.com",
     "stay.gpChongPaths": "Booking paths",
+    "stay.groupFindsTitle": "New options from the group chat",
+    "stay.groupFindsLean": "Chat lean",
+    "stay.groupFindsOpenQ": "Still open",
+    "stay.groupFindsCoach": "Coaching quote from the chat",
+    "stay.groupFindsIncludes": "Included",
+    "stay.groupFindsExtras": "Extra costs",
+    "stay.groupFindsTransfers": "Surf transfers",
+    "stay.groupFindsChecked": "From the WhatsApp group, {date}.",
+    "stay.groupFindsOpen": "Open source",
+    "stay.groupFindsPp": "about {price} each",
+    "stay.groupFindsGroup": "about {price} for the 7",
+    "stay.groupFindsSession": "{price} per person per session",
+    "stay.groupFindsSessions": "{n} sessions ≈ {price} each",
+    "stay.groupFindsRoomNight": "per room per night",
     "stay.roomsFor": "Rooms for 7",
     "stay.meals": "Meals",
     "stay.taxes": "Taxes",
@@ -4205,9 +4219,67 @@
       '<ol class="self-steps">' + ideas.map(function (idea, i) { return '<li>' + esc(txi(C.other.ideas, i)) + '</li>'; }).join('') + '</ol>' +
       '<p class="fine">' + Tve('stay.chongChecked', { date: tx(C, 'checked_label') }) + '</p></section>';
   }
+  function groupFindStayCard(o) {
+    var price = '';
+    if (o.pp_hkd) {
+      price = '<p class="num">' + esc(hkd(o.pp_hkd.low, o.pp_hkd.high)) + '</p><p class="per">' + Tve('stay.groupFindsPp', { price: hkd(o.pp_hkd.low, o.pp_hkd.high) }) + '</p>';
+      if (o.total_group_hkd) {
+        price += '<p class="per">' + Tve('stay.groupFindsGroup', { price: hkd(o.total_group_hkd.low, o.total_group_hkd.high) }) + '</p>';
+      }
+    } else if (o.room_night_hkd != null) {
+      price = '<p class="num">' + esc(hkd(o.room_night_hkd, o.room_night_hkd)) + '</p><p class="per">' + Te('stay.groupFindsRoomNight') + '</p>';
+    } else if (o.pp_hkd_8n) {
+      price = '<p class="num">' + esc(hkd(o.pp_hkd_8n.low, o.pp_hkd_8n.high)) + '</p><p class="per">' + Tve('stay.groupFindsPp', { price: hkd(o.pp_hkd_8n.low, o.pp_hkd_8n.high) }) + '</p>';
+    }
+    var bits = '';
+    if (o.includes && o.includes.length) {
+      bits += '<p class="pc-h">' + Te('stay.groupFindsIncludes') + '</p>' + listOf(o.includes);
+    }
+    if (o.extras && o.extras.length) {
+      bits += '<p class="pc-h">' + Te('stay.groupFindsExtras') + '</p>' + listOf(o.extras);
+    }
+    if (o.transfers && o.transfers.length) {
+      bits += '<p class="pc-h">' + Te('stay.groupFindsTransfers') + '</p>' + listOf(o.transfers);
+    }
+    var extraNotes = ['nights_note', 'coaching_note', 'waves', 'why_chat', 'why'].map(function (k) {
+      return o[k] ? '<p>' + esc(tx(o, k)) + '</p>' : '';
+    }).join('');
+    return '<article class="prop group-find"><header class="prop-head"><div><p class="plan-short">' + esc(tx(o, 'rank')) + '</p><h4>' + esc(tx(o, 'name')) + '</h4><p class="prop-type">' + esc(tx(o, 'kind')) + '</p></div>' +
+      '<div class="prop-price">' + price + chipT(o, 'status') + '</div></header>' +
+      '<p>' + esc(tx(o, 'price_note')) + '</p>' + extraNotes +
+      (bits ? '<details class="more-d"><summary>' + Te('stay.roomsSummary') + '</summary>' + bits + '</details>' : '') +
+      (o.url ? '<p class="src-row">' + srcLink(o.url, T('stay.groupFindsOpen')) + '</p>' : '') +
+      '</article>';
+  }
+  function groupFindsHtml() {
+    var G = TRIP.group_finds;
+    if (!G) return '';
+    var coach = G.coaching || {};
+    var stays = G.stays || [];
+    var qs = G.open_questions || [];
+    return '<section class="group-finds" id="group-finds" aria-labelledby="group-finds-title">' +
+      '<h3 class="h-sub" id="group-finds-title">' + Te('stay.groupFindsTitle') + '</h3>' +
+      '<p class="fine">' + esc(tx(G, 'source_note')) + '</p>' +
+      '<div class="coach-plan"><p class="verdict-kicker">' + Te('stay.groupFindsLean') + '</p><p>' + esc(tx(G, 'chat_lean')) + '</p></div>' +
+      '<div class="props">' + stays.map(groupFindStayCard).join('') + '</div>' +
+      '<div class="group-find-coach"><h4 class="h-sub">' + Te('stay.groupFindsCoach') + '</h4>' +
+      '<article class="prop"><header class="prop-head"><div><h4>' + esc(tx(coach, 'name')) + '</h4></div>' +
+      '<div class="prop-price"><p class="num">' + esc(hkd(coach.pp_session_hkd, coach.pp_session_hkd)) + '</p>' +
+      '<p class="per">' + Tve('stay.groupFindsSession', { price: hkd(coach.pp_session_hkd, coach.pp_session_hkd) }) + '</p>' +
+      '<p class="per">' + Tve('stay.groupFindsSessions', { n: coach.sessions, price: hkd(coach.pp_7_sessions_hkd, coach.pp_7_sessions_hkd) }) + '</p>' +
+      chipT(coach, 'status') + '</div></header>' +
+      '<p>' + esc(tx(coach, 'package_shape')) + ' ' + esc(tx(coach, 'duration')) + '</p>' +
+      '<p><strong>' + Te('stay.groupFindsIncludes') + ':</strong> ' + esc(tx(coach, 'includes')) + '</p>' +
+      '<p>' + esc(tx(coach, 'focus')) + '</p>' +
+      '<p class="fine">' + esc(tx(coach, 'note')) + '</p>' +
+      '<p class="fine"><a class="more" href="#coaching">' + Te('sec.coaching') + '</a></p></article></div>' +
+      '<h4 class="h-sub">' + Te('stay.groupFindsOpenQ') + '</h4>' +
+      '<ol class="self-steps">' + qs.map(function (q, i) { return '<li>' + esc(txi(G.open_questions, i)) + '</li>'; }).join('') + '</ol>' +
+      '<p class="fine">' + Tve('stay.groupFindsChecked', { date: tx(G, 'checked_label') }) + '</p></section>';
+  }
   function renderStay() {
     // "Book it" sits above the plan cards and follows the chosen plan (see updateStayPlan).
-    var html = '<div data-book-stay></div>' + chongStayHtml() + overwaterHtml() + '<div class="plans">' + TRIP.plans.map(function (p, i) {
+    var html = '<div data-book-stay></div>' + groupFindsHtml() + chongStayHtml() + overwaterHtml() + '<div class="plans">' + TRIP.plans.map(function (p, i) {
       return '<article class="plan-card" data-plan-card="' + esc(p.id) + '">' + photoFigure(photoById(STAY_PHOTOS[i]), 'card-ph', '(min-width: 1100px) 40vw, (min-width: 900px) 45vw, 92vw') +
         '<header><p class="plan-short">' + Tve('stay.planShort', { plan: planShort(p.id) }) + '</p><span class="stamp">' + Te('stay.stampCrew') + '</span>' +
         '<h3>' + esc(tx(p, 'name')) + '</h3><p class="plan-tag-line">' + esc(tx(p, 'tagline')) + '</p></header>' +
